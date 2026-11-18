@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PastorHub Admin – Painel de gestão</title>
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- ===== Login ===== -->
+  <div class="admin-login" id="admin-login">
+    <div class="login-box">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+      </div>
+      <h1>PastorHub Admin</h1>
+      <p>Acesso restrito à administração da plataforma.</p>
+      <form id="login-form">
+        <div class="field"><label for="adm-email">E-mail</label><input id="adm-email" type="email" value="admin@pastorhub.app" required></div>
+        <div class="field"><label for="adm-senha">Senha</label><input id="adm-senha" type="password" value="admin1234" required></div>
+        <button class="btn btn-primary" type="submit">Entrar no painel</button>
+      </form>
+      <div class="login-hint">Ambiente de demonstração — qualquer e-mail e senha acessam o painel.</div>
+    </div>
+  </div>
+
+  <!-- ===== Painel ===== -->
+  <div class="admin-layout" id="admin-app" hidden>
+    <aside class="aside" id="admin-aside">
+      <div class="aside-brand">
+        <span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 9.4 8 10 4.6-.6 8-5 8-10V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <div><strong>PastorHub</strong><span>Painel administrativo</span></div>
+      </div>
+      <nav class="aside-nav" id="admin-nav"></nav>
+      <div class="aside-foot">
+        <span class="avatar">AD</span>
+        <div><b>Administrador</b><span>admin@pastorhub.app</span></div>
+        <a href="site.html" title="Ir para o site">↗</a>
+      </div>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-top">
+        <button class="icon-btn menu-btn" id="menu-btn" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <div>
+          <h1 id="page-title">Visão geral</h1>
+          <div class="crumb" id="page-crumb">PastorHub · Painel administrativo</div>
+        </div>
+        <div class="admin-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input id="global-search" type="text" placeholder="Buscar no painel..." autocomplete="off">
+          <div class="search-pop" id="search-pop" hidden></div>
+        </div>
+        <button class="icon-btn" id="theme-btn" title="Alternar tema claro/escuro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="theme-icon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button class="icon-btn" id="refresh-btn" title="Atualizar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        </button>
+      </header>
+
+      <div class="admin-content" id="admin-content"></div>
+    </div>
+  </div>
+
+  <div class="aside-backdrop" id="aside-backdrop"></div>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Navegação rápida"></nav>
+
+  <div id="admin-toasts"></div>
+  <div id="admin-modal-root"></div>
+
+  <script src="js/icons.js"></script>
+  <script src="js/investidor.js"></script>
+  <script src="js/imagem.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/versiculos.js"></script>
+  <script src="js/admin-ai.js"></script>
+  <script src="js/admin-planos.js"></script>
+  <script src="js/admin-vers.js"></script>
+</body>
+</html>
