@@ -189,6 +189,7 @@
       const n = MOCK.notificacoes.lista.find((x) => x.titulo === titulo);
       if (!n) return;
       const prio = { alta: ['Alta', 'badge-destructive'], media: ['Média', 'badge-navy'], baixa: ['Baixa', 'badge-secondary'] }[n.prioridade];
+      const temVersiculo = n.ref && n.ref.includes(':');
       openSheet({
         title: n.titulo,
         desc: n.desc,
@@ -205,10 +206,17 @@
             linha('Tipo', n.tipo) +
             linha('Prioridade', prio[0]) +
           '</div>' +
+          // Se a notificação tem versículo, exibi-lo em destaque
+          (temVersiculo ? '<div class="versiculo-destacado">' +
+            '<div class="versiculo-ref">' + escapeHtml(n.ref) + '</div>' +
+            '<blockquote class="versiculo-texto">“' + escapeHtml(n.desc) + '”</blockquote>' +
+            '<div class="versao-info">' + (n.versao ? '<small>' + n.versao + '</small>' : '') + '</div>' +
+          '</div>' : '') +
           acoes([
             { label: 'Abrir no módulo', icon: 'bell', action: 'ir-para-alertas' },
             { label: 'Marcar como lida', icon: 'check', action: 'marcar-lidas', classe: 'lime' },
-          ]),
+            (temVersiculo ? { label: 'Compartilhar', icon: 'share', action: 'compartilhar-versiculo', classe: 'blue' } : null),
+          ].filter(item => item !== null)),
       });
     },
 
@@ -270,5 +278,21 @@
     const nome = el.dataset.id;
     closeSheet();
     toast('Lembrete enviado para ' + nome + ' via WhatsApp', 'success');
+  };
+
+  // ação: compartilhar versículo da notificação
+  Actions['compartilhar-versiculo'] = function (el) {
+    const refTitulo = el.dataset && el.dataset.ref ? el.dataset.ref : 'Versículo do dia';
+    if (navigator.share) {
+      navigator.share({ title: 'Versículo do PastorHub', text: refTitulo }).catch(() => {});
+    } else {
+      toast('Versículo: ' + refTitulo, 'success');
+      // Fallback: copiar para área de transferência
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(refTitulo).then(() => {
+          toast('Versículo copiado', 'success');
+        }).catch(() => {});
+      }
+    }
   };
 })();

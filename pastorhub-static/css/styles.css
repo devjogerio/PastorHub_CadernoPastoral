@@ -934,6 +934,34 @@ body.theme-dark .chat-modo.aviso { background: rgba(245, 158, 11, .1); border-co
 .det-acoes .btn { width: 100%; justify-content: flex-start; }
 .det-acoes .btn .icon { color: var(--muted-text); }
 
+/* --- Versículo em destaque no modal --- */
+.versiculo-destacado { 
+  margin: 0.9rem 0; 
+  padding: 0.8rem 1rem; 
+  background: var(--soft); 
+  border: 1px solid var(--border); 
+  border-radius: var(--radius); 
+}
+.versiculo-ref { 
+  font-size: 0.85rem; 
+  color: var(--muted); 
+  margin-bottom: 0.3rem; 
+  display: block; 
+}
+.versiculo-texto { 
+  font-style: italic; 
+  font-size: 1.05rem; 
+  line-height: 1.6; 
+  color: var(--navy); 
+  margin: 0.5rem 0; 
+  quote: '“' '”';
+}
+.versao-info { 
+  font-size: 0.75rem; 
+  color: var(--muted-text); 
+  margin-top: 0.3rem; 
+}
+
 /* --- perfil --- */
 .perfil-top { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 0.9rem; }
 .perfil-top strong { display: block; font-size: 1rem; color: var(--navy); }
