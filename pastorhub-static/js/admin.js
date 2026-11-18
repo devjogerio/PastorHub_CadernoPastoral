@@ -167,9 +167,11 @@
   const CONTAS = [
     { email: 'admin@pastorhub.app', senha: 'admin1234', nome: 'Administrador', papel: 'admin' },
     { email: 'ana.b.rocha@email.com', senha: 'ana1234', nome: 'Ana Beatriz Rocha', papel: 'usuario' },
+    /* conta vinculada ao Google (demonstração do login social) */
+    { email: 'pastorhub.oficial@gmail.com', senha: null, nome: 'PastorHub Oficial', papel: 'admin', origem: 'google' },
   ];
   /* seções restritas a quem não é administrador */
-  const SECOES_ADMIN = ['investimento', 'planos', 'usuarios', 'integracoes', 'mercado', 'sistema', 'configuracoes'];
+  const SECOES_ADMIN = ['investimento', 'planos', 'usuarios', 'integracoes', 'mercado', 'sistema', 'configuracoes', 'roadmap', 'documentos'];
   const sessao = { conta: null };
   const ehAdmin = () => !sessao.conta || sessao.conta.papel === 'admin';
   function secoesPermitidas() {
@@ -179,12 +181,14 @@
   function aplicarSessao(conta) {
     const foot = document.querySelector('.aside-foot');
     if (!foot) return;
+    const info = foot.querySelector('.aside-foot-info');
     const av = foot.querySelector('.avatar');
-    const b = foot.querySelector('b');
-    const sp = foot.querySelector('div span');
     if (av) av.textContent = initials(conta.nome);
-    if (b) b.textContent = conta.papel === 'admin' ? 'Administrador' : 'Usuário comum';
-    if (sp) sp.textContent = conta.nome + ' · ' + conta.email;
+    if (!info) return;
+    const b = info.querySelector('b');
+    const sp = info.querySelector('span');
+    if (b) b.textContent = conta.nome;
+    if (sp) sp.textContent = conta.origem === 'google' ? 'Conta Google · ' + conta.email : conta.email;
   }
 
   /* ================= ESTADO ================= */
@@ -2121,7 +2125,7 @@
   }
 
   /* login */
-  function realizarLogin(conta) {
+  function realizarLogin(conta, origem) {
     sessao.conta = conta;
     aplicarSessao(conta);
     if (!ehAdmin() && SECOES_ADMIN.indexOf(state.section) !== -1) state.section = 'overview';
@@ -2129,9 +2133,13 @@
     $('#admin-app').hidden = false;
     document.body.classList.add('painel-ativo');
     render();
-    toast(conta.papel === 'admin'
-      ? 'Bem-vindo ao painel administrativo'
-      : 'Bem-vinda, ' + conta.nome + ' · acesso de usuário comum', 'ok');
+    if (origem === 'google') {
+      toast('Conectado com Google · ' + conta.nome, 'ok');
+    } else if (conta.papel === 'admin') {
+      toast('Bem-vindo ao painel administrativo', 'ok');
+    } else {
+      toast('Bem-vinda, ' + conta.nome + ' · acesso de usuário comum', 'ok');
+    }
   }
 
   $('#login-form').addEventListener('submit', (e) => {
@@ -2140,28 +2148,48 @@
     const email = $('#adm-email').value.trim().toLowerCase().replace(/\s+/g, '');
     const senha = $('#adm-senha').value.trim();
     if (!email || !senha) {
-      toast('Preencha e-mail e senha. Use os logins de demonstração abaixo.', 'err');
+      toast('Preencha e-mail e senha.', 'err');
       return;
     }
     const conta = CONTAS.find((c) => c.email === email);
     if (!conta) {
-      toast('Conta não encontrada. Logins válidos: admin@pastorhub.app ou ana.b.rocha@email.com', 'err');
+      toast('E-mail ou senha inválidos.', 'err');
+      return;
+    }
+    if (conta.origem === 'google') {
+      toast('Esta conta entra com Google. Use "Continuar com Google".', 'err');
       return;
     }
     if (conta.senha !== senha) {
-      toast('Senha incorreta para ' + conta.email + '. Demonstração: ' + conta.senha, 'err');
+      toast('E-mail ou senha inválidos.', 'err');
       return;
     }
     realizarLogin(conta);
   });
 
+  /* login social (demonstração do fluxo Google) */
+  const btnGoogle = document.getElementById('btn-google');
+  if (btnGoogle) {
+    btnGoogle.addEventListener('click', () => {
+      const conta = CONTAS.find((c) => c.origem === 'google');
+      if (!conta) return;
+      btnGoogle.disabled = true;
+      btnGoogle.classList.add('loading');
+      /* simula a janela de consentimento do Google */
+      setTimeout(() => {
+        btnGoogle.disabled = false;
+        btnGoogle.classList.remove('loading');
+        realizarLogin(conta, 'google');
+      }, 700);
+    });
+  }
+
   /* preenchimento rápido das contas de demonstração (evita erro de digitação) */
   document.querySelectorAll('[data-login-rapido]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const conta = CONTAS.find((c) => (btn.dataset.loginRapido === 'admin' ? c.papel === 'admin' : c.papel !== 'admin'));
+      const conta = CONTAS.find((c) => !c.origem &&
+        (btn.dataset.loginRapido === 'admin' ? c.papel === 'admin' : c.papel !== 'admin'));
       if (!conta) return;
-      $('#adm-email').value = conta.email;
-      $('#adm-senha').value = conta.senha;
       realizarLogin(conta);
     });
   });
