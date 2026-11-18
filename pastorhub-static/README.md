@@ -114,7 +114,7 @@ Implementado funcionalmente no app (mobile, tablet e desktop):
 | **Configurações** | Identidade, segurança, 12 feature flags, backup |
 | **Documentos** | Todos os documentos de apresentação com links diretos |
 
-Login de demonstração: qualquer e-mail/senha (pré-preenchidos).
+Login de demonstração: `admin@pastorhub.app` / `admin1234` (administrador) ou `ana.b.rocha@email.com` / `ana1234` (usuário comum, sem acesso a financeiro, planos e configurações).
 
 ### 📱 Painel no celular e no tablet
 
@@ -136,8 +136,8 @@ se organizam em 2 colunas, modais ficam quase em tela cheia e os botões têm al
 ### 📖 Versículos diários
 
 - **Painel (Versículos diários)**: liga/desliga o envio automático, define o horário, escolhe os canais (card no app, notificação, WhatsApp via integração ativa), edita o banco de versículos (adicionar/editar/pausar/excluir/restaurar padrão), vê o versículo de hoje em prévia e o histórico de envios por canal.
-- **App (mobile, tablet e desktop)**: card "Versículo do dia" no Início, com **Copiar** e **Compartilhar** (WhatsApp). Quando o versículo do dia é enviado, o card atualiza e o app avisa com uma notificação.
-- O envio acontece automaticamente no horário configurado quando qualquer página do projeto está aberta (uma vez por dia, registrada em `pastorhub_vers_log`). O versículo é fixo por data: todos veem o mesmo no mesmo dia.
+- **App (mobile, tablet e desktop)**: card "Versículo do dia" no Início, com **Copiar** e **Compartilhar** (WhatsApp). O versículo é **aleatório e troca a cada 3 minutos**; quando o envio automático do dia ocorre, o card atualiza e o app avisa com uma notificação.
+- O envio acontece automaticamente no horário configurado quando qualquer página do projeto está aberta (uma vez por dia, registrada em `pastorhub_vers_log`). A rotação visual é aleatória a cada 3 minutos e sincronizada: todos veem o mesmo versículo enquanto a janela durar.
 
 ### Integrações com chaves de API (painel · Integrações)
 
