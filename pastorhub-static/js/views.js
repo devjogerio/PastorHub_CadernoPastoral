@@ -395,6 +395,9 @@
                   '<div class="item-title" style="' + (x.lida ? 'color:var(--muted-text)' : '') + '">' + escapeHtml(x.titulo) + '</div>' +
                   '<div class="item-badges"><span class="badge ' + prioBadge[x.prioridade] + '">' + prioLabel[x.prioridade] + '</span></div>' +
                   '<div class="item-sub" style="white-space:normal;margin-top:.25rem">' + escapeHtml(x.desc) + '</div>' +
+                  '<div class="item-acoes">' +
+                    '<button class="btn btn-outline btn-sm" data-action="ver-notificacao" data-id="' + escapeHtml(x.titulo) + '" title="Ver detalhes completos">' + ic('eye') + ' Ver</button>' +
+                  '</div>' +
                 '</div>' +
                 '<span class="item-meta">' + escapeHtml(x.hora) + '</span>' +
               '</div>'
