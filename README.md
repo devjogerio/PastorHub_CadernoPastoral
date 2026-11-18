@@ -98,12 +98,13 @@ Conventional Commits nos commits enviados.
 
 ## 🌐 Demonstração via GitHub Pages
 
-O workflow [pages.yml](.github/workflows/pages.yml) publica o conteúdo de `pastorhub-static/`.
-Para ativá-lo, no GitHub acesse **Settings → Pages → Build and deployment → Source → GitHub
-Actions**. Depois, execute o workflow **Publicar demonstração estática** manualmente ou envie
-uma mudança na pasta para a `main`.
+**Publicação ativa** — fonte: branch `main`, pasta raiz. A raiz redireciona para o app
+estático e qualquer push na `main` reconstrói o site automaticamente.
 
-URL prevista: https://devjogerio.github.io/PastorHub_CadernoPastoral/
+- https://devjogerio.github.io/PastorHub_CadernoPastoral/
+
+O workflow [pages.yml](.github/workflows/pages.yml) é a alternativa pela fonte *GitHub
+Actions* (requer conta sem pendência de cobrança) e publica direto em `pastorhub-static/`.
 
 A publicação é uma demonstração local-first: os dados ficam no navegador; não substitui backend,
 autenticação multiusuário, processamento real de pagamentos ou armazenamento seguro de segredos.

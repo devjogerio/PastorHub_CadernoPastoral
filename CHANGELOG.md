@@ -19,3 +19,4 @@ As mudanças relevantes deste projeto são registradas neste arquivo. O formato 
 ### Changed
 
 - README raiz passa a apresentar as duas implementações e o fluxo de desenvolvimento.
+- Raiz do GitHub Pages redireciona para o app estático publicado.
