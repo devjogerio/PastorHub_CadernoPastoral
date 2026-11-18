@@ -165,30 +165,85 @@
 
   /* ================= CONTAS DO PAINEL ================= */
   const CONTAS = [
-    { email: 'admin@pastorhub.app', senha: 'admin1234', nome: 'Administrador', papel: 'admin' },
-    { email: 'ana.b.rocha@email.com', senha: 'ana1234', nome: 'Ana Beatriz Rocha', papel: 'usuario' },
+    { email: 'admin@pastorhub.app', senha: 'admin1234', nome: 'Administrador', papel: 'admin', desde: '2025-01-15' },
+    { email: 'ana.b.rocha@email.com', senha: 'ana1234', nome: 'Ana Beatriz Rocha', papel: 'usuario', desde: '2025-06-03' },
     /* conta vinculada ao Google (demonstração do login social) */
-    { email: 'pastorhub.oficial@gmail.com', senha: null, nome: 'PastorHub Oficial', papel: 'admin', origem: 'google' },
+    { email: 'pastorhub.oficial@gmail.com', senha: null, nome: 'PastorHub Oficial', papel: 'admin', origem: 'google', desde: '2025-09-21' },
   ];
   /* seções restritas a quem não é administrador */
   const SECOES_ADMIN = ['investimento', 'planos', 'usuarios', 'integracoes', 'mercado', 'sistema', 'configuracoes', 'roadmap', 'documentos'];
-  const sessao = { conta: null };
+  const sessao = { conta: null, perfil: null };
   const ehAdmin = () => !sessao.conta || sessao.conta.papel === 'admin';
   function secoesPermitidas() {
     if (ehAdmin()) return SECTIONS;
-    return SECTIONS.filter((s) => s.group || s.href || SECOES_ADMIN.indexOf(s.id) === -1);
+    return SECTIONS.filter((s) => s.group || s.href || s.action || SECOES_ADMIN.indexOf(s.id) === -1);
   }
-  function aplicarSessao(conta) {
+
+  /* ================= PERFIL DO USUÁRIO LOGADO ================= */
+  const PERFIS_KEY = 'pastorhub_admin_perfis';
+  const PERFIL_PADRAO = {
+    telefone: '', igreja: '', cargo: '', cidade: '', bio: '', avatar: '',
+    notifEmail: true, notifResumo: true, notifPush: false,
+  };
+
+  function perfisSalvos() {
+    try {
+      const mapa = JSON.parse(localStorage.getItem(PERFIS_KEY));
+      return mapa && typeof mapa === 'object' ? mapa : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function perfilDe(conta) {
+    const salvo = perfisSalvos()[conta.email] || {};
+    return Object.assign({}, PERFIL_PADRAO, salvo, {
+      nome: salvo.nome || conta.nome,
+      email: conta.email,
+      papel: conta.papel,
+      origem: conta.origem || 'email',
+      desde: conta.desde || null,
+    });
+  }
+
+  function salvarPerfil(dados) {
+    if (!sessao.conta) return false;
+    const mapa = perfisSalvos();
+    mapa[sessao.conta.email] = Object.assign({}, mapa[sessao.conta.email] || {}, dados);
+    try {
+      localStorage.setItem(PERFIS_KEY, JSON.stringify(mapa));
+    } catch (e) {
+      toast('Armazenamento local cheio — o perfil não foi salvo', 'err');
+      return false;
+    }
+    sessao.perfil = perfilDe(sessao.conta);
+    aplicarSessao(sessao.conta);
+    return true;
+  }
+
+  function aplicarSessao(conta, perfil) {
     const foot = document.querySelector('.aside-foot');
     if (!foot) return;
+    const p = perfil || sessao.perfil || perfilDe(conta);
     const info = foot.querySelector('.aside-foot-info');
     const av = foot.querySelector('.avatar');
-    if (av) av.textContent = initials(conta.nome);
+    if (av) {
+      av.innerHTML = p.avatar
+        ? '<img src="' + esc(p.avatar) + '" alt="Foto de perfil">'
+        : esc(initials(p.nome));
+    }
     if (!info) return;
     const b = info.querySelector('b');
     const sp = info.querySelector('span');
-    if (b) b.textContent = conta.nome;
+    if (b) b.textContent = p.nome;
     if (sp) sp.textContent = conta.origem === 'google' ? 'Conta Google · ' + conta.email : conta.email;
+  }
+
+  function dataBr(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso.length <= 10 ? iso + 'T12:00:00' : iso);
+    if (isNaN(d.getTime())) return '—';
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
   }
 
   /* ================= ESTADO ================= */
@@ -251,6 +306,10 @@
     { id: 'site', label: 'Site institucional', icon: 'globe', href: 'site.html' },
     { id: 'app-mobile', label: 'App mobile', icon: 'phone', href: 'index.html' },
     { id: 'app-desktop', label: 'App desktop', icon: 'monitor', href: 'desktop.html' },
+    { group: 'Minha conta' },
+    { id: 'perfil', label: 'Meu perfil', icon: 'user' },
+    { id: 'perfil-config', label: 'Configurações do perfil', icon: 'settings' },
+    { id: 'sair', label: 'Sair do painel', icon: 'log-out', action: 'sair' },
   ];
 
   const TITLES = {
@@ -272,6 +331,8 @@
     sistema: 'Saúde do sistema',
     configuracoes: 'Configurações da plataforma',
     documentos: 'Documentos para apresentação',
+    perfil: 'Meu perfil',
+    'perfil-config': 'Configurações do perfil',
   };
 
   /* ================= UI HELPERS ================= */
@@ -1815,12 +1876,237 @@
   };
 
 
+  /* ================= MINHA CONTA ================= */
+  function avatarPerfil(p, extra) {
+    return '<span class="perfil-avatar' + (extra ? ' ' + extra : '') + (p.avatar ? ' avatar-img' : '') + '">' +
+      (p.avatar
+        ? '<img src="' + esc(p.avatar) + '" alt="Foto de ' + esc(p.nome) + '">'
+        : esc(initials(p.nome))) +
+    '</span>';
+  }
+
+  function dadoPerfil(icone, rotulo, valor) {
+    const vazio = !valor;
+    return '<div class="perfil-dado">' + ic(icone) +
+      '<div><b>' + esc(rotulo) + '</b>' +
+      '<span' + (vazio ? ' class="perfil-vazio"' : '') + '>' + esc(vazio ? 'Não informado' : valor) + '</span></div>' +
+    '</div>';
+  }
+
+  function switchPerfil(id, ativo) {
+    return '<span class="switch"><input type="checkbox" id="' + id + '"' + (ativo ? ' checked' : '') + '>' +
+      '<span class="track"></span><span class="thumb"></span></span>';
+  }
+
+  VIEWS.perfil = function () {
+    const p = sessao.perfil || perfilDe(sessao.conta);
+    const papel = p.papel === 'admin' ? 'Administrador' : 'Usuário comum';
+    const origem = p.origem === 'google' ? 'Conta Google' : 'E-mail e senha';
+
+    return '<div class="perfil-hero">' +
+        avatarPerfil(p, 'perfil-avatar-lg') +
+        '<div class="perfil-hero-info">' +
+          '<h2>' + esc(p.nome) + '</h2>' +
+          '<p>' + esc(p.email) + '</p>' +
+          '<div class="perfil-badges">' +
+            '<span class="tag ' + (p.papel === 'admin' ? 'tag-green' : 'tag-gray') + '">' + ic('shield') + ' ' + esc(papel) + '</span>' +
+            '<span class="tag tag-gray">' + esc(origem) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="perfil-hero-acoes">' +
+          '<button class="btn btn-primary btn-sm" data-section="perfil-config" type="button">' + ic('edit') + 'Editar perfil</button>' +
+          '<button class="btn btn-danger btn-sm" data-action="sair" type="button">' + ic('log-out') + 'Sair do painel</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="grid-2-even">' +
+        panel('Dados do perfil', '<div class="perfil-dados">' +
+          dadoPerfil('mail', 'E-mail de acesso', p.email) +
+          dadoPerfil('phone', 'Telefone / WhatsApp', p.telefone) +
+          dadoPerfil('home', 'Igreja', p.igreja) +
+          dadoPerfil('user', 'Cargo na igreja', p.cargo) +
+          dadoPerfil('map-pin', 'Cidade', p.cidade) +
+          dadoPerfil('calendar', 'Membro desde', dataBr(p.desde)) +
+        '</div>', { sub: 'Informações exibidas para a equipe da plataforma' }) +
+
+        panel('Sobre esta sessão',
+          '<div class="setting-row"><div><b>Papel na plataforma</b><span>' + esc(papel) + '</span></div>' +
+            '<span class="tag ' + (p.papel === 'admin' ? 'tag-green' : 'tag-gray') + '">' + (p.papel === 'admin' ? 'Admin' : 'Usuário') + '</span></div>' +
+          '<div class="setting-row"><div><b>Forma de acesso</b><span>' + esc(origem) + '</span></div>' +
+            '<span class="tag tag-gray">' + (p.origem === 'google' ? 'Google' : 'E-mail') + '</span></div>' +
+          '<div class="setting-row"><div><b>Último acesso</b><span>Sessão atual neste dispositivo</span></div>' +
+            '<span class="tag tag-green">Agora</span></div>',
+          { sub: 'Conta autenticada neste dispositivo' }) +
+      '</div>' +
+
+      panel('Sobre mim', '<p class="perfil-bio">' +
+        esc(p.bio || 'Conte um pouco sobre o seu ministério. Essa descrição aparece no seu perfil e pode ser editada a qualquer momento.') +
+        '</p>', { sub: 'Biografia do perfil' }) +
+
+      panel('Segurança e encerramento', '<div class="perfil-acoes-form" style="margin-top:0">' +
+        '<button class="btn btn-outline" data-section="perfil-config" type="button">' + ic('settings') + 'Configurações do perfil</button>' +
+        '<button class="btn btn-danger" data-action="sair" type="button">' + ic('log-out') + 'Sair do painel</button>' +
+      '</div>', { sub: 'Encerrar a sessão volta para a tela de login' });
+  };
+
+  VIEWS['perfil-config'] = function () {
+    const p = sessao.perfil || perfilDe(sessao.conta);
+    return '<div class="grid-2">' +
+        panel('Dados pessoais',
+          '<div class="field-row">' +
+            '<div class="field"><label for="perfil-nome">Nome completo</label>' +
+              '<input id="perfil-nome" type="text" value="' + esc(p.nome) + '" placeholder="Seu nome"></div>' +
+            '<div class="field"><label for="perfil-email">E-mail de acesso</label>' +
+              '<input id="perfil-email" type="email" value="' + esc(p.email) + '" disabled></div>' +
+          '</div>' +
+          '<div class="field-row">' +
+            '<div class="field"><label for="perfil-tel">Telefone / WhatsApp</label>' +
+              '<input id="perfil-tel" type="tel" value="' + esc(p.telefone) + '" placeholder="(00) 00000-0000"></div>' +
+            '<div class="field"><label for="perfil-cidade">Cidade</label>' +
+              '<input id="perfil-cidade" type="text" value="' + esc(p.cidade) + '" placeholder="Cidade / UF"></div>' +
+          '</div>' +
+          '<div class="field-row">' +
+            '<div class="field"><label for="perfil-igreja">Igreja</label>' +
+              '<input id="perfil-igreja" type="text" value="' + esc(p.igreja) + '" placeholder="Nome da igreja"></div>' +
+            '<div class="field"><label for="perfil-cargo">Cargo na igreja</label>' +
+              '<input id="perfil-cargo" type="text" value="' + esc(p.cargo) + '" placeholder="Pastor titular, auxiliar..."></div>' +
+          '</div>' +
+          '<div class="field"><label for="perfil-bio">Sobre mim</label>' +
+            '<textarea id="perfil-bio" rows="4" placeholder="Conte um pouco sobre o seu ministério...">' + esc(p.bio) + '</textarea></div>' +
+          '<div class="perfil-acoes-form">' +
+            '<button class="btn btn-primary" data-action="salvar-perfil-admin" type="button">' + ic('save') + 'Salvar alterações</button>' +
+            '<button class="btn btn-outline" data-section="perfil" type="button">Cancelar</button>' +
+          '</div>',
+          { sub: 'O e-mail de acesso é gerenciado pela plataforma' }) +
+
+        panel('Foto de perfil',
+          '<div class="perfil-foto-box">' +
+            '<span id="perfil-foto-preview">' + avatarPerfil(p, 'perfil-avatar-lg') + '</span>' +
+            '<div class="field" style="width:100%"><label for="perfil-foto">Selecionar imagem</label>' +
+              '<input id="perfil-foto" type="file" accept="image/png,image/jpeg,image/webp"></div>' +
+            '<p class="perfil-dica">JPG, PNG ou WEBP. A imagem é recortada em formato quadrado e salva apenas neste dispositivo.</p>' +
+            (p.avatar
+              ? '<button class="btn btn-outline btn-sm" data-action="remover-foto-admin" type="button">' + ic('trash-2') + 'Remover foto</button>'
+              : '') +
+          '</div>',
+          { sub: 'Sua foto aparece no menu lateral' }) +
+      '</div>' +
+
+      panel('Preferências de notificação', [
+        { id: 'perfil-notif-email', n: 'Alertas por e-mail', v: 'Novos usuários, pagamentos e avisos da plataforma', on: p.notifEmail },
+        { id: 'perfil-notif-resumo', n: 'Resumo semanal', v: 'Um e-mail por semana com os principais indicadores', on: p.notifResumo },
+        { id: 'perfil-notif-push', n: 'Notificações no navegador', v: 'Avisos em tempo real neste dispositivo', on: p.notifPush },
+      ].map((r) =>
+        '<div class="setting-row"><div><b>' + esc(r.n) + '</b><span>' + esc(r.v) + '</span></div>' +
+        switchPerfil(r.id, r.on) + '</div>').join(''),
+        { sub: 'Escolha como deseja ser avisado' }) +
+
+      panel('Segurança da conta',
+        '<div class="setting-row"><div><b>Forma de acesso</b><span>' +
+          (p.origem === 'google' ? 'Conta Google vinculada' : 'E-mail e senha cadastrados') +
+        '</span></div><span class="tag tag-green">Ativa</span></div>' +
+        '<div class="setting-row"><div><b>Encerrar sessão</b><span>Saia do painel e volte para a tela de login</span></div>' +
+          '<button class="btn btn-danger btn-sm" data-action="sair" type="button">' + ic('log-out') + 'Sair do painel</button></div>',
+        { sub: 'Proteja o acesso ao painel' });
+  };
+
+  /* ---------- Ações do perfil ---------- */
+  function redimensionarImagem(file, lado) {
+    return new Promise((resolve, reject) => {
+      const leitor = new FileReader();
+      leitor.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const menor = Math.min(img.width, img.height);
+          const canvas = document.createElement('canvas');
+          canvas.width = canvas.height = lado;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, (img.width - menor) / 2, (img.height - menor) / 2, menor, menor, 0, 0, lado, lado);
+          resolve(canvas.toDataURL('image/jpeg', 0.82));
+        };
+        img.onerror = () => reject(new Error('imagem inválida'));
+        img.src = leitor.result;
+      };
+      leitor.onerror = () => reject(new Error('falha ao ler o arquivo'));
+      leitor.readAsDataURL(file);
+    });
+  }
+
+  function ligarFormPerfil() {
+    const input = document.getElementById('perfil-foto');
+    if (!input) return;
+    input.addEventListener('change', () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      redimensionarImagem(file, 320).then((url) => {
+        if (!salvarPerfil({ avatar: url })) return;
+        toast('Foto de perfil atualizada', 'ok');
+        render();
+      }).catch(() => toast('Não foi possível carregar a imagem', 'err'));
+    });
+  }
+
+  Actions['salvar-perfil-admin'] = function () {
+    const valor = (id, vazio) => {
+      const el = document.getElementById(id);
+      return el ? el.value.trim() : (vazio || '');
+    };
+    const nome = valor('perfil-nome');
+    if (!nome) { toast('Informe o seu nome completo', 'err'); return; }
+    const ok = salvarPerfil({
+      nome,
+      telefone: valor('perfil-tel'),
+      igreja: valor('perfil-igreja'),
+      cargo: valor('perfil-cargo'),
+      cidade: valor('perfil-cidade'),
+      bio: valor('perfil-bio'),
+      notifEmail: document.getElementById('perfil-notif-email').checked,
+      notifResumo: document.getElementById('perfil-notif-resumo').checked,
+      notifPush: document.getElementById('perfil-notif-push').checked,
+    });
+    if (!ok) return;
+    toast('Perfil atualizado com sucesso', 'ok');
+    render();
+  };
+
+  Actions['remover-foto-admin'] = function () {
+    if (!salvarPerfil({ avatar: '' })) return;
+    toast('Foto removida — voltando às iniciais', 'ok');
+    render();
+  };
+
+  function sairDoPainel() {
+    sessao.conta = null;
+    sessao.perfil = null;
+    state.section = 'overview';
+    $('#admin-app').hidden = true;
+    $('#admin-login').hidden = false;
+    document.body.classList.remove('painel-ativo');
+    const form = document.getElementById('login-form');
+    if (form) form.reset();
+    aplicarSessao(CONTAS[0], Object.assign({}, PERFIL_PADRAO, { nome: CONTAS[0].nome }));
+    const av = document.querySelector('.aside-foot .avatar');
+    if (av) av.textContent = 'AD';
+    toast('Sessão encerrada com segurança', 'ok');
+    window.scrollTo(0, 0);
+  }
+
+  Actions['sair'] = function () {
+    if (!sessao.conta) return;
+    const p = sessao.perfil || perfilDe(sessao.conta);
+    confirmAction('Sair do painel', 'Encerrar a sessão de <b>' + esc(p.nome) + '</b>? Você voltará para a tela de login.', sairDoPainel);
+  };
+
   /* ================= RENDER ================= */
   function renderNav() {
     const html = secoesPermitidas().map((s) => {
       if (s.group) return '<div class="nav-label">' + esc(s.group) + '</div>';
       if (s.href) {
         return '<button data-href="' + s.href + '" type="button">' +
+          ic(s.icon) + '<span>' + esc(s.label) + '</span></button>';
+      }
+      if (s.action) {
+        return '<button class="nav-danger" data-action="' + esc(s.action) + '" type="button">' +
           ic(s.icon) + '<span>' + esc(s.label) + '</span></button>';
       }
       return '<button class="' + (state.section === s.id ? 'active' : '') + '" data-section="' + s.id + '">' +
@@ -1846,6 +2132,7 @@
     const view = VIEWS[state.section] || VIEWS.overview;
     $('#page-title').textContent = TITLES[state.section] || 'Painel';
     $('#admin-content').innerHTML = view();
+    if (state.section === 'perfil-config') ligarFormPerfil();
     $('#admin-aside').classList.remove('open');
     document.body.classList.remove('nav-open');
   }
@@ -2127,6 +2414,7 @@
   /* login */
   function realizarLogin(conta, origem) {
     sessao.conta = conta;
+    sessao.perfil = perfilDe(conta);
     aplicarSessao(conta);
     if (!ehAdmin() && SECOES_ADMIN.indexOf(state.section) !== -1) state.section = 'overview';
     $('#admin-login').hidden = true;
@@ -2134,11 +2422,11 @@
     document.body.classList.add('painel-ativo');
     render();
     if (origem === 'google') {
-      toast('Conectado com Google · ' + conta.nome, 'ok');
+      toast('Conectado com Google · ' + sessao.perfil.nome, 'ok');
     } else if (conta.papel === 'admin') {
       toast('Bem-vindo ao painel administrativo', 'ok');
     } else {
-      toast('Bem-vinda, ' + conta.nome + ' · acesso de usuário comum', 'ok');
+      toast('Bem-vinda, ' + sessao.perfil.nome + ' · acesso de usuário comum', 'ok');
     }
   }
 
