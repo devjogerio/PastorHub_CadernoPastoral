@@ -1159,6 +1159,40 @@ body.theme-dark .app-info h3 { color: #e8f1fb; }
 
 .side-brand, .side-user { display: none; }
 
+/* ---------- SHELL: MOBILE (respiro de app nativo) ----------
+   Gutter generoso, headers com folga vertical e safe-areas para
+   que o conteúdo não fique colado nas bordas do aparelho. */
+.shell-mobile {
+  --gutter-x: 1.5rem;
+}
+.shell-mobile #topbar {
+  padding: 0 var(--gutter-x);
+  padding-top: env(safe-area-inset-top, 0px);
+  height: calc(3.5rem + env(safe-area-inset-top, 0px));
+}
+.shell-mobile .view-header {
+  padding: 1.5rem var(--gutter-x) 1.6rem;
+  margin-bottom: 1.25rem;
+}
+.shell-mobile .stat-grid {
+  padding: 0 var(--gutter-x) 0.35rem;
+  gap: 0.8rem;
+}
+.shell-mobile .section {
+  padding: 0 var(--gutter-x);
+  margin-bottom: 1.4rem;
+}
+.shell-mobile .pills { margin: 0 var(--gutter-x) 0.85rem; }
+.shell-mobile .search-count { padding: 0.75rem var(--gutter-x) 0; }
+.shell-mobile .search-results { padding: 1rem var(--gutter-x); }
+.shell-mobile #view {
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+.shell-mobile #bottom-nav {
+  height: calc(4rem + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 /* ---------- SHELL: TABLET ---------- */
 .shell-tablet #app { max-width: 834px; }
 
