@@ -14,6 +14,13 @@ O repositório reúne duas implementações:
 | `pastorhub-static/` | HTML, CSS e JavaScript puro | App mobile/tablet/desktop, site institucional, painel e documentos; abre sem build |
 | `src/` | React, TypeScript, Vite e Capacitor | Aplicação web/mobile-first original, com Supabase opcional e modo offline |
 
+> **⚠️ Modo demonstração.** Este repositório está publicado como uma **vitrine pública** para que
+> visitantes conheçam e testem todas as funcionalidades. A versão em GitHub Pages usa dados
+> fictícios, autenticação simulada e persistência local no navegador — não é um ambiente de
+> produção. **Não insira informações reais, pessoais ou sensíveis.** As credenciais e chaves de
+> integração exibidas são de exemplo e ficam apenas no dispositivo. A auditoria de segurança é um
+> documento interno, mantido fora deste repositório público.
+
 ## 🚀 Início rápido
 
 ### Aplicação estática

@@ -4,6 +4,18 @@ Réplica estática de **todo o projeto Pastoral Care App (PastorHub)** em HTML, 
 Supabase ou qualquer build. Inclui o **app em 3 shells**, o **site institucional**, o **painel administrativo** e os
 **documentos de apresentação** derivados da *Proposta de Investimento PastorHub v2.0*.
 
+## ⚠️ Modo demonstração
+
+Esta versão é uma **vitrine pública de demonstração**, publicada no GitHub Pages para testes.
+Ela usa dados fictícios, autenticação simulada (inclusive os botões de acesso rápido do painel) e
+persistência local no navegador (`localStorage`). Não há servidor, banco real, cobrança ou envio de
+e-mails. **Não insira informações reais ou sensíveis** — qualquer pessoa com acesso à página
+consegue ver e alterar os dados de demonstração.
+
+O aviso "Modo demonstração" aparece fixo no topo de `index.html`, `tablet.html`, `desktop.html`,
+`site.html` e `admin.html` (script `js/demo.js`, dispensável por sessão). Para reexibi-lo após
+ocultar, feche a aba ou limpe o `sessionStorage`.
+
 ## 🚀 Como usar
 
 ```bash

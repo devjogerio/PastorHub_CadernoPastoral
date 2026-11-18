@@ -132,6 +132,9 @@ Thumbs.db
 /build/
 /test.html
 
+# Relatório de auditoria de segurança (documento interno, não publicar)
+docs/auditoria-seguranca-*
+
 # Builds locais do Android
 android/.gradle/
 android/local.properties

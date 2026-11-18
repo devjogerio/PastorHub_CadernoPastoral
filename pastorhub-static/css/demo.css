@@ -1,0 +1,30 @@
+/* Aviso de modo demonstração — compartilhado por todas as páginas do app estático */
+#ph-demo-banner {
+  position: fixed; inset: 0 0 auto 0; z-index: 400;
+  display: flex; align-items: center; gap: .6rem;
+  padding: .5rem .9rem;
+  background: linear-gradient(90deg, #3a2f00, #5a4700);
+  border-bottom: 1px solid #d4a900;
+  color: #ffe9a8;
+  font: 600 .78rem/1.35 "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+}
+#ph-demo-banner .ph-demo-tag {
+  flex: none; background: #d4a900; color: #221a00;
+  border-radius: 999px; padding: .15rem .55rem;
+  font-size: .66rem; letter-spacing: .09em;
+}
+#ph-demo-banner .ph-demo-text { flex: 1; min-width: 0; }
+#ph-demo-banner .ph-demo-text strong { color: #fff; }
+#ph-demo-banner button {
+  flex: none; background: rgba(255, 255, 255, .14);
+  border: 1px solid rgba(255, 255, 255, .3); color: #fff;
+  border-radius: 6px; padding: .25rem .65rem;
+  font-size: .72rem; font-weight: 600; cursor: pointer;
+}
+#ph-demo-banner button:hover { background: rgba(255, 255, 255, .24); }
+body.ph-demo-on { padding-top: var(--ph-demo-h, 39px); }
+
+@media (max-width: 640px) {
+  #ph-demo-banner { font-size: .72rem; padding: .45rem .6rem; gap: .45rem; }
+  #ph-demo-banner .ph-demo-text strong { display: block; }
+}
