@@ -163,6 +163,30 @@
     ],
   };
 
+  /* ================= CONTAS DO PAINEL ================= */
+  const CONTAS = [
+    { email: 'admin@pastorhub.app', senha: 'admin1234', nome: 'Administrador', papel: 'admin' },
+    { email: 'ana.b.rocha@email.com', senha: 'ana1234', nome: 'Ana Beatriz Rocha', papel: 'usuario' },
+  ];
+  /* seções restritas a quem não é administrador */
+  const SECOES_ADMIN = ['investimento', 'planos', 'usuarios', 'integracoes', 'mercado', 'sistema', 'configuracoes'];
+  const sessao = { conta: null };
+  const ehAdmin = () => !sessao.conta || sessao.conta.papel === 'admin';
+  function secoesPermitidas() {
+    if (ehAdmin()) return SECTIONS;
+    return SECTIONS.filter((s) => s.group || s.href || SECOES_ADMIN.indexOf(s.id) === -1);
+  }
+  function aplicarSessao(conta) {
+    const foot = document.querySelector('.aside-foot');
+    if (!foot) return;
+    const av = foot.querySelector('.avatar');
+    const b = foot.querySelector('b');
+    const sp = foot.querySelector('div span');
+    if (av) av.textContent = initials(conta.nome);
+    if (b) b.textContent = conta.papel === 'admin' ? 'Administrador' : 'Usuário comum';
+    if (sp) sp.textContent = conta.nome + ' · ' + conta.email;
+  }
+
   /* ================= ESTADO ================= */
   const USUARIOS_KEY = 'pastorhub_admin_usuarios';
 
@@ -1789,7 +1813,7 @@
 
   /* ================= RENDER ================= */
   function renderNav() {
-    const html = SECTIONS.map((s) => {
+    const html = secoesPermitidas().map((s) => {
       if (s.group) return '<div class="nav-label">' + esc(s.group) + '</div>';
       if (s.href) {
         return '<button data-href="' + s.href + '" type="button">' +
@@ -1805,7 +1829,7 @@
     const mnav = document.getElementById('mobile-nav');
     if (mnav) {
       const rapidas = ['overview', 'usuarios', 'planos', 'rag', 'versiculos'];
-      mnav.innerHTML = SECTIONS.filter((s) => s.id && rapidas.includes(s.id)).map((s) =>
+      mnav.innerHTML = secoesPermitidas().filter((s) => s.id && rapidas.includes(s.id)).map((s) =>
         '<button class="' + (state.section === s.id ? 'active' : '') + '" data-section="' + s.id + '" type="button">' +
           ic(s.icon) + '<span>' + esc(s.label.split(' ')[0].replace('&', '')) + '</span></button>').join('');
     }
@@ -1813,6 +1837,7 @@
 
   function render() {
     persistirEstado();
+    if (!ehAdmin() && SECOES_ADMIN.indexOf(state.section) !== -1) state.section = 'overview';
     renderNav();
     const view = VIEWS[state.section] || VIEWS.overview;
     $('#page-title').textContent = TITLES[state.section] || 'Painel';
@@ -2098,11 +2123,23 @@
   /* login */
   $('#login-form').addEventListener('submit', (e) => {
     e.preventDefault();
+    const email = $('#adm-email').value.trim().toLowerCase();
+    const senha = $('#adm-senha').value;
+    const conta = CONTAS.find((c) => c.email === email);
+    if (!conta || conta.senha !== senha) {
+      toast('E-mail ou senha inválidos. Consulte os logins de demonstração.', 'err');
+      return;
+    }
+    sessao.conta = conta;
+    aplicarSessao(conta);
+    if (!ehAdmin() && SECOES_ADMIN.indexOf(state.section) !== -1) state.section = 'overview';
     $('#admin-login').hidden = true;
     $('#admin-app').hidden = false;
     document.body.classList.add('painel-ativo');
     render();
-    toast('Bem-vindo ao painel administrativo', 'ok');
+    toast(conta.papel === 'admin'
+      ? 'Bem-vindo ao painel administrativo'
+      : 'Bem-vinda, ' + conta.nome + ' · acesso de usuário comum', 'ok');
   });
 
   $('#refresh-btn').addEventListener('click', () => { render(); toast('Dados atualizados', 'ok'); });
@@ -2157,7 +2194,7 @@
     const res = [];
     state.users.forEach((u) => {
       if ((u.nome + ' ' + u.email + ' ' + u.igreja).toLowerCase().includes(termo)) {
-        res.push({ grupo: 'Usuários', icone: 'users', titulo: u.nome, sub: u.email, ir: () => { state.section = 'usuarios'; state.userQuery = u.nome; render(); } });
+        if (ehAdmin()) res.push({ grupo: 'Usuários', icone: 'users', titulo: u.nome, sub: u.email, ir: () => { state.section = 'usuarios'; state.userQuery = u.nome; render(); } });
       }
     });
     state.content.forEach((c) => {
@@ -2172,7 +2209,7 @@
     });
     DB.integracoes.forEach((i) => {
       if (i.nome.toLowerCase().includes(termo)) {
-        res.push({ grupo: 'Integrações', icone: 'zap', titulo: i.nome, sub: i.desc, ir: () => { state.section = 'integracoes'; render(); } });
+        if (ehAdmin()) res.push({ grupo: 'Integrações', icone: 'zap', titulo: i.nome, sub: i.desc, ir: () => { state.section = 'integracoes'; render(); } });
       }
     });
     return res.slice(0, 10);
