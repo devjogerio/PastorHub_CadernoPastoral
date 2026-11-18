@@ -2121,15 +2121,7 @@
   }
 
   /* login */
-  $('#login-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const email = $('#adm-email').value.trim().toLowerCase();
-    const senha = $('#adm-senha').value;
-    const conta = CONTAS.find((c) => c.email === email);
-    if (!conta || conta.senha !== senha) {
-      toast('E-mail ou senha inválidos. Consulte os logins de demonstração.', 'err');
-      return;
-    }
+  function realizarLogin(conta) {
     sessao.conta = conta;
     aplicarSessao(conta);
     if (!ehAdmin() && SECOES_ADMIN.indexOf(state.section) !== -1) state.section = 'overview';
@@ -2140,6 +2132,38 @@
     toast(conta.papel === 'admin'
       ? 'Bem-vindo ao painel administrativo'
       : 'Bem-vinda, ' + conta.nome + ' · acesso de usuário comum', 'ok');
+  }
+
+  $('#login-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    /* normaliza: espaços nas pontas, caixa e acentos colados do copy/paste */
+    const email = $('#adm-email').value.trim().toLowerCase().replace(/\s+/g, '');
+    const senha = $('#adm-senha').value.trim();
+    if (!email || !senha) {
+      toast('Preencha e-mail e senha. Use os logins de demonstração abaixo.', 'err');
+      return;
+    }
+    const conta = CONTAS.find((c) => c.email === email);
+    if (!conta) {
+      toast('Conta não encontrada. Logins válidos: admin@pastorhub.app ou ana.b.rocha@email.com', 'err');
+      return;
+    }
+    if (conta.senha !== senha) {
+      toast('Senha incorreta para ' + conta.email + '. Demonstração: ' + conta.senha, 'err');
+      return;
+    }
+    realizarLogin(conta);
+  });
+
+  /* preenchimento rápido das contas de demonstração (evita erro de digitação) */
+  document.querySelectorAll('[data-login-rapido]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const conta = CONTAS.find((c) => (btn.dataset.loginRapido === 'admin' ? c.papel === 'admin' : c.papel !== 'admin'));
+      if (!conta) return;
+      $('#adm-email').value = conta.email;
+      $('#adm-senha').value = conta.senha;
+      realizarLogin(conta);
+    });
   });
 
   $('#refresh-btn').addEventListener('click', () => { render(); toast('Dados atualizados', 'ok'); });

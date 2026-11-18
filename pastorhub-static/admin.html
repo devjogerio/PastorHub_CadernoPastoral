@@ -16,12 +16,16 @@
       </div>
       <h1>PastorHub Admin</h1>
       <p>Acesso restrito à administração da plataforma.</p>
-      <form id="login-form">
-        <div class="field"><label for="adm-email">E-mail</label><input id="adm-email" type="email" value="admin@pastorhub.app" required></div>
-        <div class="field"><label for="adm-senha">Senha</label><input id="adm-senha" type="password" value="admin1234" required></div>
+      <form id="login-form" novalidate>
+        <div class="field"><label for="adm-email">E-mail</label><input id="adm-email" type="email" inputmode="email" autocomplete="username" spellcheck="false" placeholder="nome@exemplo.com" required></div>
+        <div class="field"><label for="adm-senha">Senha</label><input id="adm-senha" type="password" autocomplete="current-password" placeholder="Sua senha" required></div>
         <button class="btn btn-primary" type="submit">Entrar no painel</button>
       </form>
       <div class="login-hint">Demonstração: <b>admin@pastorhub.app</b> / <b>admin1234</b> (administrador) · <b>ana.b.rocha@email.com</b> / <b>ana1234</b> (usuário comum).</div>
+      <div class="login-quick">
+        <button class="btn btn-outline" type="button" data-login-rapido="admin">Entrar como administrador</button>
+        <button class="btn btn-outline" type="button" data-login-rapido="ana">Entrar como Ana (usuário comum)</button>
+      </div>
     </div>
   </div>
 
