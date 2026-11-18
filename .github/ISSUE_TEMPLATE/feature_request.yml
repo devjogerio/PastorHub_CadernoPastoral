@@ -1,0 +1,59 @@
+name: Sugerir uma funcionalidade
+description: Proponha uma melhoria com problema, valor e critérios de aceite.
+title: "feat(<escopo>): "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema ou oportunidade
+      description: Qual necessidade pastoral, operacional ou técnica será atendida?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Solução proposta
+      description: Descreva o comportamento desejado e, se útil, o fluxo de telas.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área principal
+      options:
+        - App estático
+        - Painel administrativo
+        - Planos e faturamento
+        - IA / RAG / OCR
+        - Site institucional
+        - App React
+        - Documentação
+        - Infraestrutura / GitHub
+        - Outro
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critérios de aceite
+      placeholder: |
+        - [ ] ...
+        - [ ] Funciona em mobile/tablet/desktop
+        - [ ] Não quebra dados persistidos existentes
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas e contexto adicional
+      description: Outras soluções consideradas, referências, restrições ou prioridade.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Antes de enviar
+      options:
+        - label: Consultei o registro técnico e a lista de melhorias propostas.
+          required: true
+        - label: A proposta não contém dados pessoais, comprovantes ou credenciais reais.
+          required: true

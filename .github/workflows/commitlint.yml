@@ -1,0 +1,25 @@
+name: Conventional Commits
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, edited]
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  commitlint:
+    name: Validar mensagens de commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout com histórico
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validar intervalo de commits
+        uses: wagoid/commitlint-github-action@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

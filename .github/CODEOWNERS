@@ -1,0 +1,9 @@
+# Revisão padrão de todos os arquivos
+* @devjogerio
+
+# Governança, automação e dependências exigem revisão explícita
+/.github/ @devjogerio
+/package.json @devjogerio
+/package-lock.json @devjogerio
+/commitlint.config.cjs @devjogerio
+/SECURITY.md @devjogerio

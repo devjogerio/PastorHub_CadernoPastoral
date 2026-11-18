@@ -1,0 +1,72 @@
+name: Relatar um bug
+description: Informe um comportamento incorreto com dados para reprodução.
+title: "fix(<escopo>): "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado pelo relatório. Use somente dados fictícios. Não envie senhas, tokens,
+        chaves Pix reais ou informações pessoais de atendimentos.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área afetada
+      options:
+        - App estático — mobile
+        - App estático — tablet
+        - App estático — desktop
+        - Painel administrativo
+        - Planos e faturamento
+        - IA / RAG / OCR
+        - Site institucional
+        - App React
+        - Documentação
+        - Outro
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: O que aconteceu?
+      description: Descreva o comportamento atual e inclua mensagens de erro, se houver.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: O que era esperado?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para reproduzir
+      placeholder: |
+        1. Abra ...
+        2. Clique em ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Ambiente
+      description: Sistema operacional, navegador e versão, viewport e commit/branch.
+      placeholder: Windows 11, Chrome 142, 390 × 844, main@abc1234
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidências e contexto
+      description: Screenshots sem dados sensíveis, erro do console ou outras informações.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Antes de enviar
+      options:
+        - label: Pesquisei issues existentes e removi dados sensíveis do relatório.
+          required: true
+        - label: Isto não é uma vulnerabilidade de segurança (nesses casos, uso advisory privado).
+          required: true
