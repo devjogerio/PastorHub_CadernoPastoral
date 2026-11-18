@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PastorHub · Ecossistema de IA (RAG + OCR)</title>
+  <link rel="stylesheet" href="../css/docs.css">
+</head>
+<body>
+
+  <div class="doc-toolbar">
+    <div class="t-left">
+      <a href="../site.html">← Site</a>
+      <a href="proposta-investimento.html">Proposta</a>
+      <a href="apresentacao.html">Deck</a>
+      <a href="ficha-tecnica.html">Ficha técnica</a>
+      <a href="manual-usuario.html">Manual</a>
+      <a href="roadmap.html">Roadmap</a>
+      <a href="registro-tecnico.html">Registro técnico</a>
+    </div>
+    <div class="t-right"><button class="btn-doc" onclick="window.print()">Imprimir / Salvar em PDF</button></div>
+  </div>
+
+  <article class="doc">
+    <header class="cover">
+      <span class="kicker">Documento técnico · Confidencial</span>
+      <h1>Ecossistema de IA do PastorHub</h1>
+      <p class="sub">RAG, OCR e LLMs: como os documentos da igreja viram conhecimento consultável</p>
+      <p class="tagline">Ingestão de .md, .pdf e imagens · OCR em português · BM25 no navegador · LLMs gratuitos e pagos · fontes citadas</p>
+      <div class="cover-meta">
+        <div><div class="m-label">Onde vive</div><div class="m-value">Painel admin + app (mobile, tablet, desktop)</div></div>
+        <div><div class="m-label">OCR</div><div class="m-value">Tesseract.js · português (pt-BR)</div></div>
+        <div><div class="m-label">Recuperação</div><div class="m-value">BM25 no navegador</div></div>
+        <div><div class="m-label">LLMs</div><div class="m-value">Llama (gratuito) · GPT · Claude · Gemini</div></div>
+      </div>
+    </header>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">1</span> Visão geral do processo</h2>
+      <p class="lead-doc">O ecossistema transforma arquivos soltos da igreja em conhecimento consultável, em seis etapas.
+        Todo o processamento acontece no navegador do usuário — na versão estática, nenhum documento sai do dispositivo.</p>
+      <div class="grid-3">
+        <div class="mini-card"><h4>1 · Ingestão</h4><p>Arrastar e soltar .md, .txt, .pdf e imagens, escolhendo a coleção de destino.</p></div>
+        <div class="mini-card"><h4>2 · Extração</h4><p>PDF com texto → pdf.js. PDF digitalizado → OCR. Imagem → OCR. Markdown → leitura direta.</p></div>
+        <div class="mini-card"><h4>3 · Divisão</h4><p>Trechos de ~900 caracteres, respeitando parágrafos e títulos, com rótulo de seção.</p></div>
+        <div class="mini-card"><h4>4 · Indexação</h4><p>Índice BM25 no navegador, com remoção de palavras vazias em português.</p></div>
+        <div class="mini-card"><h4>5 · Recuperação</h4><p>O agente recupera os k trechos mais relevantes das coleções vinculadas.</p></div>
+        <div class="mini-card"><h4>6 · Resposta</h4><p>Com LLM: resposta citando [1], [2]. Sem LLM: modo extrativo com os trechos.</p></div>
+      </div>
+      <div class="callout lime" style="margin-top:20px">
+        <strong>Princípio</strong>
+        O assistente nunca inventa versículos nem dados: a resposta é construída sobre os trechos recuperados, e cada
+        afirmação aponta para o documento de origem.
+      </div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">2</span> Integrações com chaves de API</h2>
+      <p class="doc-p">O painel (Integrações) guarda chaves e configurações de 17 serviços, cada um com: Configurar/Editar,
+        Testar conexão, Pausar/Ativar, Ver chave (com copiar), Rotacionar, Remover e Console. A chave fica no
+        <code>localStorage</code> do navegador do administrador — em produção, migram para Edge Functions.</p>
+      <table class="doc-table">
+        <thead><tr><th>Grupo</th><th>Integrações</th><th>Teste de conexão</th></tr></thead>
+        <tbody id="tabela-catalogo"></tbody>
+      </table>
+      <div class="callout blue">
+        <strong>Teste real, não simulado</strong>
+        Quando o provedor permite acesso pelo navegador, o “Testar conexão” faz uma chamada real: a Groq responde HTTP 401
+        para chave inválida e confirma a conexão para chave válida. Para serviços sem permissão de CORS, o painel informa
+        que a entrega não pôde ser confirmada, em vez de fingir sucesso.
+      </div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">3</span> OCR: como PDFs digitalizados e imagens viram texto</h2>
+      <table class="doc-table">
+        <thead><tr><th style="width:30%">Entrada</th><th>Caminho de extração</th></tr></thead>
+        <tbody>
+          <tr><td><b>PDF com texto</b></td><td><b>pdf.js</b> extrai o texto embutido, página a página, com quebras de linha preservadas.</td></tr>
+          <tr><td><b>PDF digitalizado</b> (imagem)</td><td>pdf.js detecta ausência de texto → cada página é renderizada em tela em escala 2× e enviada ao <b>Tesseract.js</b> com treinamento em português.</td></tr>
+          <tr><td><b>Imagem</b> (.png, .jpg, .webp)</td><td>Aberta e centralizada em tela, enviada diretamente ao OCR.</td></tr>
+          <tr><td><b>Markdown / texto</b></td><td>Leitura direta, com estrutura de títulos preservada para as seções.</td></tr>
+          <tr><td><b>Sem internet</b></td><td>Fallback: extração básica de PDFs simples (streams descomprimidos). OCR não está disponível — o sistema avisa.</td></tr>
+        </tbody>
+      </table>
+      <h4 class="doc-h4">Detalhes de operação</h4>
+      <ul class="doc-list">
+        <li><b>Idioma:</b> treinamento em português (pt-BR), carregado sob demanda pelo CDN.</li>
+        <li><b>Progresso:</b> a barra mostra a página atual (“OCR página 3/12”) e o avanço do reconhecimento.</li>
+        <li><b>Limite:</b> até 20 páginas por PDF por padrão. Documentos maiores são marcados como truncados (“OCR 20/45 páginas”).</li>
+        <li><b>Qualidade:</b> PDFs digitalizados em boa resolução (300 dpi) dão o melhor resultado. Imagens com pouca resolução podem falhar — o sistema avisa em vez de inventar texto.</li>
+        <li><b>Privacidade:</b> a imagem é processada localmente no navegador; nenhuma página é enviada a um servidor.</li>
+      </ul>
+      <div class="callout gray">
+        <strong>Requisitos</strong>
+        Navegador moderno com suporte a WebAssembly. O treinamento em português é baixado uma vez e fica em cache
+        (IndexedDB) para as próximas execuções.
+      </div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">4</span> Base de conhecimento: indexação e recuperação</h2>
+      <h4 class="doc-h4">Divisão em trechos</h4>
+      <p class="doc-p">O texto é dividido em trechos de aproximadamente 900 caracteres, sempre respeitando parágrafos e
+        títulos. Cada trecho guarda a seção de origem (ex.: “Estrutura do sermão”), o que melhora a busca por assuntos.</p>
+      <h4 class="doc-h4">Índice BM25</h4>
+      <p class="doc-p">A recuperação usa o algoritmo <b>BM25</b> (Okapi) executado no navegador: normalização de acentos,
+        remoção de palavras vazias em português, frequência inversa de documentos e saturação de termos, com pequeno bônus
+        quando o termo aparece no título da seção. Não há embeddings nesta fase — a busca é lexical.</p>
+      <table class="doc-table">
+        <thead><tr><th>Parâmetro</th><th style="width:18%">Valor</th><th>Detalhe</th></tr></thead>
+        <tbody>
+          <tr><td>Tamanho do trecho</td><td class="num">~900 car.</td><td>Respeita parágrafos; trechos longos são cortados em frases.</td></tr>
+          <tr><td>k1</td><td class="num">1,5</td><td>Saturação da frequência do termo.</td></tr>
+          <tr><td>b</td><td class="num">0,75</td><td>Normalização pelo tamanho do trecho.</td></tr>
+          <tr><td>Trechos por resposta</td><td class="num">4 (1–10)</td><td>Configurável por agente (top-k).</td></tr>
+        </tbody>
+      </table>
+      <h4 class="doc-h4">Coleções</h4>
+      <p class="doc-p"><b>Geral · Sermões · Aconselhamento · Agenda e atendimentos · Recursos pastorais.</b>
+        Cada documento pertence a uma coleção, e cada agente consulta as coleções vinculadas a ele. Um documento pode ser
+        movido de coleção a qualquer momento.</p>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">5</span> Agentes e LLMs</h2>
+      <p class="doc-p">Três agentes vêm prontos, editáveis pelo administrador (nome, função, coleções, motor, modelo,
+        temperatura e instruções): <b>Assistente de Homilética</b> (sermões), <b>Assistente de Aconselhamento</b>
+        (histórico de cuidado) e <b>Assistente Pastoral Geral</b> (agenda e recursos).</p>
+      <table class="doc-table">
+        <thead><tr><th style="width:34%">Motor</th><th style="width:16%">Custo</th><th>Como o agente usa</th></tr></thead>
+        <tbody>
+          <tr><td><b>Groq · Llama 3</b></td><td>Gratuito</td><td>Respostas rápidas com Llama 3 (8B/70B) e Gemma 2, no formato OpenAI-compatível.</td></tr>
+          <tr><td><b>OpenRouter · Llama :free</b></td><td>Gratuito</td><td>Modelos abertos com sufixo :free, incluindo Llama 3.3 70B.</td></tr>
+          <tr><td><b>Ollama · local</b></td><td>Gratuito</td><td>Llama rodando no computador/servidor da igreja — sem custo por token e sem envio de dados.</td></tr>
+          <tr><td><b>Google Gemini</b></td><td>Gratuito*</td><td>Cota gratuita do AI Studio; chamada em formato próprio da Gemini API.</td></tr>
+          <tr><td><b>Mistral · Hugging Face</b></td><td>Gratuito*</td><td>Planos Experiment/Router com modelos abertos.</td></tr>
+          <tr><td><b>OpenAI · GPT-4o</b></td><td>Pago</td><td>Família GPT-4o, com cobrança por token.</td></tr>
+          <tr><td><b>Anthropic · Claude</b></td><td>Pago</td><td>Formato próprio da API Anthropic (messages), bom para textos longos.</td></tr>
+          <tr><td><b>Together AI · Llama</b></td><td>Pago</td><td>Llama 3.3 70B Turbo hospedado.</td></tr>
+        </tbody>
+      </table>
+      <p class="doc-p" style="font-size:.84rem;color:var(--muted)">* Gratuitos com cotas e limites de requisição do próprio provedor.</p>
+      <h4 class="doc-h4">Sem chave: modo extrativo</h4>
+      <p class="doc-p">Quando o agente não tem LLM, ele responde com os trechos recuperados, bem formatados. É o mesmo
+        caminho usado quando o LLM falha — o sistema nunca deixa o pastor sem resposta.</p>
+      <div class="callout lime">
+        <strong>Custo marginal</strong>
+        Com chaves gratuitas (Llama via Groq/OpenRouter/Ollama), o custo por resposta é zero ou irrelevante. Nos planos
+        pagos, o custo de geração fica abaixo de 5% da receita, consistente com o unit economics da proposta.
+      </div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">6</span> Privacidade, LGPD e segurança</h2>
+      <ul class="doc-list">
+        <li><b>Documentos:</b> processados no navegador; nada é enviado a servidores do PastorHub na versão estática.</li>
+        <li><b>Chaves de API:</b> guardadas no dispositivo do administrador; o app do pastor nunca as vê.</li>
+        <li><b>Consulta com LLM na nuvem:</b> os trechos recuperados são enviados ao provedor escolhido. Para conteúdo sensível de aconselhamento, o recomendado é <b>Ollama local</b>, que não envia nada para fora.</li>
+        <li><b>Produção:</b> chaves e índice migram para Edge Functions e banco com RLS, conforme a arquitetura de migração da proposta.</li>
+        <li><b>Dados sensíveis:</b> transcrições de aconselhamento são tratadas como dado de saúde/crença, com retenção limitada e exclusão pelo titular.</li>
+      </ul>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">7</span> Checklist de operação do administrador</h2>
+      <div class="step-block"><div class="num">1</div><div class="c"><h4>Configure um motor de linguagem</h4>
+        <p>Painel → Integrações → Groq (gratuito) → cole a chave → “Salvar e testar”. O teste confirma a conexão com o provedor.</p></div></div>
+      <div class="step-block"><div class="num">2</div><div class="c"><h4>Envie os documentos</h4>
+        <p>Painel → Base de conhecimento → arraste .md/.pdf/imagens → escolha a coleção → acompanhe o progresso (OCR por página).</p></div></div>
+      <div class="step-block"><div class="num">3</div><div class="c"><h4>Configure os agentes</h4>
+        <p>Vincule coleções a cada agente, escolha o motor e ajuste as instruções. Salve e use “Testar agente”.</p></div></div>
+      <div class="step-block"><div class="num">4</div><div class="c"><h4>Valide no playground</h4>
+        <p>Execute perguntas reais do ministério, confira as fontes e ajuste top-k/temperatura até a qualidade ficar boa.</p></div></div>
+      <div class="step-block"><div class="num">5</div><div class="c"><h4>O pastor usa no app</h4>
+        <p>O assistente aparece no Início (e em Sermões e Conselho) nas versões mobile, tablet e desktop, com as mesmas fontes.</p></div></div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">8</span> Limites atuais e próximos passos</h2>
+      <table class="doc-table">
+        <thead><tr><th style="width:44%">Limitação atual</th><th>Próximo passo no roadmap</th></tr></thead>
+        <tbody>
+          <tr><td>Busca lexical (BM25), sem embeddings</td><td>Índice semântico vetorial no backend (Tranche 2)</td></tr>
+          <tr><td>OCR exige internet (Tesseract.js via CDN)</td><td>Traineddata empacotado no PWA para uso offline</td></tr>
+          <tr><td>Base e chaves no navegador do administrador</td><td>Migração para Edge Functions + banco com RLS (FastAPI)</td></tr>
+          <tr><td>20 páginas por PDF por execução</td><td>Fila de processamento no backend para documentos longos</td></tr>
+          <tr><td>Limite do localStorage (~5 MB)</td><td>Armazenamento de objetos no Supabase Storage</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="legal">
+      <p><b>PastorHub · Ecossistema de IA</b> — Documento técnico confidencial. Os provedores e cotas podem mudar; consulte o console de cada serviço.</p>
+    </footer>
+  </article>
+
+  <script src="../js/investidor.js"></script>
+  <script>
+    (function () {
+      const inv = window.INVESTIDOR;
+      const rows = [
+        ['Backend', 'Supabase (banco, auth, RLS, Edge Functions)', 'Chamada real ao REST do projeto com a anon key'],
+        ['Mobile', 'Capacitor · APK Android (build e sync)', 'Sem endpoint de teste (configuração local)'],
+        ['Observabilidade', 'Sentry (erros e performance)', 'Validação do formato do DSN'],
+        ['Agenda', 'Google Calendar · Microsoft Outlook · Apple Calendar', 'Validação de formato das credenciais'],
+        ['Comunicação', 'WhatsApp Business API · Google Meet', 'WhatsApp: chamada real ao Graph API · Meet: formato'],
+        ['IA · gratuitas', 'Groq (Llama 3) · OpenRouter (:free) · Gemini · Mistral · Hugging Face · Ollama (local)', 'Chamada real: /models, /api/tags ou whoami'],
+        ['IA · pagas', 'OpenAI (GPT-4o) · Anthropic (Claude) · Together AI (Llama)', 'Chamada real: /models e /v1/models'],
+      ].map((r) => '<tr><td><b>' + r[0] + '</b></td><td>' + r[1] + '</td><td>' + r[2] + '</td></tr>').join('');
+      document.getElementById('tabela-catalogo').innerHTML = rows;
+      // valores da proposta no documento (mantém consistência automática)
+      document.querySelectorAll('.cover-meta .m-value')[0].textContent =
+        'Painel admin + app (mobile, tablet, desktop)';
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PastorHub · Manual do Usuário</title>
+  <link rel="stylesheet" href="../css/docs.css">
+</head>
+<body>
+
+  <div class="doc-toolbar">
+    <div class="t-left">
+      <a href="../site.html">← Site</a>
+      <a href="proposta-investimento.html">Proposta</a>
+      <a href="apresentacao.html">Deck</a>
+      <a href="ficha-tecnica.html">Ficha técnica</a>
+      <a href="roadmap.html">Roadmap</a>
+      <a href="registro-tecnico.html">Registro técnico</a>
+    </div>
+    <div class="t-right"><button class="btn-doc" onclick="window.print()">Imprimir / Salvar em PDF</button></div>
+  </div>
+
+  <article class="doc">
+    <header class="cover">
+      <span class="kicker">Manual do Usuário</span>
+      <h1>Guia completo do PastorHub</h1>
+      <p class="sub">Do primeiro acesso ao relatório confidencial de aconselhamento.</p>
+      <p class="tagline">Mobile-first · funciona offline · 6 módulos · 100% em português.</p>
+      <div class="cover-meta">
+        <div><div class="m-label">Tempo de preparação</div><div class="m-value">De 8–15h para minutos</div></div>
+        <div><div class="m-label">Plataformas</div><div class="m-value">Web, PWA e APK Android</div></div>
+        <div><div class="m-label">Exports</div><div class="m-value">PDF, TXT, copiar e compartilhar</div></div>
+        <div><div class="m-label">Privacidade</div><div class="m-value">RLS, LGPD e chaves no servidor</div></div>
+      </div>
+    </header>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">1</span> Primeiros passos</h2>
+      <div class="step-block"><div class="num">1</div><div class="c">
+        <h4>Escolha como começar</h4>
+        <p>Na tela de acesso você pode entrar com e-mail e senha, criar uma conta ou usar o botão <b>“Usar Modo Offline”</b>,
+        que libera o app completo sem cadastro — ideal para testar antes de criar a conta.</p></div></div>
+      <div class="step-block"><div class="num">2</div><div class="c">
+        <h4>Permita o modo offline</h4>
+        <p>Permita o armazenamento local quando o navegador perguntar. É ele que garante que sermões, atendimentos e relatórios
+        fiquem disponíveis mesmo sem internet — e sejam sincronizados depois.</p></div></div>
+      <div class="step-block"><div class="num">3</div><div class="c">
+        <h4>Comece pelo Caderno</h4>
+        <p>Abra <b>Sermões → Criar Novo Sermão com IA</b>, preencha os campos obrigatórios e gere sua primeira mensagem.
+        O painel inicial mostra o progresso do seu ministry.</p></div></div>
+      <div class="screen">
+        <div class="bar">Tela de acesso e seleção de modo</div>
+        <div class="body"><div class="chip-row">
+          <span class="chip">Entrar</span><span class="chip">Cadastrar</span><span class="chip">Google</span><span class="chip">Usar Modo Offline</span>
+        </div><p>PastorHub v1.0 • Seus dados são privados e seguros</p></div>
+      </div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">2</span> Módulos — passo a passo</h2>
+      <div id="manual-modulos"></div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">3</span> Resumo das telas</h2>
+      <div class="grid-3" id="manual-modulos-lista"></div>
+      <h3 class="doc-h3">O que cada módulo entrega</h3>
+      <table class="doc-table">
+        <thead><tr><th style="width:30%">Módulo</th><th>Conteúdo</th></tr></thead>
+        <tbody id="manual-planilha"></tbody>
+      </table>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">4</span> Perguntas frequentes</h2>
+      <div class="grid-2" id="manual-faq"></div>
+      <div class="callout lime" style="margin-top:20px">
+        <strong>Suporte</strong>
+        Atendimento por WhatsApp de segunda a sexta, das 8h às 18h, e documentação contínua em <code>docs/</code>.
+      </div>
+    </section>
+
+    <footer class="legal">
+      <p><b>PastorHub · Manual do Usuário</b> — Versão 1.0. Documento informativo; a interface pode variar conforme o dispositivo.</p>
+    </footer>
+  </article>
+
+  <script src="../js/investidor.js"></script>
+  <script src="../js/docs.js"></script>
+  <script>Docs.renderManual();</script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PastorHub · Registro Técnico de Implementação</title>
+  <link rel="stylesheet" href="../css/docs.css">
+</head>
+<body>
+
+  <div class="doc-toolbar">
+    <div class="t-left">
+      <a href="../site.html">← Site</a>
+      <a href="proposta-investimento.html">Proposta</a>
+      <a href="apresentacao.html">Deck</a>
+      <a href="ficha-tecnica.html">Ficha técnica</a>
+      <a href="manual-usuario.html">Manual</a>
+      <a href="roadmap.html">Roadmap</a>
+      <a href="ecossistema-ia.html">Ecossistema de IA</a>
+    </div>
+    <div class="t-right"><button class="btn-doc" onclick="window.print()">Imprimir / Salvar em PDF</button></div>
+  </div>
+
+  <article class="doc">
+    <header class="cover">
+      <span class="kicker">Documento técnico · Registro de implementação</span>
+      <h1>Registro Técnico de Implementação</h1>
+      <p class="sub">Tudo o que foi construído no PastorHub até agora — inventário completo, arquitetura, qualidade e próximos passos</p>
+      <p class="tagline">3 versões do app · site institucional · painel admin com 18 seções · IA/RAG/OCR · modelo de negócio com faturamento recorrente · 7 documentos</p>
+      <div class="cover-meta">
+        <div><div class="m-label">Versão do registro</div><div class="m-value">1.0 — 17 de novembro de 2026</div></div>
+        <div><div class="m-label">Stack</div><div class="m-value">HTML + CSS + JavaScript puro (sem build)</div></div>
+        <div><div class="m-label">Persistência</div><div class="m-value">localStorage (27 chaves)</div></div>
+        <div><div class="m-label">Estado</div><div class="m-value">Funcional · 0 erros de console em 18 seções + 3 apps</div></div>
+      </div>
+    </header>
+
+    <!-- ================= 1 ================= -->
+    <section class="page">
+      <h2 class="doc-h"><span class="n">1</span> Resumo executivo</h2>
+      <p class="lead-doc">O PastorHub estático é um ecossistema completo de software para pastores, construído inteiramente em
+        HTML, CSS e JavaScript puro — sem React, sem Vite, sem Supabase e sem etapa de build. Tudo abre direto no navegador
+        (localmente ou por qualquer servidor estático) e persiste no <code>localStorage</code>.</p>
+      <div class="grid-3">
+        <div class="mini-card"><h4>📱 App · 3 versões</h4><p><b>index.html</b> (mobile), <b>tablet.html</b> e <b>desktop.html</b> — mesmo núcleo (<code>window.APP_SHELL</code>), layouts distintos.</p></div>
+        <div class="mini-card"><h4>🌐 Site institucional</h4><p><b>site.html</b> com 15 seções geradas a partir dos dados da proposta (investidor.js).</p></div>
+        <div class="mini-card"><h4>🛠 Painel administrativo</h4><p><b>admin.html</b> com 18 seções: usuários, planos, finanças, RAG, versículos, logs e mais.</p></div>
+        <div class="mini-card"><h4>🤖 IA · RAG · OCR</h4><p>17 integrações, LLMs gratuitos e pagos, OCR em português, busca BM25 e agentes com fontes.</p></div>
+        <div class="mini-card"><h4>💳 Modelo de negócio</h4><p>Planos com valores da proposta, faturamento recorrente, 6 gateways, Pix com QR e bloqueio por pendência.</p></div>
+        <div class="mini-card"><h4>📚 7 documentos</h4><p>Proposta (18 pág.), deck, ficha técnica, manual, roadmap, ecossistema de IA e este registro.</p></div>
+      </div>
+      <div class="callout lime" style="margin-top:20px">
+        <strong>Estado atual</strong>
+        Projeto funcional de ponta a ponta, validado por regressão em 18 seções do painel e nas 3 versões do app
+        (0 erros de console, 0 overflow) e por testes funcionais de CRUD, exportações, IA e cobrança.
+      </div>
+    </section>
+
+    <!-- ================= 2 ================= -->
+    <section class="page">
+      <h2 class="doc-h"><span class="n">2</span> Inventário de artefatos</h2>
+      <p class="doc-p"><b>Páginas (5 + 7 documentos):</b></p>
+      <table class="doc-table">
+        <thead><tr><th style="width:26%">Arquivo</th><th>Papel</th></tr></thead>
+        <tbody>
+          <tr><td><b>index.html</b></td><td>App versão mobile (padrão) — bottom-nav, drawer, sheets</td></tr>
+          <tr><td><b>tablet.html</b></td><td>App versão tablet — navegação no topo, grade de conteúdo</td></tr>
+          <tr><td><b>desktop.html</b></td><td>App versão desktop — sidebar fixa, painel de detalhes</td></tr>
+          <tr><td><b>site.html</b></td><td>Site institucional (15 seções) + rodapé com links dos documentos</td></tr>
+          <tr><td><b>admin.html</b></td><td>Painel administrativo (18 seções + 3 atalhos de plataforma)</td></tr>
+          <tr><td><b>docs/*.html</b></td><td>proposta-investimento · apresentacao · ficha-tecnica · manual-usuario · roadmap · ecossistema-ia · <b>registro-tecnico (este)</b></td></tr>
+        </tbody>
+      </table>
+      <p class="doc-p"><b>Módulos JavaScript (22):</b></p>
+      <table class="doc-table">
+        <thead><tr><th style="width:24%">Módulo</th><th>Responsabilidade</th></tr></thead>
+        <tbody>
+          <tr><td><b>app.js</b></td><td>Shell (mobile/tablet/desktop), navegação, drawer, busca global, auth, <b>tela de bloqueio por pendência</b></td></tr>
+          <tr><td><b>ui.js · data.js · storage.js</b></td><td>UI base, dados de exemplo e persistência offline (fila de sync)</td></tr>
+          <tr><td><b>views.js</b></td><td>Dashboard, Agenda, Atendimentos, Recursos, Alertas, Configurações (card do versículo)</td></tr>
+          <tr><td><b>sermoes.js · conselho.js · assistente.js · imagem.js</b></td><td>Caderno do Pastor (CRUD + IA + PDF/TXT), Meet AI, chat do assistente, fotos de perfil</td></tr>
+          <tr><td><b>perfil.js · versiculos.js · pagamentos.js</b></td><td>Perfil do usuário, motor dos versículos diários, <b>estado de cobrança no app (bloqueio, Pix/QR)</b></td></tr>
+          <tr><td><b>ai.js</b></td><td>Núcleo de IA: 17 integrações, LLMs, OCR (Tesseract + pdf.js), RAG/BM25, agentes</td></tr>
+          <tr><td><b>admin.js</b></td><td>Núcleo do painel: seções, tabelas, modais, KPIs, gráficos SVG, nav mobile, API (<code>window.AdminAPI</code>)</td></tr>
+          <tr><td><b>admin-planos.js</b></td><td><b>Planos & Assinaturas:</b> valores documentados, faturamento recorrente, gateways, Pix recorrente, bloqueio/regularização</td></tr>
+          <tr><td><b>admin-ai.js · admin-vers.js</b></td><td>Integrações + Base de conhecimento (RAG) · Versículos diários no painel</td></tr>
+          <tr><td><b>investidor.js</b></td><td>Fonte única dos dados da proposta (alimenta site, painel e documentos)</td></tr>
+          <tr><td><b>site.js · docs.js · icons.js</b></td><td>Renderização do site, preenchimento dos documentos e biblioteca de ícones SVG</td></tr>
+        </tbody>
+      </table>
+      <p class="doc-p"><b>CSS (4):</b> <code>styles.css</code> (app) · <code>admin.css</code> (painel) · <code>site.css</code> (site) · <code>docs.css</code> (documentos, com estilos de impressão/PDF).</p>
+    </section>
+
+    <!-- ================= 3 ================= -->
+    <section class="page">
+      <h2 class="doc-h"><span class="n">3</span> App — 3 versões</h2>
+      <table class="doc-table">
+        <thead><tr><th style="width:30%">Módulo</th><th>O que foi implementado</th></tr></thead>
+        <tbody>
+          <tr><td><b>Caderno do Pastor</b></td><td>CRUD completo de sermões, filtros, busca ao vivo, editor com IA (gerar/ melhorar/ resumir), exportação PDF (impressão) e TXT, tema, público e status de publicação.</td></tr>
+          <tr><td><b>Agenda & Atendimentos</b></td><td>Eventos com data/hora/local, atendimentos com status, lembretes e visão por dia/semana.</td></tr>
+          <tr><td><b>Conselho (Meet AI)</b></td><td>Transcrição simulada ao vivo, análise de sentimento, relatório confidencial com exportação.</td></tr>
+          <tr><td><b>Recursos pastorais</b></td><td>Biblioteca de materiais, categorias e busca.</td></tr>
+          <tr><td><b>Alertas</b></td><td>Central de notificações e eventos com confirmação.</td></tr>
+          <tr><td><b>Assistente IA</b></td><td>Chat sobre a base de conhecimento (RAG) com fontes [1], [2] — no app e no painel.</td></tr>
+          <tr><td><b>Versículos diários</b></td><td>Card "Versículo do dia" no Início, Copiar/Compartilhar (WhatsApp), atualização automática pelo envio do painel.</td></tr>
+          <tr><td><b>Bloqueio financeiro</b></td><td>Tela de bloqueio (pendência + chave Pix + comprovante + suporte) e aviso de fatura em aberto — sincroniza com o painel em tempo real (<code>storage</code> event).</td></tr>
+          <tr><td><b>Plataforma</b></td><td>Modo offline com fila de sincronização, tema claro/escuro, perfil com foto, busca global, drawer/bottom-nav/sidebar por shell, toasts e detecção online/offline.</td></tr>
+        </tbody>
+      </table>
+      <div class="callout blue">
+        <strong>Núcleo único</strong>
+        As 3 versões compartilham exatamente os mesmos módulos JS; apenas o shell (layout, navegação e CSS de posição)
+        muda por HTML. Correções e funcionalidades novas valem automaticamente para mobile, tablet e desktop.
+      </div>
+    </section>
+
+    <!-- ================= 4 ================= -->
+    <section class="page">
+      <h2 class="doc-h"><span class="n">4</span> Painel administrativo — 18 seções</h2>
+      <table class="doc-table">
+        <thead><tr><th style="width:34%">Seção</th><th>Conteúdo</th></tr></thead>
+        <tbody>
+          <tr><td><b>Visão geral</b></td><td>KPIs, gráficos SVG, card do assistente e do versículo, atividade recente</td></tr>
+          <tr><td><b>Investimento &amp; Financeiro</b></td><td>Unit economics, previsão, tranches (R$ 50 mil · entrada R$ 15 mil · tranche 2 R$ 35 mil)</td></tr>
+          <tr><td><b>Usuários</b></td><td>CRUD completo, busca, filtros por status (incl. <b>Bloqueado</b>), avatar, plano</td></tr>
+          <tr><td><b>Planos &amp; Assinaturas</b></td><td>Ver seção 5 deste registro</td></tr>
+          <tr><td><b>Conteúdo (Sermões)</b></td><td>Gestão de sermões, publicação, destaques</td></tr>
+          <tr><td><b>Conselho (Meet AI)</b></td><td>Relatórios de aconselhamento</td></tr>
+          <tr><td><b>WhatsApp</b></td><td>Filas, mensagens, modelos de resposta</td></tr>
+          <tr><td><b>Agenda &amp; Atendimentos</b></td><td>Eventos e atendimentos da base</td></tr>
+          <tr><td><b>Recursos pastorais</b></td><td>Biblioteca e categorias</td></tr>
+          <tr><td><b>Notificações</b></td><td>Disparos e histórico</td></tr>
+          <tr><td><b>Integrações</b></td><td>17 serviços com chaves, teste de conexão, pausar/ativar, rotacionar e console</td></tr>
+          <tr><td><b>Base de conhecimento (RAG)</b></td><td>Coleções, upload .md/.txt/.pdf/imagens com <b>OCR</b>, progresso por página, trechos, agentes</td></tr>
+          <tr><td><b>Versículos diários</b></td><td>Liga/desliga, horário, canais, banco (28 padrão), prévia, histórico, "Enviar agora"</td></tr>
+          <tr><td><b>Mercado &amp; Concorrência</b></td><td>Posicionamento e comparativo</td></tr>
+          <tr><td><b>Roadmap</b></td><td>Cronograma por versão e marcos de investimento</td></tr>
+          <tr><td><b>Sistema &amp; Logs</b></td><td>Logs de atividade e saúde do sistema</td></tr>
+          <tr><td><b>Configurações</b></td><td>Preferências gerais do painel</td></tr>
+          <tr><td><b>Documentos</b></td><td>7 documentos para apresentação (abrem em nova aba, imprimem em PDF)</td></tr>
+        </tbody>
+      </table>
+      <p class="doc-p"><b>Recursos transversais:</b> busca global no painel · exportação CSV e PDF · CRUD geral com modais ·
+        tema claro/escuro · <b>uso em celular e tablet</b> (gaveta com backdrop, barra inferior de acesso rápido, tabelas com
+        rolagem, modais em tela cheia, alvos de toque) · atalhos para Site institucional, App mobile e App desktop.</p>
+    </section>
+
+    <!-- ================= 5 ================= -->
+    <section class="page">
+      <h2 class="doc-h"><span class="n">5</span> Modelo de negócio — planos, cobrança recorrente e bloqueio</h2>
+      <p class="doc-p">Valores conforme os documentos do projeto (proposta e investidor.js). Tudo editável no painel.</p>
+      <table class="doc-table">
+        <thead><tr><th style="width:22%">Plano</th><th>Mensal</th><th>Anual</th><th>Características</th></tr></thead>
+        <tbody>
+          <tr><td><b>Offline</b></td><td>Grátis</td><td>—</td><td>Porta de entrada: uso local completo</td></tr>
+          <tr><td><b>Pro (Premium)</b></td><td><b>R$ 49,90</b></td><td><b>R$ 598,80</b> (2 meses grátis)</td><td>Assistente RAG + OCR, 3 agentes, Meet AI, WhatsApp, backup</td></tr>
+          <tr><td><b>Igreja</b></td><td><b>R$ 149,90</b></td><td><b>R$ 1.499</b></td><td>Até 10 assentos de pastor, painel da igreja, suporte prioritário</td></tr>
+        </tbody>
+      </table>
+      <div class="grid-2">
+        <div class="mini-card"><h4>🔄 Faturamento recorrente</h4><p>Motor automático (a cada 5 min e ao abrir a seção): no dia de vencimento gera a fatura do ciclo, abre a pendência e, após a tolerância configurável, <b>bloqueia o acesso</b>. Config: dia 1–28, tolerância, lembretes WhatsApp/e-mail, gateway padrão, auto-bloqueio, "Executar agora".</p></div>
+        <div class="mini-card"><h4>🏦 Gateways de pagamento</h4><p><b>Mercado Pago · Pagar.me · Stripe · PagSeguro · Asaas · Banco/Pix direto</b> — sandbox/produção, chave pública/privada, webhook, ativação, teste e indicadores de Pix, <b>Pix recorrente</b>, cartão e boleto.</p></div>
+        <div class="mini-card"><h4>🟩 Pix recorrente</h4><p>Chave, tipo (estática/dinâmica), valor fixo ou da assinatura, gateway escolhido e <b>QR Code real</b> (BR Code/EMV com CRC16) gerado no painel e disponível ao usuário; cópia da chave em 1 clique.</p></div>
+        <div class="mini-card"><h4>🔒 Bloqueio por pendência</h4><p>No lugar do cancelamento: <b>Bloquear</b> (status Bloqueada, usuário Bloqueado) e <b>Regularizar</b> (faturas pagas, acesso liberado). No app: tela de bloqueio com pendência, Pix, "Já paguei" e WhatsApp do suporte + aviso não bloqueante com fatura em aberto.</p></div>
+      </div>
+      <p class="doc-p" style="margin-top:14px"><b>KPIs:</b> MRR (calculado com os valores atuais), assinantes pagantes, igrejas,
+        bloqueadas/pendentes · <b>Assentos por igreja</b> com barras de uso · <b>CSV</b> de assinaturas com vencimento,
+        método, gateway e recorrência · migração automática de preços antigos para os valores documentados.</p>
+    </section>
+
+    <!-- ================= 6 ================= -->
+    <section class="page">
+      <h2 class="doc-h"><span class="n">6</span> Ecossistema de IA (resumo)</h2>
+      <p class="doc-p">Detalhamento completo em <a href="ecossistema-ia.html"><b>Ecossistema de IA (RAG + OCR)</b></a>. Em resumo:</p>
+      <div class="grid-3">
+        <div class="mini-card"><h4>17 integrações</h4><p>LLMs (Groq, OpenRouter, Ollama, Gemini, Mistral, Hugging Face, OpenAI, Claude…), WhatsApp, e-mail e mais — com chaves, teste e console no painel.</p></div>
+        <div class="mini-card"><h4>OCR em português</h4><p>Tesseract.js pt-BR + pdf.js; PDF digitalizado e imagens reconhecidos, com progresso por página e fallback FlateDecode.</p></div>
+        <div class="mini-card"><h4>RAG com fontes</h4><p>Ingestão .md/.txt/.pdf/imagens → trechos ~900 caracteres → índice BM25 → resposta citando [1], [2]. Sem chave: modo extrativo.</p></div>
+      </div>
+    </section>
+
+    <!-- ================= 7 ================= -->
+    <section class="page">
+      <h2 class="doc-h"><span class="n">7</span> Versículos diários</h2>
+      <p class="doc-p"><b>Painel:</b> liga/desliga, horário de envio, canais (card no app, notificação, WhatsApp via integração ativa),
+        banco de 28 versículos padrão com CRUD, prévia do dia, histórico de envios e "Enviar agora". <b>App:</b> card no Início
+        das 3 versões com Copiar/Compartilhar. <b>Motor:</b> versículo fixo por data (índice determinístico), envio 1×/dia no
+        horário configurado com qualquer página aberta, evento <code>pastorhub:versiculo</code> para atualizar os cards.</p>
+    </section>
+
+    <!-- ================= 8 ================= -->
+    <section class="page">
+      <h2 class="doc-h"><span class="n">8</span> Site institucional e documentos</h2>
+      <p class="doc-p"><b>site.html</b> — 15 seções (problema, solução, produto, tecnologia, IA, planos com preços e formas de
+        pagamento, mercado, concorrência, proposta de investimento, roadmap, FAQ…) geradas a partir de <code>investidor.js</code>.
+        <b>Documentos</b> — proposta de investimento (18 páginas), deck, ficha técnica, manual do usuário, roadmap, ecossistema
+        de IA e este registro; todos imprimem em PDF pelo navegador e são listados no painel (Documentos) e no rodapé do site.</p>
+    </section>
+
+    <!-- ================= 9 ================= -->
+    <section class="page">
+      <h2 class="doc-h"><span class="n">9</span> Arquitetura e persistência</h2>
+      <p class="doc-p"><b>Padrões de código:</b> IIFEs por módulo · APIs globais (<code>window.AdminAPI</code>, <code>window.PastorAI</code>,
+        <code>window.PastorVers</code>, <code>window.PastorPag</code>, <code>window.Actions</code>) · escaping obrigatório
+        (<code>esc</code>/<code>escapeHtml</code>) · sem dependências locais (CDNs apenas para OCR, pdf.js e QR) · idioma pt-BR em todo o conteúdo.</p>
+      <table class="doc-table">
+        <thead><tr><th style="width:36%">Chave (localStorage)</th><th>Conteúdo</th></tr></thead>
+        <tbody>
+          <tr><td><code>pastorhub_user · pastorhub_tema · pastorhub_tema_admin</code></td><td>Perfil do app e temas</td></tr>
+          <tr><td><code>pastorhub_sermoes · sync_queue · last_sync</code></td><td>Sermões, fila de sincronização e última sync</td></tr>
+          <tr><td><code>pastorhub_conselhos</code></td><td>Relatórios do Meet AI</td></tr>
+          <tr><td><code>pastorhub_admin_usuarios · planos · assinaturas</code></td><td>Usuários, planos e assinaturas (faturas, pendências)</td></tr>
+          <tr><td><code>pastorhub_faturamento · gateways · pix</code></td><td><b>Novo:</b> recorrência, credenciais dos gateways e chave Pix</td></tr>
+          <tr><td><code>pastorhub_vers_config · vers_banco · vers_log · vers_ultimo</code></td><td>Versículos diários</td></tr>
+          <tr><td><code>pastorhub_integracoes · webhooks · rag_documentos · rag_agentes</code></td><td>Integrações, webhooks, base RAG e agentes</td></tr>
+          <tr><td><code>pastorhub_admin_eventos · atendimentos · palestras · videos · categorias</code></td><td>Demais dados do painel</td></tr>
+          <tr><td><code>pastorhub_config_admin</code></td><td>Configurações gerais do painel</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ================= 10 ================= -->
+    <section class="page">
+      <h2 class="doc-h"><span class="n">10</span> Qualidade — correções e validação</h2>
+      <p class="doc-p"><b>Correções de raiz aplicadas</b> (registro):</p>
+      <table class="doc-table">
+        <thead><tr><th style="width:38%">Problema</th><th>Correção</th></tr></thead>
+        <tbody>
+          <tr><td>Ícones gigantes no painel (faltava tamanho global de <code>.icon</code>)</td><td>Registros globais 16px/14px em admin.css</td></tr>
+          <tr><td>Bordas quase pretas (<code>var(--border)</code> inexistente no painel)</td><td>Troca por <code>var(--line)</code> em todo o CSS</td></tr>
+          <tr><td>Grid de planos/gateways caindo em 1 coluna</td><td>Overrides específicos por media query</td></tr>
+          <tr><td>Tabela de assinaturas cortada (coluna de ações)</td><td>Variante <code>data-tight</code> (padding compacto)</td></tr>
+          <tr><td><code>.info-box</code> sem estilo base no painel</td><td>Base + variantes copiadas (blue, lime, amber, red…)</td></tr>
+          <tr><td>QR Code não gerava (URL de CDN sem build de browser)</td><td>qrcodejs do cdnjs + fallback textual</td></tr>
+          <tr><td>Preços antigos em assinaturas já criadas</td><td>Migração automática para os valores documentados</td></tr>
+        </tbody>
+      </table>
+      <p class="doc-p"><b>Validação executada:</b> 18 seções do painel renderizam sem exceções e 0 erros de console ·
+        3 versões do app carregam sem erros e sem overflow · fluxos testados de ponta a ponta: CRUD de planos, configuração de
+        gateway, Pix + QR desenhado, bloquear → regularizar, motor de recorrência (fatura aberta → pendente → regularização),
+        exportação CSV, envio de versículo e tela de bloqueio no app.</p>
+    </section>
+
+    <!-- ================= 11 ================= -->
+    <section class="page">
+      <h2 class="doc-h"><span class="n">11</span> Limitações conhecidas</h2>
+      <div class="callout gray">
+        <strong>Escopo atual</strong>
+        · Persistência em <code>localStorage</code> (~5 MB, texto puro) — sem backend<br>
+        · Chaves de API em texto puro no navegador (em produção: Edge Functions + variáveis de ambiente)<br>
+        · Busca semântica é BM25 (sem embeddings vetoriais)<br>
+        · OCR e QR dependem de internet (CDNs) · PDFs limitados a 20 páginas por ingestão<br>
+        · Integrações e webhooks testados em modo simulado (CORS impede chamadas reais de navegador)<br>
+        · Painel e app compartilham dados apenas na mesma origem (servidor local ou mesmo host)
+      </div>
+    </section>
+
+    <!-- ================= 12 ================= -->
+    <section class="page">
+      <h2 class="doc-h"><span class="n">12</span> Próximas funcionalidades e melhorias — <span style="color:#3261AB">para aprovação</span></h2>
+      <p class="doc-p">Itens sugeridos, agrupados por área, com esforço estimado (Pequeno · Médio · Grande).
+        <b>Responda com os números que deseja aprovar</b> (ex.: "aprovo 1, 2, 8").</p>
+
+      <h3 class="doc-h" style="font-size:1.02rem;margin-top:18px">A · Negócio &amp; receita</h3>
+      <table class="doc-table">
+        <thead><tr><th style="width:5%">Nº</th><th style="width:30%">Item</th><th>Descrição</th><th style="width:13%">Esforço</th></tr></thead>
+        <tbody>
+          <tr><td><b>1</b></td><td><b>Portal do assinante</b></td><td>Autoatendimento no app: ver faturas, atualizar método de pagamento, trocar plano/ciclo e baixar comprovantes.</td><td>Médio</td></tr>
+          <tr><td><b>2</b></td><td><b>Trial de 14 dias no Pro</b></td><td>Teste grátis sem cartão, com lembretes ao fim e conversão automática em assinatura paga.</td><td>Pequeno</td></tr>
+          <tr><td><b>3</b></td><td><b>Cupons e promoções</b></td><td>Código de desconto (% ou valor), validade, limite de usos e campanhas sazonais (ex.: Black Friday).</td><td>Pequeno</td></tr>
+          <tr><td><b>4</b></td><td><b>Prorata em upgrade/downgrade</b></td><td>Crédito proporcional ao ciclo atual ao trocar de plano, com recálculo da próxima cobrança.</td><td>Médio</td></tr>
+          <tr><td><b>5</b></td><td><b>Dunning em sequência</b></td><td>Cadeia de lembretes configurável (D-3, D0, D+3, D+7) por WhatsApp/e-mail antes e depois do vencimento.</td><td>Médio</td></tr>
+          <tr><td><b>6</b></td><td><b>Indicações/afiliados</b></td><td>Link de indicação por usuário, comissão rastreada e crédito no Pix/assinatura.</td><td>Grande</td></tr>
+          <tr><td><b>7</b></td><td><b>Painel financeiro avançado</b></td><td>MRR histórico (gráfico), churn, LTV, CAC e runway — além dos KPIs atuais.</td><td>Médio</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="doc-h" style="font-size:1.02rem;margin-top:18px">B · Produto (app &amp; retenção)</h3>
+      <table class="doc-table">
+        <thead><tr><th style="width:5%">Nº</th><th style="width:30%">Item</th><th>Descrição</th><th style="width:13%">Esforço</th></tr></thead>
+        <tbody>
+          <tr><td><b>8</b></td><td><b>PWA instalável</b></td><td>Manifest + service worker: ícone na tela inicial, tela cheia e cache offline — o site vira "app de verdade".</td><td>Médio</td></tr>
+          <tr><td><b>9</b></td><td><b>Planos de leitura bíblica</b></td><td>Cronogramas guiados (ex.: 365 dias) com progresso e lembretes diários junto com o versículo.</td><td>Médio</td></tr>
+          <tr><td><b>10</b></td><td><b>Calendário litúrgico</b></td><td>Lecionário, temporadas (Advento, Quaresma…) e datas comemorativas cristãs na Agenda.</td><td>Pequeno</td></tr>
+          <tr><td><b>11</b></td><td><b>Biblioteca de esboços da igreja</b></td><td>Templates e esboços compartilhados entre os pastores do mesmo plano Igreja.</td><td>Médio</td></tr>
+          <tr><td><b>12</b></td><td><b>Transcrição de prédicas</b></td><td>Enviar áudio → transcrição (Whisper) → resumo e pontos-chave com IA no Caderno.</td><td>Grande</td></tr>
+          <tr><td><b>13</b></td><td><b>Acessibilidade</b></td><td>Fonte ajustável, alto contraste e navegação completa por teclado.</td><td>Pequeno</td></tr>
+          <tr><td><b>14</b></td><td><b>Espanhol (i18n)</b></td><td>Versão em espanhol para a América Latina, com troca de idioma no app e no site.</td><td>Médio</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="doc-h" style="font-size:1.02rem;margin-top:18px">C · Painel &amp; operação</h3>
+      <table class="doc-table">
+        <thead><tr><th style="width:5%">Nº</th><th style="width:30%">Item</th><th>Descrição</th><th style="width:13%">Esforço</th></tr></thead>
+        <tbody>
+          <tr><td><b>15</b></td><td><b>Sub-painel da igreja</b></td><td>O gestor do plano Igreja vê apenas sua igreja: pastores, assentos e uso — sem dados de outros clientes.</td><td>Médio</td></tr>
+          <tr><td><b>16</b></td><td><b>Backup/restauração em JSON</b></td><td>Exportar tudo (dados + config) em um arquivo e importar em outro navegador/dispositivo.</td><td>Pequeno</td></tr>
+          <tr><td><b>17</b></td><td><b>Logs de auditoria</b></td><td>Registro de "quem alterou o quê e quando" (planos, preços, bloqueios, integrações).</td><td>Médio</td></tr>
+          <tr><td><b>18</b></td><td><b>Relatórios do painel em PDF</b></td><td>Exportar MRR, usuários, RAG e versículos como relatório formatado (impressão).</td><td>Pequeno</td></tr>
+          <tr><td><b>19</b></td><td><b>Web Push real</b></td><td>Notificações do navegador (service worker) para lembretes de vencimento e versículo, mesmo com o site fechado.</td><td>Médio</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="doc-h" style="font-size:1.02rem;margin-top:18px">D · Integrações &amp; qualidade</h3>
+      <table class="doc-table">
+        <thead><tr><th style="width:5%">Nº</th><th style="width:30%">Item</th><th>Descrição</th><th style="width:13%">Esforço</th></tr></thead>
+        <tbody>
+          <tr><td><b>20</b></td><td><b>WhatsApp Cloud API real</b></td><td>Trocar o simulador pela API oficial do WhatsApp Business, com webhook assinado (HMAC).</td><td>Grande</td></tr>
+          <tr><td><b>21</b></td><td><b>Google Calendar / Outlook</b></td><td>Sincronização da Agenda com calendários externos (importar/exportar eventos).</td><td>Médio</td></tr>
+          <tr><td><b>22</b></td><td><b>Doações e campanhas</b></td><td>Campanhas da igreja com Pix dinâmico e meta arrecadada — nova fonte de receita além das assinaturas.</td><td>Médio</td></tr>
+          <tr><td><b>23</b></td><td><b>Testes automatizados + lint</b></td><td>Suíte Playwright (regressão das 18 seções e 3 apps) e lint de código para evolução segura.</td><td>Médio</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout blue" style="margin-top:18px">
+        <strong>Como aprovar</strong>
+        Basta indicar os números desejados (ex.: "aprovo 1, 2, 8 e 16"). Itens aprovados entram no roadmap e são implementados
+        seguindo os mesmos padrões de qualidade deste registro.
+      </div>
+    </section>
+
+    <footer class="legal">
+      <p><b>PastorHub · Registro Técnico de Implementação v1.0</b> — 17 de novembro de 2026. Documento gerado a partir do estado real do projeto; imprima em PDF pelo botão no topo.</p>
+    </footer>
+  </article>
+
+</body>
+</html>
