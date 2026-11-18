@@ -38,8 +38,13 @@
         '</div>' +
         items +
         '<div class="side-user">' +
-          '<span class="avatar">' + escapeHtml(Usuario.iniciais()) + '</span>' +
-          '<div><div class="u-name">' + escapeHtml(Usuario.dados.nome) + '</div><div class="u-mail">' + escapeHtml(Usuario.dados.email) + '</div></div>' +
+          '<button class="side-user-perfil" data-action="meu-perfil" type="button" title="Meu perfil" aria-label="Abrir meu perfil">' +
+            '<span class="avatar">' + escapeHtml(Usuario.iniciais()) + '</span>' +
+            '<span class="side-user-info">' +
+              '<span class="u-name">' + escapeHtml(Usuario.dados.nome) + '</span>' +
+              '<span class="u-mail">' + escapeHtml(Usuario.dados.email) + '</span>' +
+            '</span>' +
+          '</button>' +
           '<button data-action="sair" aria-label="Sair" type="button">' + icon('log-out', 'icon-sm') + '</button>' +
         '</div>';
     } else {
@@ -261,6 +266,13 @@
     closeDrawer();
     toast('Sessão encerrada');
     App.showAuth();
+  };
+
+  /* Abre o perfil do usuário logado (Configurações · aba Geral) */
+  Actions['meu-perfil'] = function () {
+    closeDrawer();
+    if (window.NOTIF_UI) window.NOTIF_UI.setTab = 'geral';
+    App.navigate('settings');
   };
 
   /* ---------- Formulários dos sheets ---------- */
