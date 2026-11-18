@@ -1,0 +1,229 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#002645">
+  <title>PastorHub – Versão Tablet</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ===== Splash (carregamento) ===== -->
+  <div id="splash">
+    <div class="spinner spinner-lime"></div>
+    <p>Carregando PastorHub...</p>
+  </div>
+
+  <!-- ===== Tela de Autenticação ===== -->
+  <div id="auth" hidden>
+    <div class="auth-inner">
+      <div class="auth-logo">
+        <div class="auth-logo-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <h1>PastorHub</h1>
+        <p>Caderno do Pastor</p>
+      </div>
+
+      <div class="auth-card">
+        <h2>Bem-vindo</h2>
+        <p class="auth-desc">Entre para acessar seus sermões e recursos pastorais</p>
+
+        <div class="tabs auth-tabs">
+          <button class="tab active" data-auth-tab="login" type="button">Entrar</button>
+          <button class="tab" data-auth-tab="signup" type="button">Cadastrar</button>
+        </div>
+
+        <form id="auth-login" class="auth-form" autocomplete="off">
+          <div class="field">
+            <label for="login-email">Email</label>
+            <input id="login-email" type="email" placeholder="pastor@igreja.com" required>
+          </div>
+          <div class="field">
+            <label for="login-senha">Senha</label>
+            <input id="login-senha" type="password" placeholder="••••••••" required>
+          </div>
+          <button class="btn primary block" type="submit">Entrar</button>
+          <div class="divider"><span>Ou continue com</span></div>
+          <button class="btn outline block" type="button" data-action="auth-google">
+            <svg class="icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.66-.22-2.45H12v4.64h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.86c2.26-2.09 3.58-5.17 3.58-8.81z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3a7.26 7.26 0 0 1-10.7-3.82H1.4v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.37 14.27a7.2 7.2 0 0 1 0-4.54v-3.1H1.4a12 12 0 0 0 0 10.74l3.97-3.1z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42A11.97 11.97 0 0 0 12 0 12 12 0 0 0 1.4 6.63l3.97 3.1A7.26 7.26 0 0 1 12 4.75z"/></svg>
+            Google
+          </button>
+        </form>
+
+        <form id="auth-signup" class="auth-form" hidden autocomplete="off">
+          <div class="field">
+            <label for="cad-nome">Nome Completo</label>
+            <input id="cad-nome" type="text" placeholder="Pastor João Silva" required>
+          </div>
+          <div class="field">
+            <label for="cad-igreja">Igreja (opcional)</label>
+            <input id="cad-igreja" type="text" placeholder="Igreja Batista Central">
+          </div>
+          <div class="field">
+            <label for="cad-email">Email</label>
+            <input id="cad-email" type="email" placeholder="pastor@igreja.com" required>
+          </div>
+          <div class="field">
+            <label for="cad-senha">Senha</label>
+            <input id="cad-senha" type="password" placeholder="Mínimo 6 caracteres" minlength="6" required>
+          </div>
+          <button class="btn lime block" type="submit">Criar Conta</button>
+          <div class="hint-alert">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>
+            <span>Você receberá um email de confirmação após o cadastro.</span>
+          </div>
+        </form>
+
+        <div class="hint-alert info">
+          <strong>Modo Demo:</strong> Se não tiver conta Supabase configurada, você pode usar o app offline com dados locais.
+        </div>
+        <p class="auth-foot">PastorHub v1.0 • Seus dados são privados e seguros</p>
+      </div>
+    </div>
+
+    <button class="btn outline fab-offline" data-action="usar-offline" type="button">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 2 20 20"/><path d="M5.8 11.3 2 13"/><path d="M9.9 5.1 8.4 8.4"/><path d="M17.3 11.3 19 13"/><path d="M22.6 9.6 21 9.6"/><path d="M18.5 15.5c-1.4 0-2.6-.6-3.4-1.5"/><path d="M8.8 15.5c-1.7-.4-3-1.9-3-3.7 0-2 1.6-3.6 3.6-3.6.4 0 .8 0 1.2.2"/><path d="M16.9 7.4A6 6 0 0 0 7.6 5.6"/><path d="M12 18h6.5a3.5 3.5 0 0 0 0-7"/><path d="M12 18H5.5A3.5 3.5 0 0 1 2 14.5"/></svg>
+      Usar Modo Offline
+    </button>
+  </div>
+
+  <!-- ===== App principal ===== -->
+  <div id="app" hidden>
+    <!-- Barra superior -->
+    <header id="topbar">
+      <button class="btn-icon" id="btn-menu" aria-label="Abrir menu" type="button">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="topbar-title">
+        <h1>PastorHub</h1>
+        <span class="badge badge-lime" id="conn-badge">Offline</span>
+      </div>
+      <div class="topbar-right">
+        <span id="conn-indicator"></span>
+        <button class="btn-icon" id="btn-search" aria-label="Buscar" type="button">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Conteúdo da tela atual (renderizado por JS) -->
+    <main id="view"></main>
+
+    <!-- Navegação inferior (renderizada por JS) -->
+    <nav id="bottom-nav" aria-label="Navegação principal"></nav>
+  </div>
+
+  <!-- ===== Drawer lateral (menu) ===== -->
+  <div id="drawer" hidden>
+    <div class="drawer-backdrop" data-action="close-drawer"></div>
+    <aside class="drawer-panel" role="dialog" aria-label="Menu">
+      <header class="drawer-head">
+        <div>
+          <h2>Menu</h2>
+          <p>PastorHub App</p>
+        </div>
+        <button class="btn-icon dark" data-action="close-drawer" aria-label="Fechar" type="button">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </header>
+      <div class="drawer-profile" id="drawer-profile"></div>
+      <div id="drawer-conn"></div>
+      <hr class="sep">
+      <nav class="drawer-menu">
+        <button data-toast="Meu Perfil: em breve" type="button">Meu Perfil</button>
+        <button data-nav="settings" type="button">Configurações</button>
+        <button data-action="sync" type="button">Sincronização</button>
+        <button data-toast="Ajuda e Suporte: em breve" type="button">Ajuda e Suporte</button>
+        <hr class="sep">
+        <p class="drawer-label">Versões</p>
+        <a href="index.html" data-action="close-drawer">📱 Mobile (celular)</a>
+        <a href="tablet.html" data-action="close-drawer">📲 Tablet</a>
+        <a href="desktop.html" data-action="close-drawer">🖥️ Desktop</a>
+        <a href="site.html">🌐 Site institucional</a>
+        <a href="admin.html">🛠️ Painel administrativo</a>
+        <hr class="sep">
+        <p class="drawer-label">Documentos</p>
+        <a href="docs/proposta-investimento.html">📑 Proposta de Investimento</a>
+        <a href="docs/apresentacao.html">📊 Deck de apresentação</a>
+        <a href="docs/ficha-tecnica.html">🧾 Ficha técnica</a>
+        <a href="docs/manual-usuario.html">📖 Manual do usuário</a>
+        <a href="docs/registro-tecnico.html">📋 Registro técnico</a>
+        <hr class="sep">
+        <button class="danger" data-action="sair" type="button">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+          Sair
+        </button>
+      </nav>
+    </aside>
+  </div>
+
+  <!-- ===== Busca global (overlay) ===== -->
+  <div id="search-overlay" hidden>
+    <header class="search-head">
+      <button class="btn-icon" data-action="close-search" aria-label="Fechar busca" type="button">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="search-input-wrap">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="search-input" type="text" placeholder="Buscar sermões, atendimentos, agenda...">
+      </div>
+    </header>
+    <p class="search-count" id="search-count" hidden></p>
+    <div class="search-results" id="search-results"></div>
+  </div>
+
+  <!-- ===== Sheet inferior (formulários/modais) ===== -->
+  <div id="sheet" hidden>
+    <div class="sheet-backdrop" data-action="close-sheet"></div>
+    <div class="sheet-panel" role="dialog" aria-modal="true">
+      <div class="sheet-handle"></div>
+      <header class="sheet-head">
+        <div>
+          <h3 id="sheet-title"></h3>
+          <p id="sheet-desc"></p>
+        </div>
+        <button class="btn-icon dark" data-action="close-sheet" aria-label="Fechar" type="button">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </header>
+      <div class="sheet-body" id="sheet-body"></div>
+      <footer class="sheet-footer" id="sheet-footer" hidden></footer>
+    </div>
+  </div>
+
+  <!-- ===== Dialog de confirmação (excluir sermão) ===== -->
+  <div id="confirm" hidden>
+    <div class="modal-backdrop" data-action="confirm-cancel"></div>
+    <div class="modal-panel" role="alertdialog" aria-modal="true">
+      <h3 id="confirm-title"></h3>
+      <p id="confirm-message"></p>
+      <div class="modal-actions">
+        <button class="btn outline" data-action="confirm-cancel" type="button">Cancelar</button>
+        <button class="btn danger" id="confirm-ok" type="button">Excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Toasts ===== -->
+  <div id="toast-root" aria-live="polite"></div>
+
+  <script>window.APP_SHELL = 'tablet';</script>
+  <script src="js/icons.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/views.js"></script>
+  <script src="js/sermoes.js"></script>
+  <script src="js/conselho.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/pagamentos.js"></script>
+  <script src="js/versiculos.js"></script>
+  <script src="js/assistente.js"></script>
+  <script src="js/imagem.js"></script>
+  <script src="js/perfil.js"></script>
+  <script src="js/detalhes.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
