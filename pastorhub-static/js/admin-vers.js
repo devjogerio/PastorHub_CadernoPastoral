@@ -36,6 +36,7 @@
         '<td><div class="row-actions">' +
           '<button class="icon-btn" data-action="vers-toggle" data-id="' + i + '" title="' + (v.ativo !== false ? 'Pausar' : 'Ativar') + '">' + ic(v.ativo !== false ? 'lock' : 'check') + '</button>' +
           '<button class="btn btn-outline btn-sm" data-action="vers-editar" data-id="' + i + '">' + ic('edit', 'icon-sm') + 'Editar</button>' +
+          '<button class="icon-btn" data-action="vers-ver" data-id="' + i + '" title="Ver versículo completo">' + ic('eye') + ' Ver</button>' +
           '<button class="icon-btn danger" data-action="vers-excluir" data-id="' + i + '" title="Excluir">' + ic('trash-2') + '</button>' +
         '</div></td>' +
       '</tr>').join('');
@@ -213,7 +214,22 @@
     });
   };
 
-  /* busca ao vivo */
+  Actions['vers-ver'] = function (el) {
+    const idx = Number(el.dataset.id);
+    const banco = V.banco();
+    const v = banco[idx];
+    if (!v) return;
+    modal({
+      title: 'Versículo — ' + esc(v.ref),
+      body:
+        '<div class="vers-modal">' +
+        '<div class="ref-large">' + esc(v.ref) + ' · ' + esc(v.versao || cfg.versao) + '</div>' +
+        '<blockquote class="txt">“' + esc(v.texto) + '”</blockquote>' +
+        '</div>',
+      confirmLabel: 'Fechar',
+      wide: true,
+    });
+  };
   document.addEventListener('input', (e) => {
     if (e.target.id === 'vers-q') {
       state.busca = e.target.value;
