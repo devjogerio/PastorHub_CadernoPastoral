@@ -87,11 +87,11 @@
               '<button class="btn btn-outline" data-action="vers-enviar-agora">' + ic('send') + 'Enviar agora</button>' +
             '</div>' +
           '</div>') +
-        panel('Prévia de hoje',
+        panel('Prévia atual',
           (hoje
             ? '<div class="vers-preview"><div class="ref">' + esc(hoje.ref) + ' · ' + esc(hoje.versao || cfg.versao) + '</div><div class="txt">“' + esc(hoje.texto) + '”</div></div>'
             : '<p style="color:var(--muted)">Nenhum versículo ativo no banco. Ative pelo menos um.</p>') +
-          '<div class="info-box blue" style="margin-top:14px"><div>💡</div><div>O versículo do dia é escolhido de forma fixa para cada data: todos os usuários veem o mesmo versículo no mesmo dia. A sequência acompanha a ordem do banco abaixo.</div></div>') +
+          '<div class="info-box blue" style="margin-top:14px"><div>💡</div><div>O versículo é sorteado de forma aleatória e trocado a cada 3 minutos: todos os usuários veem o mesmo versículo enquanto a janela durar. O envio automático continua 1×/dia no horário configurado.</div></div>') +
       '</div>' +
 
       panel('Banco de versículos',

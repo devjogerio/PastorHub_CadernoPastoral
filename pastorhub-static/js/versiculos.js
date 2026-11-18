@@ -2,6 +2,7 @@
    Versículos diários do PastorHub
    Motor compartilhado pelo painel administrativo e pelo app
    (mobile, tablet e desktop). Persistência em localStorage.
+   Seleção aleatória com rotação a cada 3 minutos.
    ============================================================ */
 (function () {
   if (window.PastorVers) return;
@@ -70,17 +71,33 @@
   const salvarBanco = (b) => salvarJSON(K_BANCO, b);
   const log = () => lerJSON(K_LOG, []);
 
-  /* ---------- seleção do versículo do dia ---------- */
+  /* ---------- seleção: versículo aleatório a cada 3 minutos ---------- */
+  const INTERVALO_ROTACAO = 3 * 60 * 1000; // 3 minutos
+
   function chaveDia(d) {
     const dt = d || new Date();
     return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
   }
+
+  /* janela de 3 minutos: o versículo muda quando o slot vira */
+  function slotRotacao(ms) {
+    return Math.floor((ms == null ? Date.now() : ms) / INTERVALO_ROTACAO);
+  }
+
+  /* PRNG semeado pelo slot: sorteia entre janelas e fica estável dentro delas */
+  function randDoSlot(slot) {
+    let s = (Math.imul(slot, 2654435761) ^ 0x9e3779b9) >>> 0;
+    s = (s + 0x6d2b79f5) >>> 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  }
+
   function doDia(data) {
     const ativos = banco().filter((v) => v.ativo !== false);
     if (!ativos.length) return null;
-    // índice determinístico: dias desde 01/01/1970 → sempre o mesmo versículo no mesmo dia
-    const dias = Math.floor((data || new Date()).setHours(12, 0, 0, 0) / 86400000);
-    return ativos[((dias % ativos.length) + ativos.length) % ativos.length];
+    const slot = slotRotacao(data ? data.getTime() : undefined);
+    return ativos[Math.floor(randDoSlot(slot) * ativos.length)];
   }
 
   /* ---------- envio ---------- */
@@ -136,6 +153,15 @@
   function iniciar() {
     verificar();
     setInterval(verificar, 60000);
+    /* repinta o card quando a janela de 3 minutos vira */
+    let slotVisto = slotRotacao();
+    setInterval(function () {
+      const s = slotRotacao();
+      if (s !== slotVisto) {
+        slotVisto = s;
+        pintar();
+      }
+    }, 5000);
   }
 
   /* ---------- card no app ---------- */
