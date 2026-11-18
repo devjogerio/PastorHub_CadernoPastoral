@@ -114,7 +114,7 @@ Implementado funcionalmente no app (mobile, tablet e desktop):
 | **Configurações** | Identidade, segurança, 12 feature flags, backup |
 | **Documentos** | Todos os documentos de apresentação com links diretos |
 
-Login de demonstração: `admin@pastorhub.app` / `admin1234` (administrador) ou `ana.b.rocha@email.com` / `ana1234` (usuário comum, sem acesso a financeiro, planos e configurações).
+Formas de acesso do painel (`admin.html`): **Continuar com Google** (demonstração do fluxo social), **e-mail e senha**, ou os botões de acesso rápido — `admin@pastorhub.app` / `admin1234` (administrador) ou `ana.b.rocha@email.com` / `ana1234` (usuário comum, sem acesso a financeiro, planos, roadmap, documentos e configurações). As credenciais não ficam exibidas na tela de login.
 
 ### 📱 Painel no celular e no tablet
 
