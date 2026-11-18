@@ -1,0 +1,321 @@
+// =============================================================================
+// SUPABASE EDGE FUNCTION - Geração de Sermões com OpenAI
+// =============================================================================
+// 
+// Este arquivo é um EXEMPLO de como implementar a Edge Function.
+// Para usar:
+// 1. Instale o Supabase CLI: npm install -g supabase
+// 2. Crie a função: supabase functions new generate-sermon
+// 3. Copie este código para: supabase/functions/generate-sermon/index.ts
+// 4. Configure a API Key: supabase secrets set OPENAI_API_KEY=sk-...
+// 5. Deploy: supabase functions deploy generate-sermon
+//
+// =============================================================================
+
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY")!;
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+interface SermonRequest {
+  titulo?: string;
+  texto_biblico: string;
+  tema: string;
+  publico_alvo: string;
+  tipo_sermao: string;
+  tom?: string;
+  observacoes?: string;
+}
+
+serve(async (req) => {
+  // CORS headers
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  };
+
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  try {
+    // =======================================================================
+    // 1. AUTENTICAÇÃO
+    // =======================================================================
+    const authHeader = req.headers.get("Authorization")!;
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "Não autorizado" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // =======================================================================
+    // 2. VALIDAÇÃO DE ENTRADA
+    // =======================================================================
+    const body: SermonRequest = await req.json();
+
+    if (!body.texto_biblico || !body.tema || !body.publico_alvo || !body.tipo_sermao) {
+      return new Response(
+        JSON.stringify({
+          error: "Campos obrigatórios faltando",
+          required: ["texto_biblico", "tema", "publico_alvo", "tipo_sermao"],
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // =======================================================================
+    // 3. CONSTRUIR PROMPTS PARA OPENAI
+    // =======================================================================
+    const systemPrompt = `Você é um assistente teológico sábio e experiente, especializado em hermenêutica bíblica e homilética reformada. 
+Sua tarefa é criar esboços de sermões estruturados, fiéis às escrituras, biblicamente sólidos e inspiradores.
+Use linguagem pastoral acessível, mas teologicamente profunda.
+Sempre cite referências bíblicas e mantenha fidelidade ao texto sagrado.`;
+
+    const userPrompt = `Crie um esboço completo de sermão ${body.tipo_sermao} baseado em ${body.texto_biblico} com o tema "${body.tema}".
+
+**ESPECIFICAÇÕES:**
+- Público-alvo: ${body.publico_alvo}
+- Tom desejado: ${body.tom || "encorajador e pastoral"}
+${body.observacoes ? `- Observações especiais: ${body.observacoes}` : ""}
+
+**ESTRUTURA OBRIGATÓRIA:**
+
+**TÍTULO**: [Crie um título impactante e relevante]
+
+**TEXTO BÍBLICO**: ${body.texto_biblico}
+
+**INTRODUÇÃO**:
+- Comece com uma ilustração contemporânea ou histórica relevante
+- Contextualize o texto bíblico (autor, audiência, contexto histórico)
+- Apresente o tema central de forma clara
+- Estabeleça a relevância para o público atual
+
+**DESENVOLVIMENTO** (3 pontos principais):
+
+**I. [Primeiro Ponto Principal]**
+   • Exposição do texto bíblico com análise do contexto original
+   • Referências cruzadas relevantes (mínimo 2)
+   • Aplicação prática para a vida do ouvinte
+   • Ilustração contextualizada e impactante
+
+**II. [Segundo Ponto Principal]**
+   • Exposição do texto bíblico com análise do contexto original
+   • Referências cruzadas relevantes (mínimo 2)
+   • Aplicação prática para a vida do ouvinte
+   • Ilustração contextualizada e impactante
+
+**III. [Terceiro Ponto Principal]**
+   • Exposição do texto bíblico com análise do contexto original
+   • Referências cruzadas relevantes (mínimo 2)
+   • Aplicação prática para a vida do ouvinte
+   • Ilustração contextualizada e impactante
+
+**CONCLUSÃO**:
+- Recapitule os três pontos principais de forma concisa
+- Faça um apelo prático e transformador
+- Termine com esperança e encorajamento bíblico
+- Inclua uma oração final ou desafio
+
+**REFERÊNCIAS BÍBLICAS ADICIONAIS**:
+Liste 5-7 textos relacionados para aprofundamento com breve explicação
+
+**FORMATAÇÃO:**
+Use HTML simples: <h2>, <h3>, <p>, <strong>, <em>, <ul>, <li>
+Mantenha o texto limpo e bem estruturado para fácil leitura.`;
+
+    // =======================================================================
+    // 4. CHAMADA À API DA OPENAI
+    // =======================================================================
+    console.log("Chamando OpenAI API...");
+
+    const openaiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4", // ou "gpt-4o-mini" ou "gpt-3.5-turbo"
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        temperature: 0.7, // Criatividade balanceada
+        max_tokens: 3000, // Limite de tokens para resposta
+        top_p: 1,
+        frequency_penalty: 0.3, // Evita repetições
+        presence_penalty: 0.3, // Incentiva novos tópicos
+      }),
+    });
+
+    if (!openaiResponse.ok) {
+      const error = await openaiResponse.text();
+      console.error("OpenAI Error:", error);
+      return new Response(
+        JSON.stringify({
+          error: "Erro ao gerar sermão com IA",
+          details: error,
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const openaiData = await openaiResponse.json();
+    const conteudoHtml = openaiData.choices[0].message.content;
+
+    console.log("Sermão gerado com sucesso!");
+
+    // =======================================================================
+    // 5. PROCESSAR RESPOSTA
+    // =======================================================================
+
+    // Extrair título do HTML
+    const tituloMatch = conteudoHtml.match(/<h2>(.*?)<\/h2>/);
+    const titulo = body.titulo || (tituloMatch ? tituloMatch[1] : "Novo Sermão");
+
+    // Gerar texto puro (sem HTML)
+    const conteudoPlain = conteudoHtml
+      .replace(/<[^>]*>/g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .substring(0, 1000);
+
+    // Gerar tags automáticas
+    const tags: string[] = [];
+    tags.push(body.tema.toLowerCase());
+
+    const livro = body.texto_biblico.split(" ")[0].toLowerCase();
+    if (livro) tags.push(livro);
+
+    // =======================================================================
+    // 6. SALVAR NO BANCO DE DADOS
+    // =======================================================================
+    const { data: sermon, error: insertError } = await supabase
+      .from("sermoes")
+      .insert({
+        user_id: user.id,
+        titulo: titulo,
+        texto_biblico: body.texto_biblico,
+        tema: body.tema,
+        publico_alvo: body.publico_alvo,
+        tipo_sermao: body.tipo_sermao,
+        conteudo_html: conteudoHtml,
+        conteudo_plain: conteudoPlain,
+        tags: tags,
+        status_pregado: false,
+        data_criacao: new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (insertError) {
+      console.error("Insert Error:", insertError);
+      return new Response(
+        JSON.stringify({
+          error: "Erro ao salvar sermão no banco de dados",
+          details: insertError.message,
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // =======================================================================
+    // 7. RETORNAR SUCESSO
+    // =======================================================================
+    console.log("Sermão salvo com sucesso! ID:", sermon.id);
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        sermon: sermon,
+        usage: {
+          prompt_tokens: openaiData.usage?.prompt_tokens,
+          completion_tokens: openaiData.usage?.completion_tokens,
+          total_tokens: openaiData.usage?.total_tokens,
+        },
+      }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  } catch (error) {
+    console.error("Error:", error);
+    return new Response(
+      JSON.stringify({
+        error: "Erro interno do servidor",
+        message: error.message,
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
+});
+
+// =============================================================================
+// TESTES LOCAIS
+// =============================================================================
+//
+// Para testar localmente:
+//
+// 1. Instale Deno: https://deno.land/#installation
+//
+// 2. Execute:
+//    deno run --allow-net --allow-env index.ts
+//
+// 3. Teste com curl:
+/*
+curl -i --location --request POST 'http://localhost:54321/functions/v1/generate-sermon' \
+  --header 'Authorization: Bearer YOUR_ANON_KEY' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "texto_biblico": "João 3:16",
+    "tema": "Amor de Deus",
+    "publico_alvo": "Geral",
+    "tipo_sermao": "Expositivo",
+    "tom": "Encorajador"
+  }'
+*/
+//
+// =============================================================================
+
+// =============================================================================
+// MONITORAMENTO E LOGS
+// =============================================================================
+//
+// Para ver logs em produção:
+// 1. Acesse o dashboard do Supabase
+// 2. Vá em Edge Functions > generate-sermon
+// 3. Clique na aba "Logs"
+//
+// Para monitorar custos:
+// 1. Acesse https://platform.openai.com/usage
+// 2. Monitore o consumo de tokens
+// 3. Configure alertas de limite de gastos
+//
+// =============================================================================

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">PastoralApp</string>
+    <string name="title_activity_main">PastoralApp</string>
+    <string name="package_name">io.pastoral.app</string>
+    <string name="custom_url_scheme">io.pastoral.app</string>
+</resources>
