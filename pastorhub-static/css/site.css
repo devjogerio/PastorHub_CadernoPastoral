@@ -560,7 +560,7 @@ body {
   .testimonials blockquote { padding: 20px; }
   .docs-grid { grid-template-columns: 1fr !important; gap: 16px; }
   .doc-card { padding: 20px; }
-  .passos-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .passos-grid { grid-template-columns: 1fr !important; gap: 16px; }
   .passo { padding: 20px; }
   .cap-grid { grid-template-columns: 1fr; gap: 16px; }
   .cap-value { font-size: 2.2rem; }
@@ -613,7 +613,7 @@ body {
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .market-grid { grid-template-columns: 1fr 1fr; }
   .gtm-grid { grid-template-columns: 1fr !important; }
-  .passos-grid { grid-template-columns: 1fr 1fr; }
+  .passos-grid { grid-template-columns: 1fr !important; }
   .cap-grid { grid-template-columns: 1fr; }
   .steps-5 { grid-template-columns: 1fr !important; }
   .site-nav { display: none; }
