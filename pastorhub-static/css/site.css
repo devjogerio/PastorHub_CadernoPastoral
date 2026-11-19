@@ -472,6 +472,12 @@ body {
 .mock-row-live { border-left-color: var(--blue); }
 .live-pill { color: #ef4444; font-size: .7rem; }
 
+/* Depoimentos: melhorar legibilidade no mobile */
+#depoimentos .testimonials blockquote { padding: 16px; }
+#depoimentos .testimonials blockquote p { font-size: .9rem; }
+#depoimentos .testimonials blockquote footer b { font-size: .85rem; }
+#depoimentos .testimonials blockquote footer span { font-size: .8rem; }
+
 /* Equipe: forçar 1 coluna no mobile */
 @media (max-width: 1020px) { #equipe .grid-2 { grid-template-columns: 1fr !important; } }
 @media (max-width: 768px) { #equipe .grid-2 { grid-template-columns: 1fr !important; } }
