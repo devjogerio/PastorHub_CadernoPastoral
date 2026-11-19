@@ -1406,16 +1406,21 @@ body.theme-dark .app-info h3 { color: #e8f1fb; }
 .stat-modal-actions {
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
 }
-.stat-modal-actions .btn-action {
+.stat-modal-actions .btn-outline-stats {
   flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
   padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: .88rem;
   transition: all .15s ease;
 }
-.stat-modal-actions .btn-action:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
-.stat-modal-actions .btn-danger {
-  background: #fff; color: var(--red); border: 1px solid #fecaca;
+.stat-modal-actions .btn-outline-stats:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+.stat-modal-actions .btn-outline-stats {
+  display: flex; align-items: center; gap: 6px; justify-content: center;
+  background: #fff; border: 1px solid var(--border); color: var(--navy);
 }
-.stat-modal-actions .btn-danger:hover { background: #fee2e2; }
+.stat-modal-actions .btn-outline-stats:hover { background: var(--muted); }
+.stat-modal-actions .btn-outline-stats.danger {
+  background: #fff; color: var(--red); border-color: #fecaca;
+}
+.stat-modal-actions .btn-outline-stats.danger:hover { background: #fee2e2; border-color: var(--red); }
 .stat-modal-actions .action-icon { display: inline-flex; }
 .stat-modal-icon {
   display: inline-flex; width: 46px; height: 46px; border-radius: 12px;
