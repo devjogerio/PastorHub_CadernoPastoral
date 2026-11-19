@@ -472,6 +472,14 @@ body {
 .mock-row-live { border-left-color: var(--blue); }
 .live-pill { color: #ef4444; font-size: .7rem; }
 
+/* Equipe: forçar 1 coluna no mobile */
+@media (max-width: 1020px) { #equipe .grid-2 { grid-template-columns: 1fr !important; } }
+@media (max-width: 768px) { #equipe .grid-2 { grid-template-columns: 1fr !important; } }
+#equipe .grid-2 .table-wrap { overflow-x: auto; }
+#equipe .grid-2 .data-table { font-size: .85rem; }
+#equipe .grid-2 .data-table th, #equipe .grid-2 .data-table td { padding: 10px; }
+#equipe .grid-2 .table-wrap:nth-child(2) { margin-top: 16px; }
+
 /* Solução: forçar 1 coluna no mobile */
 @media (max-width: 1020px) { #solucao .features-grid { grid-template-columns: 1fr !important; } }
 @media (max-width: 768px) { #solucao .features-grid { grid-template-columns: 1fr !important; } }
