@@ -566,7 +566,7 @@ body {
   .cap-value { font-size: 2.2rem; }
   .cap-box { padding: 20px; }
   .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
-  .versions-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .versions-grid { grid-template-columns: 1fr !important; gap: 16px; }
   .version-card { padding: 20px; }
   .gtm-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
   .gtm-card { padding: 20px; }
@@ -606,7 +606,7 @@ body {
   .hero-visual { margin-top: 20px; }
   .features-grid { grid-template-columns: 1fr !important; }
   .problem-grid, .plans-grid, .testimonials, .docs-grid { grid-template-columns: 1fr 1fr; }
-  .versions-grid { grid-template-columns: 1fr 1fr; }
+  .versions-grid { grid-template-columns: 1fr !important; }
   .integrations-grid { grid-template-columns: repeat(3, 1fr); }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .market-grid { grid-template-columns: 1fr 1fr; }
