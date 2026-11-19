@@ -626,9 +626,10 @@ body {
 
 @media (max-width: 768px) {
   .features-grid { grid-template-columns: 1fr !important; }
+  .features-grid { grid-template-columns: 1fr !important; }
   .problem-grid, .plans-grid, .testimonials, .versions-grid, .integrations-grid, .numbers-grid, .footer-grid,
-  .market-grid, .gtm-grid, .passos-grid, .docs-grid, .steps-5, .grid-2, .grid-3 { grid-template-columns: 1fr; }
-  .numbers-grid { grid-template-columns: repeat(2, 1fr); }
+  .market-grid, .gtm-grid, .passos-grid, .docs-grid, .steps-5, .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
+  .numbers-grid { grid-template-columns: 1fr !important; }
   .plan.featured { transform: none; }
   .section { padding: 40px 0; }
   .float-card { display: none; }
