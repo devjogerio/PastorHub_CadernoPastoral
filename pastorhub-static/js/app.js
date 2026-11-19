@@ -387,6 +387,12 @@
     const t = e.target.closest('[data-toast]');
     if (t) {
       toast(t.dataset.toast);
+    }
+
+    // modal de informações dos stats
+    const stat = e.target.closest('.stat-btn');
+    if (stat && StatModal) {
+      StatModal(stat);
       return;
     }
     // ações registradas

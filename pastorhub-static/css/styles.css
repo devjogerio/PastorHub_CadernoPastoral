@@ -1381,6 +1381,27 @@ body.theme-dark .app-info h3 { color: #e8f1fb; }
 .shell-desktop .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; align-items: start; }
 .shell-desktop .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 1rem; align-items: start; }
 
+/* ---------- Modal de Stats (Detalhes dos Estatísticas) ---------- */
+.stat-modal-content { text-align: center; padding: 0.25rem; }
+.stat-modal-value {
+  font-size: clamp(2rem, 8vw, 3rem);
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.2;
+}
+.stat-modal-desc {
+  margin-top: 14px;
+  font-size: .95rem;
+  color: var(--muted-text);
+  line-height: 1.5;
+}
+.sheet .sheet-title {
+  display: flex; align-items: center; gap: 0.75rem; justify-content: flex-start;
+}
+.sheet .sheet-title:first-child {
+  text-align: left;
+}
+
 /* ---------- Responsivo ---------- */
 @media (min-width: 421px) {
   body { padding-bottom: 0; }

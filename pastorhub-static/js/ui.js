@@ -108,11 +108,34 @@
   };
 
   window.statBtnHTML = function (s) {
-    return '<button class="stat-btn" data-toast="' + escapeHtml(s.toast) + '" aria-label="' + escapeHtml(s.label + ': ' + s.value) + '">' +
+    const desc = s.desc || (s.toast || (s.label + ': ' + s.value));
+    return '<button class="stat-btn" data-toast="' + escapeHtml(s.toast) + '" data-desc="' + escapeHtml(desc) + '" aria-label="' + escapeHtml(s.label + ': ' + s.value) + '" type="button">' +
       '<span class="stat-icon ' + s.bg + '">' + icon(s.icon) + '</span>' +
       '<span class="stat-value">' + s.value + '</span>' +
       '<span class="stat-label">' + escapeHtml(s.label) + '</span>' +
       '</button>';
+  };
+
+  window.StatModal = function (el) {
+    const $stat = (sel) => el ? el.querySelector(sel) : null;
+    const iconEl = $stat('.stat-icon') ? '<span class="stat-modal-icon ' + el.querySelector('.stat-icon').className.split(' ')[1] + '">' + icon(el.querySelector('.stat-icon').getAttribute('data-icon') || 'info') + '</span>' : '';
+    const label = el.querySelector('.stat-label').textContent.trim();
+    const value = el.querySelector('.stat-value').textContent.trim();
+    const desc = el.getAttribute('data-desc') || (label + ': ' + value);
+    const iconName = (el.querySelector('.stat-icon').className.includes('bg-navy') ? 'users' :
+      el.querySelector('.stat-icon').className.includes('bg-lime') ? 'calendar' :
+      el.querySelector('.stat-icon').className.includes('bg-blue') ? 'video' : 'bell');
+
+    const body = '<div class="stat-modal-content">' +
+      '<div class="stat-modal-value">' + value + '</div>' +
+      '<div class="stat-modal-desc">' + desc + '</div>' +
+      '</div>';
+
+    openSheet({
+      title: label,
+      body: body,
+      icon: iconName,
+    });
   };
 
   window.tabsHTML = function (tabs, group) {
