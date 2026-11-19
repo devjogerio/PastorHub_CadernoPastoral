@@ -163,8 +163,7 @@
     { p: 'A IA substitui o pregador?', r: 'De forma alguma. O app atua como um assistente de estudo (o Caderno). O pastor sempre refina, decide e prega o sermão — a chave da OpenAI nunca chega ao aplicativo.' },
     { p: 'Como funciona o aconselhamento com IA?', r: 'Na sessão do Google Meet, o app transcreve o áudio em tempo real, analisa o tom emocional, identifica os picos de intensidade e gera ao final um relatório confidencial exclusivo do pastor — base do histórico de cuidado entre os encontros.' },
     { p: 'Como o WhatsApp entra na rotina?', r: 'A plataforma envia lembretes automáticos para membros agendados. Quando o membro responde, o status do atendimento é atualizado no app — sem o pastor enviar recado um a um.' },
-    { p: 'Como exporto o sermão?', r: 'No menu do card do sermão: "Exportar PDF" (abre a tela de impressão do navegador, em A4 profissional) e "Baixar TXT" (arquivo de texto puro). Também é possível copiar e compartilhar com um toque.' },
-    { p: 'Como gero o APK para Android?', r: 'O projeto usa Capacitor: npm run build:mobile seguido de cd android && gradlew assembleRelease. O passo a passo está em GUIA_GERACAO_APK.md.' },
+    { p: 'Como exporto o sermão?', r: 'No menu do card do sermão: "Exportar PDF" (abre a tela de impressão do navegador, em A4 profissional) e "Baixar TXT" (arquivo de texto puro). Também é possível copiar e compartilhar com um toque.' }
   ];
   $('#faq-produto').innerHTML = faqProduto.map((f) =>
     '<details><summary>' + esc(f.p) + '</summary><p>' + esc(f.r) + '</p></details>').join('');

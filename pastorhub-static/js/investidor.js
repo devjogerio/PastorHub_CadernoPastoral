@@ -210,12 +210,11 @@
 
     /* ---------- 14. FAQ investidor ---------- */
     faqInvestidor: [
-      { p: 'A IA substituirá o pregador?', r: 'Não. O app atua como um assistente de estudo (o Caderno). O pastor sempre refina, decide e prega o sermão.' },
-      { p: 'É defensável?', r: 'Sim. O histórico do pastor, o controle da agenda via WhatsApp e o registro contínuo dos casos de aconselhamento criam "switching costs" imensos.' },
-      { p: 'Por que não R$ 600 mil como originalmente planejado?', r: 'A reformulação estratégica focou em eficiência de capital e migração de stack. A tranche de R$ 15.000 destrava os gargalos técnicos hoje; os R$ 35.000 subsequentes financiam o motor de vendas sem diluição precoce do fundador.' },
-      { p: 'Quais os próximos marcos mensuráveis?', r: 'IA em produção e lançamento público (Tranche 1) · Meet AI + WhatsApp (Tranche 2) · 1.000 assentos pagantes · breakeven da operação enxuta.' },
-      { p: 'Como funciona o OCR e a base de conhecimento (RAG)?', r: 'O administrador envia arquivos .md, .pdf ou imagens. PDFs com texto são lidos pelo pdf.js; digitalizados passam por OCR em português (Tesseract.js). O texto é dividido em trechos por seção e indexado com BM25 no navegador. Os agentes recuperam os trechos mais relevantes e respondem com fontes — via LLM gratuito (Llama) ou pago (GPT/Claude) quando há chave, ou em modo extrativo sem chave.' },
-      { p: 'Como é feita a cobrança dos planos pagos?', r: 'Faturamento recorrente com Pix (inclusive Pix recorrente), cartão e boleto, via gateways como Mercado Pago, Pagar.me, Stripe, PagSeguro e Asaas. No dia do vencimento a fatura é gerada automaticamente; havendo pendência após o período de tolerância, o acesso do usuário é bloqueado até a regularização.' },
+      { p: 'A Inteligência Artificial substituirá o pregador?', r: 'Não. O app atua como um assistente de estudo. O pastor sempre refina, decide e prega o sermão.' },
+      { p: 'É defensável?', r: 'Sim. O histórico do pastor, o controle da agenda e o registro dos casos de aconselhamento criam grandes dificuldades de substituição.' },
+      { p: 'Quais os próximos marcos mensuráveis?', r: 'Lançamento público e uso da IA em produção · Integração Meet AI + WhatsApp · 1.000 assentos pagantes · equilíbrio operacional da enxuta.' },
+      { p: 'Como funciona a base de conhecimento?', r: 'O administrador envia arquivos de texto ou documentos. O sistema organiza os trechos e os agentes recuperam as informações mais relevantes para responder às perguntas.' },
+      { p: 'Como é feita a cobrança dos planos pagos?', r: 'Faturamento recorrente com Pix (incluindo Pix recorrente), cartão e boleto, por meio de plataformas de pagamento. No dia do vencimento a fatura é gerada automaticamente; havendo pendência após o período de tolerância, o acesso do usuário é bloqueado até a regularização.' },
     ],
 
     /* ---------- 15. Próximos passos ---------- */
@@ -246,13 +245,8 @@
 
     /* ---------- Documentos para apresentação ---------- */
     documentos: [
-      { id: 'registro-tecnico', nome: 'Registro Técnico de Implementação', desc: 'Tudo o que foi construído até agora: inventário de páginas, módulos e CSS, funcionalidades por área (app, painel, IA, cobrança), arquitetura e persistência, registro de correções e validação, limitações conhecidas e 23 melhorias propostas para aprovação.', tipo: 'Documento técnico', icone: 'database', link: 'docs/registro-tecnico.html', tamanho: '12 seções' },
-      { id: 'ecossistema-ia', nome: 'Ecossistema de IA (RAG + OCR)', desc: 'Processo completo de ponta a ponta: ingestão de documentos, OCR em português, índice BM25, agentes e LLMs gratuitos e pagos, com custos, privacidade e limites.', tipo: 'Documento técnico', icone: 'database', link: 'docs/ecossistema-ia.html', tamanho: 'Guia completo' },
-      { id: 'proposta', nome: 'Proposta de Investimento v2.0', desc: 'Documento completo de 18 páginas: problema, solução, tecnologia, mercado, modelo de negócio, GTM, concorrência, finanças, roadmap, equipe, riscos e FAQ do investidor.', tipo: 'PDF · HTML para impressão', icone: 'file-text', link: 'docs/proposta-investimento.html', tamanho: '18 páginas' },
-      { id: 'apresentacao', nome: 'Deck de Apresentação', desc: 'Apresentação em slides com narrativa de investimento: problema, solução, demonstração, mercado, finanças e pedido de captação.', tipo: '12 slides', icone: 'monitor', link: 'docs/apresentacao.html', tamanho: '12 slides' },
-      { id: 'ficha', nome: 'Ficha Técnica do Produto', desc: 'Especificação completa de stack, arquitetura atual e futura, autenticação, persistência, IA responsável e volumes construídos.', tipo: 'Ficha técnica', icone: 'database', link: 'docs/ficha-tecnica.html', tamanho: '12 atributos' },
-      { id: 'manual', nome: 'Manual do Usuário', desc: 'Guia passo a passo de cada módulo: Caderno do Pastor, Agenda, Atendimentos, Conselho (Meet AI), WhatsApp, Recursos e Alertas.', tipo: 'Manual', icone: 'book-open', link: 'docs/manual-usuario.html', tamanho: 'Guia completo' },
-      { id: 'roadmap', nome: 'Roadmap v1.0 → v2.0', desc: 'Cronograma de entregas por versão, marcos de Tranche 1 e Tranche 2 e critérios de aceite.', tipo: 'Cronograma', icone: 'history', link: 'docs/roadmap.html', tamanho: '3 versões' },
+      { id: 'proposta', nome: 'Proposta de Investimento', desc: 'Documento completo de 18 páginas: problema, solução, tecnologia, mercado, modelo de negócio, estratégia de captação, finanças, equipe, riscos e Perguntas Frequentes.', tipo: 'PDF · HTML para impressão', icone: 'file-text', link: 'docs/proposta-investimento.html', tamanho: '18 páginas' },
+      { id: 'apresentacao', nome: 'Deck de Apresentação', desc: 'Apresentação em slides com narrativa formal: problema, solução, demonstração do funcionalidade, análise de mercado, projeções financeiras e pedido de capitação.', tipo: '12 slides', icone: 'monitor', link: 'docs/apresentacao.html', tamanho: '12 slides' },
     ],
   };
 })();
