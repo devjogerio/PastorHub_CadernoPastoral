@@ -545,9 +545,9 @@ body {
   .p-num { font-size: 1.6rem; }
   .features-grid { grid-template-columns: 1fr !important; gap: 16px; }
   .feature { padding: 20px; }
-  .steps-5 { grid-template-columns: 1fr 1fr; }
+  .steps-5 { grid-template-columns: 1fr !important; }
   .step { padding: 20px; }
-  .market-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .market-grid { grid-template-columns: 1fr !important; gap: 16px; }
   .market-card { padding: 20px; }
   .m-num { font-size: 1.4rem; }
   .tam-value { font-size: 1.5rem; }
@@ -613,7 +613,7 @@ body {
   .gtm-grid { grid-template-columns: 1fr 1fr; }
   .passos-grid { grid-template-columns: 1fr 1fr; }
   .cap-grid { grid-template-columns: 1fr; }
-  .steps-5 { grid-template-columns: 1fr 1fr; }
+  .steps-5 { grid-template-columns: 1fr !important; }
   .site-nav { display: none; }
   .menu-toggle { display: flex; }
   .header-cta .btn.ghost { display: none; }
