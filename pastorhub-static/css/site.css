@@ -551,14 +551,14 @@ body {
   .market-card { padding: 20px; }
   .m-num { font-size: 1.4rem; }
   .tam-value { font-size: 1.5rem; }
-  .integrations-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .integrations-grid { grid-template-columns: 1fr !important; gap: 12px; }
   .int-card { padding: 16px 12px; }
-  .plans-grid { grid-template-columns: 1fr; gap: 20px; }
+  .plans-grid { grid-template-columns: 1fr !important; gap: 20px; }
   .plan { padding: 24px 20px; }
   .price b { font-size: 2.2rem; }
   .testimonials { grid-template-columns: 1fr; gap: 16px; }
   .testimonials blockquote { padding: 20px; }
-  .docs-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .docs-grid { grid-template-columns: 1fr !important; gap: 16px; }
   .doc-card { padding: 20px; }
   .passos-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
   .passo { padding: 20px; }
@@ -568,7 +568,7 @@ body {
   .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
   .versions-grid { grid-template-columns: 1fr !important; gap: 16px; }
   .version-card { padding: 20px; }
-  .gtm-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .gtm-grid { grid-template-columns: 1fr !important; gap: 16px; }
   .gtm-card { padding: 20px; }
   .footer-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
   .site-footer { padding: 40px 0 20px; }
@@ -605,12 +605,14 @@ body {
 }
   .hero-visual { margin-top: 20px; }
   .features-grid { grid-template-columns: 1fr !important; }
-  .problem-grid, .plans-grid, .testimonials, .docs-grid { grid-template-columns: 1fr 1fr; }
+  .plans-grid { grid-template-columns: 1fr !important; }
+  .docs-grid { grid-template-columns: 1fr !important; }
+  .problem-grid, .testimonials { grid-template-columns: 1fr 1fr; }
   .versions-grid { grid-template-columns: 1fr !important; }
-  .integrations-grid { grid-template-columns: repeat(3, 1fr); }
+  .integrations-grid { grid-template-columns: 1fr !important; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .market-grid { grid-template-columns: 1fr 1fr; }
-  .gtm-grid { grid-template-columns: 1fr 1fr; }
+  .gtm-grid { grid-template-columns: 1fr !important; }
   .passos-grid { grid-template-columns: 1fr 1fr; }
   .cap-grid { grid-template-columns: 1fr; }
   .steps-5 { grid-template-columns: 1fr !important; }
