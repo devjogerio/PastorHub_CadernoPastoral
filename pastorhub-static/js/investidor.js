@@ -12,7 +12,7 @@
       rodada: 'Rodada Semente (Seed)',
       captacao: 50000,
       tranche: 15000,
-      estagio: 'MVP 100% funcional (Web/PWA)',
+      estagio: 'Produto 100% funcional (Aplicativo instalável)',
       mercado: '150 a 200 mil pastores e mais de 400 mil templos evangélicos no Brasil',
       modelo: 'SaaS freemium: plano gratuito + Pro (R$ 49,90/mês) + Igreja (R$ 149,90/mês)',
       diferenciais: 'IA em português, análise de sentimentos, funciona offline, foco total no pastor individual',
@@ -41,23 +41,23 @@
       { nome: 'Aconselhamento Digital com IA', icone: '🩺', novo: true, desc: 'Tele-aconselhamento via Google Meet com transcrição em tempo real, análise de sentimentos, mapeamento de picos emocionais e relatório confidencial automático.', itens: ['Transcrição automática', 'Análise de sentimentos', 'Mapeamento de angústias', 'Relatório confidencial'] },
       { nome: 'Agenda e Atendimentos', icone: '📅', novo: false, desc: 'Agenda de compromissos, cadastro de atendimentos (aconselhamento, visitação, oração, discipulado), filtros entre agendados e concluídos e alertas da igreja.', itens: ['Agenda de hoje e semana', 'Fichas de atendimento', 'Agenda via WhatsApp', 'Alertas automáticos'] },
       { nome: 'Lembretes via WhatsApp', icone: '💬', novo: true, desc: 'Envio automático de lembretes e confirmações de presença via API do WhatsApp para membros agendados, com atualização de status em tempo real.', itens: ['Confirmação automática', 'Menos faltas', 'Zero digitação', 'Respostas no app'] },
-      { nome: 'Base de Conhecimento (RAG)', icone: '🧠', novo: true, desc: 'Upload de .md, .pdf e imagens para treinar os agentes: extração com pdf.js, OCR em português com Tesseract.js, índice BM25 e respostas com fontes citadas.', itens: ['OCR em PDFs digitalizados (pt-BR)', 'Índice de trechos por seção', 'Agentes por área do ministério', 'Fontes citadas em cada resposta'] },
+      { nome: 'Base de Conhecimento Inteligente', icone: '🧠', novo: true, desc: 'Upload de documentos e imagens para treinar os assistentes: extração de texto, reconhecimento de texto em português, índice de busca e respostas com fontes citadas.', itens: ['Reconhecimento de texto em PDFs digitalizados (pt-BR)', 'Índice de trechos por seção', 'Assistentes por área do ministério', 'Fontes citadas em cada resposta'] },
       { nome: 'Assistente de estudo (IA)', icone: '🤖', novo: true, desc: 'Chat com a base de conhecimento no app e no painel, com LLMs gratuitos (Llama, Gemini) e pagos (GPT, Claude). Sem chave, responde em modo extrativo.', itens: ['Llama 3 via Groq/OpenRouter/Ollama', 'Gemini, Mistral e Hugging Face', 'GPT-4o e Claude nos planos pagos', 'Modo extrativo sem chave'] },
       { nome: 'Versículos diários', icone: '📖', novo: true, desc: 'Envio automático de um versículo por dia, no horário configurado, com card no app (mobile, tablet e desktop), notificação e canal WhatsApp. O administrador escolhe hora, canais e o banco de versículos.', itens: ['Horário configurável no painel', 'Card "Versículo do dia" no app', 'Banco editável por referência e versão', 'Histórico de envios por canal'] },
       { nome: 'Planos & Assinaturas', icone: '💳', novo: true, desc: 'Gestão do modelo de negócio no painel: planos Offline, Premium (Pro) e Igreja com preços, limites e recursos editáveis, assinaturas por usuário, faturamento, faturas e controle de assentos por igreja.', itens: ['Preços e limites editáveis', 'Ciclo mensal ou anual', 'Faturas e cobrança por usuário', 'Assentos do plano Igreja', 'Faturamento recorrente automático', 'Gateways: Mercado Pago, Pagar.me, Stripe, PagSeguro, Asaas', 'Pix recorrente com QR Code', 'Bloqueio por pendência financeira'] },
       { nome: 'Recursos Pastorais', icone: '📚', novo: false, desc: 'Biblioteca com palestras geradas por IA e vídeos de MASTER para aconselhamento, família, juventude e espiritualidade.', itens: ['Palestras por tema', 'Vídeos categorizados', 'Gerador de palestras'] },
-      { nome: 'Offline-first & Segurança', icone: '🔒', novo: false, desc: 'Fila de sincronização inteligente, RLS no PostgreSQL, chaves de IA apenas no servidor e conformidade LGPD com portabilidade de dados.', itens: ['Fila de sincronização', 'RLS por usuário', 'Chave fora do app', 'LGPD'] },
+      { nome: 'Segurança e Funcionamento Offline', icone: '🔒', novo: false, desc: 'Fila de sincronização inteligente, segurança de dados no banco, chaves de IA apenas no servidor e conformidade com a lei de proteção de dados com portabilidade de dados.', itens: ['Fila de sincronização', 'Segurança por usuário', 'Chave fora do app', 'Proteção de dados'] },
     ],
 
     /* ---------- 5. Tecnologia ---------- */
     tecnologia: {
       atual: [
         { nome: 'Front-end', desc: 'React 18 + TypeScript 5 + Tailwind CSS 4, mobile-first, com loading states, empty states e toasts' },
-        { nome: 'Back-end (BaaS)', desc: 'Supabase — PostgreSQL, autenticação (e-mail/senha e Google), RLS de privacidade e Edge Functions para ocultar as chaves de IA' },
-        { nome: 'IA', desc: 'OpenAI GPT-4 (ou GPT-4o-mini conforme custo), chamada exclusivamente no servidor' },
+        { nome: 'Banco de Dados Seguro', desc: 'Banco de dados relacional, autenticação (e-mail/senha e Google), segurança de privacidade e servidor de processamento para ocultar as chaves de IA' },
+        { nome: 'Inteligência Artificial', desc: 'IA avançada (ou versão econômica conforme custo), chamada exclusivamente no servidor' },
         { nome: 'Exportação', desc: 'PDF profissional via impressão, TXT, copiar e compartilhar nativo' },
         { nome: 'Offline-first', desc: 'Persistência local (localStorage) + fila de sincronização automática quando online' },
-        { nome: 'Base de conhecimento (RAG)', desc: 'Upload de .md/.txt/.pdf e imagens; extração com pdf.js, OCR em português (Tesseract.js) e índice BM25 no navegador' },
+        { nome: 'Base de Conhecimento Inteligente', desc: 'Upload de documentos e imagens; extração de texto, reconhecimento de texto em português e índice de busca no navegador' },
         { nome: 'LLMs', desc: 'Provedores gratuitos (Groq e OpenRouter · Llama, Gemini, Mistral, Hugging Face, Ollama local) e pagos (OpenAI, Anthropic, Together), com teste real de conexão e chaves no dispositivo' },
       ],
       maturidade: [
@@ -68,17 +68,17 @@
         { item: 'Sincronização offline-first', status: 'Concluído' },
         { item: 'Exportação PDF/TXT e histórico de pregação', status: 'Concluído' },
         { item: 'Documentação técnica e manual do usuário', status: 'Concluída (3.000+ linhas)' },
-        { item: 'Arquitetura de migração (FastAPI + Vue 3)', status: 'Concluída (planejada em detalhe)' },
+        { item: 'Arquitetura de migração (Tecnologia de ponta)', status: 'Concluída (planejada em detalhe)' },
         { item: 'Ecossistema de IA: integrações com chaves e teste de conexão', status: 'Concluído' },
-        { item: 'OCR (Tesseract.js) para PDFs digitalizados e imagens', status: 'Concluído' },
-        { item: 'RAG com índice BM25, agentes e fontes citadas', status: 'Concluído' },
+        { item: 'Reconhecimento de texto para PDFs digitalizados e imagens', status: 'Concluído' },
+        { item: 'Busca inteligente com assistentes e fontes citadas', status: 'Concluído' },
       ],
       migracao: [
-        { nome: 'Back-end', desc: 'Python + FastAPI + SQLAlchemy + Pydantic — APIs de alta performance, tipagem forte e documentação automática; liberdade para trocar modelos de IA (Claude, Gemini) sem refazer telas.' },
-        { nome: 'Front-end', desc: 'Vue 3 + Composition API + Pinia — reatividade de altíssima performance para ferramentas de edição rica e dashboards do usuário.' },
+        { nome: 'Servidor de Aplicação', desc: 'Tecnologia de servidor de alta performance, tipagem forte e documentação automática; liberdade para trocar modelos de IA (Claude, Gemini) sem refazer telas.' },
+        { nome: 'Interface Moderna', desc: 'Tecnologia de interface de altíssima performance para ferramentas de edição rica e painéis do usuário.' },
       ],
       porqueMigrar:
-        'Os módulos Meet AI e WhatsApp exigem workers de processamento contínuo — áudio, mensagens assíncronas e integrações em tempo real — que o backend próprio gerencia de forma nativa e barata. Enquanto isso, o MVP em Supabase entra no ar imediatamente.',
+        'Os módulos Meet AI e WhatsApp exigem processamento contínuo — áudio, mensagens assíncronas e integrações em tempo real — que o servidor próprio gerencia de forma nativa e econômica. Enquanto isso, o produto em banco de dados entra no ar imediatamente.',
       volumes: { codigo: '3.500+ linhas de código', doc: '3.000+ linhas de documentação técnica e de usuário' },
     },
 
@@ -141,7 +141,7 @@
       'Preço acessível em moeda local, com custo 10× menor que plataformas internacionais.',
     ],
     moat:
-      'A união de offline-first, IA pastoral e Meet/WhatsApp cria um moat difícil de replicar: quem introduzir os relatórios de aconselhamento e o controle da agenda via WhatsApp antes dos concorrentes trava a conta do pastor por custo de troca imenso.',
+      'A união de funcionamento offline, IA pastoral e Meet/WhatsApp cria uma vantagem difícil de replicar: quem introduzir os relatórios de aconselhamento e o controle da agenda via WhatsApp antes dos concorrentes trava a conta do pastor por custo de troca imenso.',
 
     /* ---------- 10. Plano financeiro ---------- */
     financeiro: {
@@ -161,15 +161,15 @@
       ],
       uso: [
         { fase: 'Tranche 1 (imediata)', valor: 'R$ 15.000', itens: [
-          { nome: 'Engenharia e setup da API (FastAPI)', v: 'R$ 7.500', obj: 'Suportar primeiros usuários pagantes e tokens OpenAI' },
-          { nome: 'IA em produção: chaves, OCR e agentes RAG', v: 'R$ 4.000', obj: 'Base de conhecimento e assistente no ar' },
+          { nome: 'Engenharia e setup do servidor', v: 'R$ 7.500', obj: 'Suportar primeiros usuários pagantes e tokens de IA' },
+          { nome: 'IA em produção: chaves, reconhecimento de texto e assistentes', v: 'R$ 4.000', obj: 'Base de conhecimento e assistente no ar' },
           { nome: 'Marketing de aquisição (Ads/SEO)', v: 'R$ 2.500', obj: 'Validar o CAC inicial' },
           { nome: 'Infra/Cloud/Jurídico inicial', v: 'R$ 1.000', obj: 'Servidores e Termos de Uso' },
         ] },
         { fase: 'Tranche 2 (crescimento)', valor: 'R$ 35.000', itens: [
           { nome: 'Meet AI e WhatsApp', v: 'R$ 12.000', obj: 'Análise de sentimentos e API WhatsApp' },
           { nome: 'Tração comercial escalonada', v: 'R$ 14.000', obj: 'Parcerias e tráfego pago agressivo' },
-          { nome: 'Evolução RAG/OCR e novos agentes', v: 'R$ 6.000', obj: 'Busca semântica e mais áreas do ministério' },
+          { nome: 'Evolução da busca inteligente e novos assistentes', v: 'R$ 6.000', obj: 'Busca semântica e mais áreas do ministério' },
           { nome: 'Conformidade LGPD e auditoria', v: 'R$ 3.000', obj: 'Blindar dados sensíveis de aconselhamento religioso' },
         ] },
       ],
@@ -181,14 +181,14 @@
         { cond: 'Governança', termo: 'Relatórios trimestrais ao investidor; sem assento de conselho nesta etapa' },
       ],
       logicaTranches:
-        'Os R$ 15.000 iniciais destravam hoje os gargalos técnicos (FastAPI, IA em produção com OCR e RAG, lançamento). Os R$ 35.000 subsequentes financiam o motor de vendas — sem diluição desnecessária precoce do fundador.',
+        'Os R$ 15.000 iniciais destravam hoje os gargalos (servidor de aplicação, IA em produção com reconhecimento de texto e busca inteligente, lançamento). Os R$ 35.000 subsequentes financiam o motor de vendas — sem diluição desnecessária precoce do fundador.',
     },
 
     /* ---------- 11. Roadmap ---------- */
     roadmap: [
       { versao: 'v1.0 — MVP atual', prazo: 'Concluído', status: 'done', entregas: ['Interface de 5 módulos', 'IA de sermões', 'Offline-first', 'PDF/TXT', 'Histórico de pregações'] },
-      { versao: 'v1.5', prazo: '3–6 meses (Tranche 1)', status: 'wip', entregas: ['Migração FastAPI + Vue 3', 'IA em produção contínua', 'Temas claro/escuro', 'PWA instalável'] },
-      { versao: 'v2.0', prazo: '6–12 meses (Tranche 2)', status: 'next', entregas: ['Aconselhamento Meet AI (transcrição + análise de sentimentos)', 'Bot de agenda via API WhatsApp', 'Compartilhamento entre pastores', 'Base de conhecimento RAG com OCR', 'Assistente de estudo no app'] },
+      { versao: 'v1.5', prazo: '3–6 meses (Parcela 1)', status: 'wip', entregas: ['Migração para tecnologia de ponta', 'IA em produção contínua', 'Temas claro/escuro', 'Aplicativo instalável'] },
+      { versao: 'v2.0', prazo: '6–12 meses (Parcela 2)', status: 'next', entregas: ['Aconselhamento Meet AI (transcrição + análise de sentimentos)', 'Bot de agenda via API WhatsApp', 'Compartilhamento entre pastores', 'Base de conhecimento com reconhecimento de texto', 'Assistente de estudo no app'] },
     ],
 
     /* ---------- 12. Equipe ---------- */
@@ -200,10 +200,10 @@
 
     /* ---------- 13. Riscos ---------- */
     riscos: [
-      { risco: 'Dependência da OpenAI (custo/disponibilidade)', prob: 'Média', mitig: 'A arquitetura FastAPI em backend próprio permite troca fácil por modelos alternativos (Claude, Gemini)' },
+      { risco: 'Dependência da IA (custo/disponibilidade)', prob: 'Média', mitig: 'A arquitetura do servidor próprio permite troca fácil por modelos alternativos (Claude, Gemini)' },
       { risco: 'Conteúdo teológico impreciso (IA)', prob: 'Média', mitig: 'IA firmada via system prompts fechados e interface que obriga a revisão pelo pastor' },
       { risco: 'Dados sensíveis (Meet AI)', prob: 'Baixa', mitig: 'Relatórios anonimizados e encriptados na nuvem, em acordo com a LGPD (dado de saúde/crença)' },
-      { risco: 'Grande player entra no nicho', prob: 'Baixa–Média', mitig: 'Velocidade de execução, comunidade de pastores e moat Meet/WhatsApp' },
+      { risco: 'Grande player entra no nicho', prob: 'Baixa–Média', mitig: 'Velocidade de execução, comunidade de pastores e vantagem competitiva Meet/WhatsApp' },
       { risco: 'Adoção por pastores menos digitais', prob: 'Média', mitig: 'Modo offline sem cadastro, manual em português, onboarding assistido e suporte por WhatsApp' },
       { risco: 'Queda de uso fora da preparação semanal', prob: 'Baixa', mitig: 'Agenda, atendimentos, lembretes WhatsApp e Meet AI sustentam uso diário' },
     ],
@@ -228,14 +228,14 @@
     /* ---------- Ficha técnica ---------- */
     ficha: [
       { attr: 'Nome do produto', spec: 'PastorHub — Caderno do Pastor (v1.0 MVP)' },
-      { attr: 'Plataformas', spec: 'Web responsiva / PWA (mobile-first); apps nativos no roadmap' },
-      { attr: 'Stack atual', spec: 'React 18 · TypeScript 5 · Tailwind CSS 4 · Supabase (PostgreSQL/Auth/Edge Functions) · OpenAI GPT-4' },
-      { attr: 'Stack futura (migração)', spec: 'Back-end Python + FastAPI + SQLAlchemy + Pydantic · Front-end Vue 3 + Composition API + Pinia' },
+      { attr: 'Plataformas', spec: 'Web responsiva / Aplicativo instalável (mobile-first); apps nativos no roadmap' },
+      { attr: 'Tecnologia atual', spec: 'Interface moderna · Banco de dados seguro (PostgreSQL/Autenticação/Servidor de processamento) · Inteligência Artificial avançada' },
+      { attr: 'Tecnologia futura (migração)', spec: 'Servidor de aplicação Python · Interface moderna com alta performance' },
       { attr: 'Novos módulos planejados', spec: 'Meet AI (transcrição + análise de sentimentos) · Bot de agenda via API WhatsApp' },
-      { attr: 'Autenticação', spec: 'E-mail/senha + Google OAuth; RLS por usuário; modo offline sem cadastro' },
+      { attr: 'Autenticação', spec: 'E-mail/senha + Google; Segurança por usuário; modo offline sem cadastro' },
       { attr: 'Persistência', spec: 'Nuvem (PostgreSQL) + offline-first com fila de sincronização automática' },
       { attr: 'Uso responsável de IA', spec: 'Chave protegida no servidor, prompts fechados, revisão pastoral obrigatória, LGPD' },
-      { attr: 'Base de conhecimento (RAG)', spec: 'Upload .md/.txt/.pdf/imagem · pdf.js + OCR Tesseract.js (pt-BR) · índice BM25 no navegador · fontes citadas' },
+      { attr: 'Base de conhecimento inteligente', spec: 'Upload de documentos e imagens · Leitor de documentos + Reconhecimento de texto (pt-BR) · índice de busca no navegador · fontes citadas' },
       { attr: 'LLMs', spec: 'Groq · OpenRouter · Gemini · Mistral · Hugging Face · Ollama (Llama local) · OpenAI · Anthropic · Together' },
       { attr: 'Exportações', spec: 'PDF (impressão profissional) · TXT · copiar/compartilhar nativo' },
       { attr: 'Domínio de linguagem', spec: 'Exclusivo português brasileiro, com prompts de homilética' },
