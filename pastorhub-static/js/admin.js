@@ -186,6 +186,13 @@
     notifEmail: true, notifResumo: true, notifPush: false,
   };
 
+  // Avatares por padrão por tipo de conta (para quando não hava foto personalizada)
+  const AVATARS_PADRAO = {
+    admin: 'https://ui-avatars.com/api/?name=Admin+PastorHub&color=fff&background=002645',
+    comum: 'https://ui-avatars.com/api/?name=Usuario&color=fff&background=3261AB',
+    google: 'https://ui-avatars.com/api/?name=Google&color=fff&background=4285F4',
+  };
+
   function perfisSalvos() {
     try {
       const mapa = JSON.parse(localStorage.getItem(PERFIS_KEY));
@@ -197,12 +204,15 @@
 
   function perfilDe(conta) {
     const salvo = perfisSalvos()[conta.email] || {};
+    const avatarDefault = AVATARS_PADRAO[conta.papel] || AVATARS_PADRAO.comum;
     return Object.assign({}, PERFIL_PADRAO, salvo, {
       nome: salvo.nome || conta.nome,
       email: conta.email,
       papel: conta.papel,
       origem: conta.origem || 'email',
       desde: conta.desde || null,
+      // Usa avatar padrão pelo papel se não houver um personalizado salvo
+      avatar: salvo.avatar || (conta.avatar || avatarDefault),
     });
   }
 
