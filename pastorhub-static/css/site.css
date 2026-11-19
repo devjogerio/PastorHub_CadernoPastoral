@@ -592,7 +592,13 @@ body {
   .cta-inline { flex-direction: column; align-items: flex-start; padding: 20px; }
   .moat-box { padding: 20px; }
   .diff-box { padding: 20px; }
-  .unit-box { padding: 20px; }
+  #planos .unit-box { padding: 16px; overflow-wrap: break-word; }
+  #planos .unit-box .setting-row { gap: 8px; padding: 10px 0; }
+  #planos .unit-box .setting-row b { font-size: .85rem; }
+  #planos .unit-box .setting-row .hl { white-space: normal; }
+  #planos .unit-box ul { font-size: .85rem; padding-left: 1rem; }
+  #planos .unit-box .small-note { font-size: .8rem; }
+  #planos .grid-2 { gap: 16px; }
   .chart-box { padding: 20px; }
   .premissas-box { padding: 20px; }
   .tranche { padding: 16px; }
@@ -665,7 +671,13 @@ body {
   .cta-inline { padding: 16px; }
   .moat-box { padding: 16px; }
   .diff-box { padding: 16px; }
-  .unit-box { padding: 16px; }
+  #planos .unit-box { padding: 14px; overflow-wrap: break-word; }
+  #planos .unit-box .setting-row { gap: 6px; padding: 8px 0; }
+  #planos .unit-box .setting-row b { font-size: .8rem; }
+  #planos .unit-box .setting-row .hl { white-space: normal; }
+  #planos .unit-box ul { font-size: .78rem; padding-left: 0.9rem; }
+  #planos .unit-box .small-note { font-size: .75rem; }
+  #planos .grid-2 { gap: 12px; }
   .chart-box { padding: 16px; }
   .premissas-box { padding: 16px; }
   .tranche { padding: 14px; }
