@@ -1047,6 +1047,46 @@ body.theme-dark .btn.outline:hover { background: var(--lime); border-color: var(
 body.theme-dark .btn.ghost { color: #7fb0e8; }
 body.theme-dark .toast { background: #1c3049; }
 body.theme-dark .toast.success { background: #166534; }
+
+/* --- Cards modernos do site institucional --- */
+.site-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.site-card:hover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+.site-card .card-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);
+}
+.site-card .card-title {
+  font-size: 1.25rem; font-weight: 700; color: var(--navy);
+}
+.site-card .card-subtitle {
+  font-size: 0.875rem; color: var(--muted-text);
+}
+.site-card .icon-badge {
+  width: 40px; height: 40px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-right: 0.75rem;
+}
+.float-card {
+  background: var(--soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin: 0.5rem 0;
+  transition: box-shadow 0.2s;
+}
+.float-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.hero-checks li,
+.hero-checks li span { color: var(--muted-text); }
 body.theme-dark .toast.error { background: var(--red); }
 body.theme-dark .live-body { background: #0e1b2b; }
 body.theme-dark .live-line.pastor b { color: #8fb8f0; }
