@@ -1420,6 +1420,42 @@ body.theme-dark .app-info h3 { color: #e8f1fb; }
   .shell-tablet .nav-item .icon { width: 18px; height: 18px; }
 }
 
+/* ---------- Animações Tablet e Desktop ---------- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Tablet (1024px - 768px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .view-grid { grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .list-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .quick-grid { grid-template-columns: repeat(3, 1fr); }
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+  .col-side { width: 260px; }
+  body.shell-tablet .topbar { padding: 0 1.25rem; }
+  .quick-action-card { padding: 1.25rem 1rem; }
+  .quick-action-card .qa-icon { width: 44px; height: 44px; font-size: 1.4rem; }
+  .quick-action-card b { font-size: 1.02rem; }
+  .quick-action-card p { font-size: .83rem; }
+}
+
+/* Desktop (min-width: 1440px) */
+@media (min-width: 1440px) {
+  .view-grid { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .list-grid { grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+  .quick-grid { grid-template-columns: repeat(4, 1fr); }
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+  .col-side { width: 320px; }
+  .shell-desktop #topbar { padding: 0 2.5rem; }
+  .shell-desktop #view { padding: 1.5rem; }
+  .shell-desktop .quick-grid { gap: .75rem; }
+}
+
 /* ---------- Bloqueio por pendência financeira ---------- */
 .bloqueio-overlay {
   position: fixed; inset: 0; z-index: 2400;
