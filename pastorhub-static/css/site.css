@@ -570,9 +570,10 @@ body {
   .version-card { padding: 20px; }
   .gtm-grid { grid-template-columns: 1fr !important; gap: 16px; }
   .gtm-card { padding: 20px; }
-  .footer-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+  .footer-grid { grid-template-columns: 1fr !important; gap: 20px; }
   .site-footer { padding: 40px 0 20px; }
-  .footer-desc { max-width: 100%; }
+  .footer-desc { max-width: 100%; font-size: .82rem; }
+  .footer-grid { gap: 18px; }
   .site-nav { display: none; }
   .menu-toggle { display: flex; }
   .header-cta .btn.ghost { display: none; }
@@ -616,7 +617,7 @@ body {
   .problem-grid, .testimonials { grid-template-columns: 1fr 1fr; }
   .versions-grid { grid-template-columns: 1fr !important; }
   .integrations-grid { grid-template-columns: 1fr !important; }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-grid { grid-template-columns: 1fr !important; }
   .market-grid { grid-template-columns: 1fr 1fr; }
   .gtm-grid { grid-template-columns: 1fr !important; }
   .passos-grid { grid-template-columns: 1fr !important; }
@@ -659,7 +660,8 @@ body {
   .cta-actions .btn { width: 100%; max-width: 280px; }
   .site-footer { padding: 32px 0 16px; }
   .footer-grid { grid-template-columns: 1fr; gap: 20px; }
-  .footer-desc { max-width: 100%; }
+  .footer-desc { max-width: 100%; font-size: .82rem; }
+  .footer-grid { gap: 18px; }
   .data-table { font-size: .8rem; }
   .data-table th, .data-table td { padding: 8px 10px; }
   .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
