@@ -52,7 +52,7 @@
       const html =
         '<div class="view-header">' +
           '<div style="display:flex;align-items:center;justify-content:space-between;gap:1rem">' +
-            '<div><p class="welcome">Bem-vindo,</p><h2>' + escapeHtml(Usuario.dados.nome) + '</h2></div>' +
+            '<div><p class="welcome">Seu dia começa aqui,</p><h2>Agenda do Pastor</h2></div>' +
             avatarDe(Usuario.dados.nome, 'avatar-56 avatar-ring') +
           '</div>' +
           '<div class="glass-card"><p class="small">' + escapeHtml(HOJE_LABEL) + '</p><p class="strong">3 atendimentos agendados</p></div>' +
