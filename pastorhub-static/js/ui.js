@@ -127,14 +127,50 @@
       el.querySelector('.stat-icon').className.includes('bg-blue') ? 'video' : 'bell');
 
     const body = '<div class="stat-modal-content">' +
+      '<span class="stat-modal-icon ' + (el.querySelector('.stat-icon') ? el.querySelector('.stat-icon').className.split(' ')[1] : 'bg-navy') + '">' +
+      (icon(el.querySelector('.stat-icon').getAttribute('data-icon') || iconName)) +
+      '</span>' +
       '<div class="stat-modal-value">' + value + '</div>' +
       '<div class="stat-modal-desc">' + desc + '</div>' +
+      '</div>';
+
+    const footer = '<div class="stat-modal-actions">' +
+      '<button class="btn btn-sm btn-action" data-stat-edit type="button"><span class="action-icon">' + icon('edit', 'icon-sm') + '</span><span>Editar</span></button>' +
+      '<button class="btn btn-sm btn-action" data-stat-save type="button" style="display:none"><span class="action-icon">' + icon('check', 'icon-sm') + '</span><span>Salvar</span></button>' +
+      '<button class="btn btn-sm btn-action" data-stat-add type="button" style="display:none"><span class="action-icon">' + icon('plus', 'icon-sm') + '</span><span>Adicionar</span></button>' +
+      '<button class="btn btn-sm btn-danger" data-stat-delete type="button"><span class="action-icon">' + icon('trash', 'icon-sm') + '</span><span>Excluir</span></button>' +
       '</div>';
 
     openSheet({
       title: label,
       body: body,
       icon: iconName,
+      footer: footer,
+    });
+
+    // Click handlers
+    $('#sheet .stat-modal-actions [data-stat-edit]').addEventListener('click', () => {
+      toast('Funcionalidade de edição sendo desenvolvida');
+      closeSheet();
+    });
+    $('#sheet .stat-modal-actions [data-stat-save]').addEventListener('click', () => {
+      toast('Salvando ' + label + '...');
+      closeSheet();
+    });
+    $('#sheet .stat-modal-actions [data-stat-add]').addEventListener('click', () => {
+      toast('Novo item adicionado');
+      closeSheet();
+    });
+    $('#sheet .stat-modal-actions [data-stat-delete]').addEventListener('click', () => {
+      confirmDialog({
+        title: 'Excluir ' + label.toLowerCase(),
+        message: 'Tem certeza que deseja excluir ' + value + ' ' + label.toLowerCase() + '?',
+        confirmLabel: 'Excluir',
+        onConfirm: () => {
+          toast(label + ' excluído com sucesso');
+          closeSheet();
+        }
+      });
     });
   };
 
