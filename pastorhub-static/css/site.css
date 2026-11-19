@@ -472,9 +472,129 @@ body {
 .mock-row-live { border-left-color: var(--blue); }
 .live-pill { color: #ef4444; font-size: .7rem; }
 
-/* ---------- Responsivo ---------- */
+/* ---------- Animações ---------- */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.animate-fade-up { animation: fadeInUp 0.6s ease-out forwards; }
+.animate-fade { animation: fadeIn 0.8s ease-out forwards; }
+.animate-slide-left { animation: slideInLeft 0.6s ease-out forwards; }
+.animate-slide-right { animation: slideInRight 0.6s ease-out forwards; }
+.animate-pulse { animation: pulse 2s ease-in-out infinite; }
+
+/* ---------- Responsivo - Tablet ---------- */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .container { padding: 0 32px; }
+  .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+  .hero-visual { margin-top: 20px; max-width: 400px; margin-left: auto; margin-right: auto; }
+  .features-grid, .problem-grid, .plans-grid, .testimonials, .docs-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .versions-grid { grid-template-columns: 1fr 1fr; }
+  .integrations-grid { grid-template-columns: repeat(3, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .market-grid { grid-template-columns: 1fr 1fr; }
+  .gtm-grid { grid-template-columns: 1fr 1fr 1fr; }
+  .passos-grid { grid-template-columns: 1fr 1fr; }
+  .cap-grid { grid-template-columns: 1fr; }
+  .steps-5 { grid-template-columns: repeat(3, 1fr); }
+  .site-nav { gap: 16px; }
+  .site-nav a { font-size: .85rem; }
+}
+
+/* ---------- Responsivo - Mobile ---------- */
 @media (max-width: 1020px) {
-  .hero-grid { grid-template-columns: 1fr; }
+  .hero-grid { grid-template-columns: 1fr; gap: 30px; }
+  .container { padding: 0 24px; }
+  .hero { padding: 40px 0 50px; }
+  .hero-copy h1 { font-size: 2.2rem; }
+  .hero-copy .lead { font-size: 1rem; }
+  .hero-checks { flex-wrap: wrap; gap: 8px; }
+  .hero-checks li { font-size: .85rem; }
+  .phone { width: 260px; }
+  .float-card { display: none; }
+  .numbers-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .numbers-grid div b { font-size: 1.8rem; }
+  .section { padding: 50px 0; }
+  .section-head h2 { font-size: 1.8rem; }
+  .problem-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .problem-card { padding: 20px; }
+  .p-num { font-size: 1.6rem; }
+  .features-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .feature { padding: 20px; }
+  .steps-5 { grid-template-columns: 1fr 1fr; }
+  .step { padding: 20px; }
+  .market-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .market-card { padding: 20px; }
+  .m-num { font-size: 1.4rem; }
+  .tam-value { font-size: 1.5rem; }
+  .integrations-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .int-card { padding: 16px 12px; }
+  .plans-grid { grid-template-columns: 1fr; gap: 20px; }
+  .plan { padding: 24px 20px; }
+  .price b { font-size: 2.2rem; }
+  .testimonials { grid-template-columns: 1fr; gap: 16px; }
+  .testimonials blockquote { padding: 20px; }
+  .docs-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .doc-card { padding: 20px; }
+  .passos-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .passo { padding: 20px; }
+  .cap-grid { grid-template-columns: 1fr; gap: 16px; }
+  .cap-value { font-size: 2.2rem; }
+  .cap-box { padding: 20px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
+  .versions-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .version-card { padding: 20px; }
+  .gtm-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .gtm-card { padding: 20px; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+  .site-footer { padding: 40px 0 20px; }
+  .footer-desc { max-width: 100%; }
+  .site-nav { display: none; }
+  .menu-toggle { display: flex; }
+  .header-cta .btn.ghost { display: none; }
+  .site-header.nav-open .site-nav {
+    display: flex; flex-direction: column; gap: 0;
+    position: absolute; top: 72px; left: 0; right: 0;
+    background: #fff; border-bottom: 1px solid var(--line);
+    padding: 10px 24px 16px;
+  }
+  .site-header.nav-open .site-nav a { padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .cta { padding: 50px 0; }
+  .cta h2 { font-size: 1.6rem; }
+  .cta p { font-size: .9rem; }
+  .cta-actions { flex-direction: column; align-items: center; gap: 10px; }
+  .cta-actions .btn { width: 100%; max-width: 300px; }
+  .problem-quote { padding: 20px; font-size: .95rem; }
+  .cta-inline { flex-direction: column; align-items: flex-start; padding: 20px; }
+  .moat-box { padding: 20px; }
+  .diff-box { padding: 20px; }
+  .unit-box { padding: 20px; }
+  .chart-box { padding: 20px; }
+  .premissas-box { padding: 20px; }
+  .tranche { padding: 16px; }
+  .tl-card { padding: 16px; }
+  .info-strip { padding: 16px; }
+  .problem-table { margin-bottom: 20px; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .data-table { font-size: .85rem; }
+  .data-table th, .data-table td { padding: 10px 12px; }
+}
   .hero-visual { margin-top: 20px; }
   .features-grid, .problem-grid, .plans-grid, .testimonials, .docs-grid { grid-template-columns: 1fr 1fr; }
   .versions-grid { grid-template-columns: 1fr 1fr; }
@@ -498,14 +618,59 @@ body {
   .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
 }
 
-@media (max-width: 680px) {
+@media (max-width: 768px) {
   .features-grid, .problem-grid, .plans-grid, .testimonials, .versions-grid, .integrations-grid, .numbers-grid, .footer-grid,
-  .market-grid, .gtm-grid, .passos-grid, .docs-grid, .steps-5 { grid-template-columns: 1fr; }
+  .market-grid, .gtm-grid, .passos-grid, .docs-grid, .steps-5, .grid-2, .grid-3 { grid-template-columns: 1fr; }
   .numbers-grid { grid-template-columns: repeat(2, 1fr); }
   .plan.featured { transform: none; }
-  .section { padding: 60px 0; }
+  .section { padding: 40px 0; }
   .float-card { display: none; }
-  .hero { padding: 52px 0 64px; }
+  .hero { padding: 40px 0 50px; }
+  .hero-copy h1 { font-size: 1.8rem; }
+  .hero-copy .lead { font-size: .95rem; }
+  .hero-checks { flex-direction: column; gap: 6px; }
+  .hero-checks li { font-size: .8rem; }
+  .phone { width: 240px; }
   .cta-inline { flex-direction: column; align-items: flex-start; }
-  .problem-quote { padding: 22px; font-size: .98rem; }
+  .problem-quote { padding: 18px; font-size: .95rem; }
+  .cta { padding: 40px 0; }
+  .cta h2 { font-size: 1.4rem; }
+  .cta p { font-size: .85rem; }
+  .cta-actions { flex-direction: column; align-items: center; gap: 10px; }
+  .cta-actions .btn { width: 100%; max-width: 280px; }
+  .site-footer { padding: 32px 0 16px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 20px; }
+  .footer-desc { max-width: 100%; }
+  .data-table { font-size: .8rem; }
+  .data-table th, .data-table td { padding: 8px 10px; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .cap-value { font-size: 2rem; }
+  .m-num { font-size: 1.2rem; }
+  .tam-value { font-size: 1.3rem; }
+  .p-num { font-size: 1.4rem; }
+  .price b { font-size: 2rem; }
+  .cta-inline { padding: 16px; }
+  .moat-box { padding: 16px; }
+  .diff-box { padding: 16px; }
+  .unit-box { padding: 16px; }
+  .chart-box { padding: 16px; }
+  .premissas-box { padding: 16px; }
+  .tranche { padding: 14px; }
+  .tl-card { padding: 14px; }
+  .info-strip { padding: 14px; }
+  .problem-card { padding: 16px; }
+  .feature { padding: 16px; }
+  .step { padding: 16px; }
+  .market-card { padding: 16px; }
+  .int-card { padding: 14px 10px; }
+  .plan { padding: 20px 16px; }
+  .testimonials blockquote { padding: 16px; }
+  .doc-card { padding: 16px; }
+  .passo { padding: 16px; }
+  .cap-box { padding: 16px; }
+  .gtm-card { padding: 16px; }
+  .version-card { padding: 16px; }
+  .cta-inline h3 { font-size: 1rem; }
+  .cta-inline p { font-size: .85rem; }
+  .problem-quote { padding: 16px; font-size: .9rem; }
 }
