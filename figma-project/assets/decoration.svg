@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="306" height="336" viewBox="0 0 306 336" fill="none" aria-hidden="true">
+  <!--Decoration: olive leaves + white dove, color-corrected from Figma vector export-->
+  <g fill="#5c6b34">
+    <ellipse cx="232" cy="58" rx="58" ry="34" transform="rotate(-28 232 58)"/>
+    <ellipse cx="272" cy="96" rx="26" ry="62" transform="rotate(-18 272 96)"/>
+    <ellipse cx="200" cy="122" rx="62" ry="24" transform="rotate(-42 200 122)"/>
+    <ellipse cx="258" cy="168" rx="24" ry="54" transform="rotate(24 258 168)"/>
+    <ellipse cx="214" cy="216" rx="58" ry="22" transform="rotate(-18 214 216)"/>
+    <ellipse cx="294" cy="54" rx="22" ry="48" transform="rotate(18 294 54)"/>
+  </g>
+  <g fill="#718044" opacity=".9">
+    <ellipse cx="248" cy="86" rx="38" ry="18" transform="rotate(-38 248 86)"/>
+    <ellipse cx="276" cy="140" rx="18" ry="44" transform="rotate(-12 276 140)"/>
+    <ellipse cx="236" cy="190" rx="46" ry="16" transform="rotate(-32 236 190)"/>
+  </g>
+  <g stroke="#d7dfc4" stroke-width="1.2" opacity=".7">
+    <path d="M232 58 C214 84 204 106 200 122 M272 96 C266 124 260 150 258 168 M214 216 C230 232 248 244 266 252"/>
+  </g>
+  <!-- white dove -->
+  <g fill="#ffffff" transform="translate(-18 88)">
+    <path d="M172 66 C186 52 204 46 220 50 C234 54 242 66 240 80 C256 72 276 74 288 86 C274 88 262 96 254 108 C238 124 216 132 194 126 C176 121 162 106 160 88 C159 79 164 71 172 66Z"/>
+    <path d="M240 80 C252 78 264 82 272 92 C258 92 246 98 238 108 C234 98 234 88 240 80Z" fill="#f2f5ef"/>
+    <path d="M162 84 C150 80 138 82 128 90 C140 94 150 102 156 112 C160 102 162 92 162 84Z"/>
+    <circle cx="226" cy="63" r="2.4" fill="#4a4a4a"/>
+    <path d="M240 66 L252 70 L240 74Z" fill="#f3a23c"/>
+  </g>
+</svg>

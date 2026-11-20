@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="130" height="146" viewBox="0 0 130 146" fill="none" aria-hidden="true">
+  <!-- Stylized praying woman, matching the Figma hero card illustration -->
+  <defs>
+    <linearGradient id="dress" x1="40" y1="60" x2="110" y2="146" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c88fe8"/><stop offset="1" stop-color="#8b5bc4"/>
+    </linearGradient>
+    <linearGradient id="skin" x1="60" y1="20" x2="90" y2="90" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f7c6a8"/><stop offset="1" stop-color="#e3a283"/>
+    </linearGradient>
+  </defs>
+  <path d="M34 146 C36 108 52 88 76 88 C100 88 116 110 118 146Z" fill="url(#dress)"/>
+  <path d="M58 88 C50 76 48 58 52 44 C56 28 68 20 82 22 C98 24 106 38 104 54 C102 70 94 84 82 90Z" fill="#8b4a3a"/>
+  <path d="M62 38 C66 28 78 26 88 32 C96 37 98 48 94 58 C90 70 80 78 70 76 C60 74 56 62 57 52 C58 46 59 42 62 38Z" fill="url(#skin)"/>
+  <path d="M60 34 C70 24 88 26 96 38 C88 32 76 32 68 40 C62 46 60 54 62 62 C56 56 54 44 60 34Z" fill="#8b4a3a"/>
+  <path d="M62 84 C56 78 54 70 56 64 C60 68 64 72 68 76 C72 72 78 70 84 72 C82 80 76 86 70 88Z" fill="#f3c7ab"/>
+  <ellipse cx="78" cy="78" rx="10" ry="7" fill="#f7d2bd" transform="rotate(-18 78 78)"/>
+  <path d="M84 58 c3 -2 5 -1 5 2 M70 58 c-3 -2 -5 -1 -5 2" stroke="#8b4a3a" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M74 68 c3 2 7 2 10 0" stroke="#b76b60" stroke-width="1.4" stroke-linecap="round"/>
+  <circle cx="36" cy="120" r="4" fill="#f7d2bd" opacity=".6"/>
+  <circle cx="112" cy="104" r="5" fill="#f7d2bd" opacity=".5"/>
+</svg>

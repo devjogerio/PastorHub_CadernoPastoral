@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#FE7940">
+  <title>Find Local Church — Community App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Demo chrome (fora do frame do design) -->
+  <header class="demo-bar">
+    <div class="demo-brand"><span class="demo-dot"></span> Find Local Church · Community</div>
+    <nav class="demo-nav" id="demo-nav" aria-label="Telas do protótipo"></nav>
+    <button class="demo-theme" id="theme-toggle" type="button" title="Alternar tema alternativo">◐ Tema</button>
+  </header>
+
+  <main class="stage">
+    <div class="phone" id="phone">
+
+      <!-- ============ SIGN IN ============ -->
+      <section class="screen screen-signin is-active" data-screen="signin" aria-label="Sign in">
+        <div class="signin-photo" role="img" aria-label="Mãos segurando uma cruz sobre a Bíblia"></div>
+        <div class="signin-card">
+          <div class="signin-tabs">
+            <button type="button" data-tab="login">Log In</button>
+            <button type="button" class="active" data-tab="signup">Sign Up</button>
+          </div>
+          <form class="signin-form" id="signup-form">
+            <label class="field-line"><span>Enter email or username</span><input type="text" name="email" autocomplete="username"></label>
+            <label class="field-line"><span>Password</span><input type="password" name="password" autocomplete="new-password"></label>
+            <label class="field-line"><span>Confirm Password</span><input type="password" name="confirm" autocomplete="new-password"></label>
+            <label class="select-wrap">
+              <select name="userType" aria-label="Select user type">
+                <option>Select user type</option>
+                <option>Basic User</option>
+                <option>Church User</option>
+                <option>Pastor User</option>
+              </select>
+            </label>
+            <button class="btn-primary" type="submit">Sign Up</button>
+          </form>
+          <p class="or">OR</p>
+          <div class="socials">
+            <button type="button" class="social google" aria-label="Google">G</button>
+            <button type="button" class="social facebook" aria-label="Facebook">f</button>
+            <button type="button" class="social twitter" aria-label="Twitter">𝕏</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ HOME ============ -->
+      <section class="screen screen-home" data-screen="home" aria-label="Home page">
+        <img class="home-decoration" src="assets/decoration.svg?v=2" alt="" aria-hidden="true">
+        <div class="avatar avatar-home"><img src="assets/asset-02.svg" alt="Perfil"></div>
+        <h1 class="home-title">Praise<br>The Lord...</h1>
+        <label class="search">
+          <img src="assets/asset-03.svg" alt="" aria-hidden="true">
+          <input type="search" placeholder="Search..." aria-label="Search">
+        </label>
+        <article class="hero-card">
+          <div class="hero-copy">
+            <h2>Raise Hand For Church…</h2>
+            <p>Get the churches connected more Bring the awareness of online services</p>
+          </div>
+          <img class="hero-art" src="assets/hero-prayer.svg" alt="Mulher orando">
+        </article>
+        <div class="feature-grid" id="feature-grid"></div>
+      </section>
+
+      <!-- ============ FIND CHURCH ============ -->
+      <section class="screen screen-list" data-screen="find" aria-label="Find church">
+        <header class="subtop"><button class="back" type="button" data-go="home">‹ Back</button><span class="avatar-mini"><img src="assets/asset-02.svg" alt=""></span></header>
+        <label class="search search-filter"><img src="assets/asset-03.svg" alt=""><input type="search" placeholder="Search..." aria-label="Search churches"><button class="icon-filter" type="button" aria-label="Filters">☷</button></label>
+        <div class="church-cards" id="church-cards"></div>
+      </section>
+
+      <!-- ============ CHURCH LIST (compact) ============ -->
+      <section class="screen screen-list" data-screen="churches" aria-label="Church list">
+        <header class="subtop"><button class="back" type="button" data-go="home">‹ Back</button><span class="avatar-mini"><img src="assets/asset-02.svg" alt=""></span></header>
+        <label class="search search-filter"><img src="assets/asset-03.svg" alt=""><input type="search" placeholder="Search..." aria-label="Search churches"><button class="icon-filter" type="button" aria-label="Filters">☷</button></label>
+        <div class="compact-cards" id="compact-cards"></div>
+      </section>
+
+      <!-- ============ CHURCH DETAIL ============ -->
+      <section class="screen screen-detail" data-screen="church" aria-label="Church detail">
+        <div class="detail-photo" role="img" aria-label="Fotografia da igreja"><button class="back back-light" type="button" data-go="find">‹ Back</button><button class="bookmark" type="button" aria-label="Salvar">🔖</button></div>
+        <div class="detail-info">
+          <h2>Good Shepherd Evangelical Church</h2>
+          <p class="address">📍 Serilingampalle HYD,500019</p>
+          <p class="hours">12–3:30pm, 6–7pm</p>
+          <span class="cost-tag">Cost <b>Rs. 10,000 – 23,000</b></span>
+          <button class="need-hand" type="button">Need Hand</button>
+        </div>
+        <div class="tabs" data-tabs="church"><button class="active" type="button">About</button><button type="button">Preaching</button><button type="button">Media</button></div>
+        <p class="lorem">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque libero eros, efficitur eu convallis eu, sollicitudin eu ipsum. Donec blandit facilisis eros, sed consectetur nunc ullamcorper et. Vestibulum feugiat pulvinar tortor, vel laoreet eros finibus non. Suspendisse facilisis vehicula tempus.</p>
+      </section>
+
+      <!-- ============ RECORDINGS ============ -->
+      <section class="screen screen-list" data-screen="recordings" aria-label="Recordings">
+        <header class="subtop"><button class="back" type="button" data-go="home">‹ Back</button><span class="avatar-mini"><img src="assets/asset-02.svg" alt=""></span></header>
+        <label class="search search-filter"><img src="assets/asset-03.svg" alt=""><input type="search" placeholder="Search..." aria-label="Search recordings"><button class="icon-filter" type="button" aria-label="Filters">☷</button></label>
+        <div class="record-grid" id="record-grid"></div>
+      </section>
+
+      <!-- ============ SERMON PLAYER (ppt variant) ============ -->
+      <section class="screen screen-list" data-screen="sermons" aria-label="Sermons">
+        <header class="subtop"><button class="back" type="button" data-go="home">‹ Back</button><span class="avatar-mini"><img src="assets/asset-02.svg" alt=""></span></header>
+        <label class="search search-filter"><img src="assets/asset-03.svg" alt=""><input type="search" placeholder="Search..." aria-label="Search sermons"><button class="icon-filter" type="button" aria-label="Filters">☷</button></label>
+        <div class="record-grid" id="sermon-grid"></div>
+      </section>
+
+      <!-- ============ SONGS ============ -->
+      <section class="screen screen-list" data-screen="songs" aria-label="Songs">
+        <header class="subtop"><button class="back" type="button" data-go="home">‹ Back</button><span class="avatar-mini"><img src="assets/asset-02.svg" alt=""></span></header>
+        <label class="search search-filter"><img src="assets/asset-03.svg" alt=""><input type="search" placeholder="Search..." aria-label="Search songs"><button class="icon-filter" type="button" aria-label="Filters">☷</button></label>
+        <div class="song-list" id="song-list"></div>
+      </section>
+
+      <!-- ============ MESSAGES ============ -->
+      <section class="screen screen-list" data-screen="messages" aria-label="Messages">
+        <header class="subtop"><button class="back" type="button" data-go="home">‹ Back</button><span class="avatar-mini"><img src="assets/asset-02.svg" alt=""></span></header>
+        <label class="search search-filter"><img src="assets/asset-03.svg" alt=""><input type="search" placeholder="Search..." aria-label="Search messages"><button class="icon-filter" type="button" aria-label="Filters">☷</button></label>
+        <div class="post-composer"><span class="avatar-mini"><img src="assets/asset-02.svg" alt=""></span><span>Write a post...</span><button type="button" aria-label="Escrever">✎</button></div>
+        <div class="section-title">Latest Messages <span>⇅</span></div>
+        <div class="posts" id="posts"></div>
+      </section>
+
+      <!-- ============ EVENTS ============ -->
+      <section class="screen screen-list" data-screen="events" aria-label="Events">
+        <header class="subtop"><button class="back" type="button" data-go="home">‹ Back</button><span class="avatar-mini"><img src="assets/asset-02.svg" alt=""></span></header>
+        <label class="search search-filter"><img src="assets/asset-03.svg" alt=""><input type="search" placeholder="Search..." aria-label="Search events"><button class="icon-filter" type="button" aria-label="Filters">☷</button></label>
+        <div id="events"></div>
+      </section>
+
+      <!-- ============ PASTOR NEEDS ============ -->
+      <section class="screen screen-list" data-screen="needs" aria-label="Pastor needs">
+        <header class="subtop"><button class="back" type="button" data-go="home">‹ Back</button><span class="avatar-mini"><img src="assets/asset-02.svg" alt=""></span></header>
+        <label class="search search-filter"><img src="assets/asset-03.svg" alt=""><input type="search" placeholder="Search..." aria-label="Search needs"><button class="icon-filter" type="button" aria-label="Filters">☷</button></label>
+        <div class="compact-cards" id="need-cards"></div>
+      </section>
+
+      <!-- ============ TESTIMONY FORM ============ -->
+      <section class="screen screen-form" data-screen="testimony" aria-label="Testimony corner">
+        <header class="subtop"><button class="back" type="button" data-go="home">‹ Back</button><span class="avatar-mini"><img src="assets/asset-02.svg" alt=""></span></header>
+        <label class="search search-filter"><img src="assets/asset-03.svg" alt=""><input type="search" placeholder="Search..." aria-label="Search"><button class="icon-filter" type="button" aria-label="Filters">☷</button></label>
+        <h2 class="form-title">Canto do Testemunho</h2>
+        <p class="form-sub">Compartilhe seu testemunho e pedido de oração com a comunidade.</p>
+        <form id="testimony-form">
+          <label>Nome<input type="text" placeholder="Digite seu nome completo aqui..." required></label>
+          <label>Email<input type="email" placeholder="Digite seu e-mail..." required></label>
+          <label>Phone/WhatsApp<input type="tel" placeholder="Digite seu número de telefone..."></label>
+          <label class="full">Digite aqui o seu pedido de oração<textarea rows="5" placeholder="Digite seu pedido de oração..."></textarea></label>
+          <button class="btn-primary" type="submit">Enviar pedido</button>
+        </form>
+      </section>
+
+      <!-- ============ ALTERNATIVE HOME (light/dark design variant) ============ -->
+      <section class="screen screen-alt" data-screen="alt" aria-label="Alternative home">
+        <div class="status-bar"><span>9:41</span><span>▮▮▮ ▰ 🔋</span></div>
+        <header class="alt-head"><span class="menu-lines">☰</span><span class="avatar avatar-alt"><img src="assets/asset-02.svg" alt=""></span></header>
+        <h1 class="alt-title">Home</h1>
+        <div class="alt-hero"><span class="alt-latest">Latest</span><p>Raise Hand For Church…</p><span class="alt-dots">••••</span></div>
+        <div class="chips" id="alt-chips"></div>
+        <div class="alt-section-title">View All</div>
+        <div class="alt-churches" id="alt-churches"></div>
+        <div class="alt-divider"></div>
+        <h3>Daily scripture</h3>
+        <blockquote class="scripture"><span>“</span><p>The wicked flee when no one is pursuing, but the righteous are bold as a lion</p><cite>Proverbs 28:1</cite></blockquote>
+      </section>
+
+    </div>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
