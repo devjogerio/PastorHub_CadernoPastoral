@@ -1,6 +1,12 @@
 # Find Local Church — versão web estática (Figma → código)
 
-Implementação estática do protótipo **[Find Local Church App (Community)](https://www.figma.com/design/Rhq8Rosks7Rx5ib2jbils4/Find-local-church-App--Community-?node-id=0-1)**, isolada nesta pasta e sem dependências de backend.
+Implementação estática do protótipo **[Find Local Church App (Community)](https://www.figma.com/design/Rhq8Rosks7Rx5ib2jbils4/Find-local-church-App--Community-?node-id=0-1)**, isolada nesta pasta, sem dependências de backend e **totalmente localizada em pt-BR**.
+
+## Recursos de navegação e pesquisa
+
+- Menu horizontal responsivo com **submenus suspensos** (Igrejas, Mídia, Comunidade), estados de hover/seleção e **menu hambúrguer** em telas ≤ 920 px.
+- **Pesquisa global** (`Ctrl/⌘ + K` ou botão "Buscar"): percorre telas, registros de dados, arquivos e textos da interface; aceita termos parciais e sem acentuação, filtros por categoria, resultados em tempo real, realce dos termos e estado "nenhum resultado".
+- Busca local por tela continua disponível no campo "Buscar..." de cada lista.
 
 ## Executar localmente
 
@@ -49,18 +55,15 @@ figma-project/
 node figma-project/tests/validate.mjs
 ```
 
-O script verifica arquivos obrigatórios, integridade dos assets, ausência de URLs temporárias do Figma no código, quantidade de telas e a presença de media queries.
+O script verifica arquivos obrigatórios, integridade dos assets, ausência de URLs temporárias do Figma no código, quantidade de telas, localização pt-BR, menu/submenus, pesquisa global e presença de media queries.
+
+Validação executada: **13 telas sem overflow horizontal**, tradução conferida, submenus com `aria-expanded`, hambúrguer com estado de abertura, resultados em tempo real (0–1 ms por busca), destaque de termos, filtros por categoria, estado vazio, navegação ao clicar no resultado e fechamento por `Escape`. Nenhum erro de console.
 
 ## Publicação no GitHub Pages
 
-O workflow `pages.yml` deste repositório publica apenas `pastorhub-static/`. Para publicar esta pasta isolada:
+O site GitHub Pages deste repositório serve a **raiz do repositório**. Para publicar esta pasta isolada, basta fazer push de `figma-project/` para `main` e manter o arquivo `.nojekyll`. Nenhum workflow adicional é necessário.
 
-1. Mover/copiar o conteúdo de `figma-project/` para um repositório próprio (ou para a raiz de um `gh-pages`/branch de demonstração).
-2. Habilitar **Pages → Deploy from a branch → main / root**.
-3. Manter o arquivo `.nojekyll`.
-
-URL pública de teste: https://devjogerio.github.io/PastorHub_CadernoPastoral/figma-project/index.html
-(O GitHub Pages publica a raiz do repositório; basta fazer push desta pasta.)
+URL pública: https://devjogerio.github.io/PastorHub_CadernoPastoral/figma-project/index.html
 
 ## Observações
 
