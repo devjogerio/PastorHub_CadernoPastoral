@@ -248,6 +248,7 @@
       { id: 'proposta', nome: 'Proposta de Investimento', desc: 'Documento completo de 18 páginas: problema, solução, tecnologia, mercado, modelo de negócio, estratégia de captação, finanças, equipe, riscos e Perguntas Frequentes.', tipo: 'PDF · HTML para impressão', icone: 'file-text', link: 'docs/proposta-investimento.html', tamanho: '18 páginas' },
       { id: 'apresentacao', nome: 'Deck de Apresentação', desc: 'Apresentação em slides com narrativa formal: problema, solução, demonstração do funcionalidade, análise de mercado, projeções financeiras e pedido de capitação.', tipo: '12 slides', icone: 'monitor', link: 'docs/apresentacao.html', tamanho: '12 slides' },
       { id: 'biblioteca', nome: 'Biblioteca Digital', desc: 'Nova funcionalidade: plano de ação, roadmap e catálogo interativo de livros teológicos clássicos em domínio público, com busca e filtros por categoria. Painel admin: importa/exporta o acervo e trata compras/aluguel dos livros.', tipo: 'Catálogo interativo', icone: '📚', link: 'docs/biblioteca.html', tamanho: '12 obras' },
+      { id: 'biblioteca-acquisto', nome: 'Biblioteca · Comprar e Alugar', desc: 'Nova página: opções de compra e aluguel dos livros do acervo — detalhes, visualização do conteúdo e formas de pagamento por obra.', tipo: 'Catálogo de compra/aluguel', icone: '🛒', link: 'docs/bibliotica-comprar-alugar.html', tamanho: '12 obras' },
     ],
   };
 })();

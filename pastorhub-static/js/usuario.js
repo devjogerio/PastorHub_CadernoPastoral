@@ -517,6 +517,7 @@
       <div class="bib-view">
         <div class="user-section-head">
           <div><b>Biblioteca Digital</b><small>Livros teológicos clássicos em domínio público</small></div>
+          <button class="btn btn-outline btn-sm" data-action="bib-comprar-alugar" type="button">Comprar e alugar</button>
         </div>
         <div class="bib-search">
           <span class="icon" aria-hidden="true">${icon('search', 'icon-sm')}</span>
@@ -691,6 +692,14 @@
       const homeCard = e.target.closest('[data-nav-id]');
       if (homeCard) {
         navigateTo(homeCard.dataset.navId);
+        return;
+      }
+
+      // Biblioteca: comprar e alugar (nova página de acervo)
+      const bibComprarAlugar = e.target.closest('[data-action="bib-comprar-alugar"]');
+      if (bibComprarAlugar) {
+        toast('Acessando a página de compras e alugueis do acervo…');
+        window.open('docs/biblioteca-comprar-alugar.html', '_blank');
         return;
       }
 

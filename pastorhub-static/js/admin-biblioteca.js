@@ -173,6 +173,10 @@
         '</tr></thead><tbody>' + linhasAcervo() + '</tbody></table></div>',
         { flush: true, sub: 'Cada obra pode ser solicitada para compra ou aluguel' }) +
 
+      panel('Comprar e alugar os livros do acervo',
+        '<button class="btn btn-primary btn-sm" data-action="bib-comprar-alugar" type="button">' + ic('card', 'icon-sm') + ' Comprar e alugar</button>',
+        { sub: 'Detalhes da obra, visualização do conteúdo e formas de pagamento — em modais (docs/biblioteca-comprar-alugar.html)' }) +
+
       panel('Importar e exportar acervo', painelImportacao(),
         { sub: 'Formato: JSON. O exportado contém as categorias e os livros do acervo atual.' }) +
 
@@ -227,6 +231,10 @@
       toast('Pedidos abertos limpos', 'ok');
       render();
     });
+  };
+
+  Actions['bib-comprar-alugar'] = function () {
+    window.open('docs/biblioteca-comprar-alugar.html', '_blank');
   };
 
   /* ---------- Delegação: importar por arrastar e soltar (padrão RAG) ---------- */
