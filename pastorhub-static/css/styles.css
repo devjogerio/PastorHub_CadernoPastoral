@@ -1381,6 +1381,21 @@ body.theme-dark .app-info h3 { color: #e8f1fb; }
 .shell-desktop .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; align-items: start; }
 .shell-desktop .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 1rem; align-items: start; }
 
+/* Avatar do Dashboard - cliqueável */
+#view > div.view-header > div:nth-child(1) > span.avatar,
+#view > div.view-header > div:nth-child(1) > div.avatar {
+  cursor: pointer;
+  transition: transform .15s ease;
+}
+#view > div.view-header > div:nth-child(1) > span.avatar:hover,
+#view > div.view-header > div:nth-child(1) > div.avatar:hover {
+  transform: scale(1.05);
+}
+#view > div.view-header > div:nth-child(1) > span:has(.avatar):hover .avatar,
+#view > div.view-header > div:nth-child(1) > .avatar:hover {
+  transform: scale(1.05);
+}
+
 /* ---------- Modal de Stats (Detalhes dos Estatísticas) ---------- */
 .stat-modal-content { text-align: center; padding: 0.25rem; }
 .stat-modal-value {

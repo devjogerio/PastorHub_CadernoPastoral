@@ -389,6 +389,12 @@
       toast(t.dataset.toast);
     }
 
+    // avatar do dashboard - abrir perfil
+    const avatarDash = e.target.closest('#view > div.view-header > div:nth-child(1) > span, #view > div.view-header > div:nth-child(1) > div.avatar');
+    if (avatarDash) {
+      Actions['meu-perfil']();
+      return;
+    }
     // modal de informações dos stats
     const stat = e.target.closest('.stat-btn');
     if (stat && StatModal) {
