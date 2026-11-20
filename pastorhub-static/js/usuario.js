@@ -633,6 +633,7 @@
           : [...state.favoritos, id];
         localStorage.setItem('pastorhub_favoritos', JSON.stringify(state.favoritos));
         toast(state.favoritos.includes(id) ? 'Sermão salvo nos favoritos!' : 'Sermão removido dos favoritos.');
+        renderView('sermoes');
         return;
       }
 
