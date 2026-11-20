@@ -306,35 +306,37 @@
     const offlineMsg = !pastor.online ? '<p class="chat-offline">Pastor está offline - mensagens enviadas</p>' : '';
 
     return `
-      <div class="chat-header">
-        <div class="chat-profile">${escapeHtml(pastor.avatar)}</div>
-        <div class="chat-info">
-          <b>${escapeHtml(pastor.nome)}</b>
-          <span class="chat-role">${escapeHtml(pastor.cargo)}</span>
+      <div class="chat-shell">
+        <div class="chat-header">
+          <div class="chat-profile">${escapeHtml(pastor.avatar)}</div>
+          <div class="chat-info">
+            <b>${escapeHtml(pastor.nome)}</b>
+            <span class="chat-role">${escapeHtml(pastor.cargo)}</span>
+          </div>
+          <div class="chat-actions">
+            <button class="btn-icon" onclick="return false" data-action="back-chat"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+          </div>
         </div>
-        <div class="chat-actions">
-          <button class="btn-icon" onclick="return false" data-action="back-chat"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+        <div class="chat-messages">
+          <div class="chat-msg received">
+            <div class="chat-bubble">Bom dia ${escapeHtml(User.iniciais())}! Quer saber sobre o culto de hoje?</div>
+            <time>14:00</time>
+          </div>
+          <div class="chat-msg sent">
+            <div class="chat-bubble">Bom dia! Sim, quero saber sobre os horários.</div>
+            <time>14:02</time>
+          </div>
+          <div class="chat-msg received">
+            <div class="chat-bubble">Os serviços começam às 9:00 e às 19:00. Quer participar?</div>
+            <time>14:03</time>
+          </div>
+          ${pastor.online ? '<div class="chat-msg received"><div class="chat-bubble">Estou ao vivo agora! Responda com vontade.</div><time>Online</time></div>' : ''}
+          ${offlineMsg}
         </div>
-      </div>
-      <div class="chat-messages">
-        <div class="chat-msg received">
-          <div class="chat-bubble">Bom dia ${escapeHtml(User.iniciais())}! Quer saber sobre o culto de hoje?</div>
-          <time>14:00</time>
+        <div class="chat-input">
+          <input type="text" id="chat-input" placeholder="Digite sua mensagem..." autocomplete="off">
+          <button class="btn" onclick="return false" data-action="send-chat"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
         </div>
-        <div class="chat-msg sent">
-          <div class="chat-bubble">Bom dia! Sim, quero saber sobre os horários.</div>
-          <time>14:02</time>
-        </div>
-        <div class="chat-msg received">
-          <div class="chat-bubble">Os serviços começam às 9:00 e às 19:00. Quer participar?</div>
-          <time>14:03</time>
-        </div>
-        ${pastor.online ? '<div class="chat-msg received"><div class="chat-bubble">Estou ao vivo agora! Responda com vontade.</div><time>Online</time></div>' : ''}
-        ${offlineMsg}
-      </div>
-      <div class="chat-input">
-        <input type="text" id="chat-input" placeholder="Digite sua mensagem..." autocomplete="off">
-        <button class="btn" onclick="return false" data-action="send-chat"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
       </div>
     `;
   }
@@ -358,7 +360,7 @@
         ${AGENDA.filter(a => !state.view || state.view === 'agenda' || a.status === state.view).map(a => renderAgendaItem(a)).join('')}
       </div>
       <div class="agenda-action-bar">
-        <button class="btn lime" id="fab-agendar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 10 10 10.3 10.3 0 0 1-.8 6.2 2 2 0 0 1-1.4 1.58 2 2 0 0 1-.98.09H8.56a2 2 0 0 1-1.94-1.58L7 11Z"/></svg>Agendar visita</button>
+        <button class="btn lime" data-action="agendar-visita"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 10 10 10.3 10.3 0 0 1-.8 6.2 2 2 0 0 1-1.4 1.58 2 2 0 0 1-.98.09H8.56a2 2 0 0 1-1.94-1.58L7 11Z"/></svg>Agendar visita</button>
       </div>
     `;
   }
@@ -430,8 +432,10 @@
       </div>
     `).join('');
     return `
-      <div style="padding: 16px;">
-        <h1>Notificações</h1>
+      <div class="user-notifs" style="padding: 16px;">
+        <div class="user-section-head">
+          <div><b>Notificações</b><small>Alertas e novidades para você</small></div>
+        </div>
         <div style="height: 12px;"></div>
         ${items}
       </div>
@@ -572,10 +576,23 @@
         return;
       }
 
-      // FAB Agendar
+      // FAB Agendar / acao de agendar visita
       const fabAgendar = e.target.closest('#fab-agendar');
       if (fabAgendar) {
         toast('Agenda de visitas aberta em breve!');
+        return;
+      }
+
+      const agendarVisita = e.target.closest('[data-action="agendar-visita"]');
+      if (agendarVisita) {
+        toast('Agenda de visitas aberta em breve!');
+        return;
+      }
+
+      // Chat: voltar para o dashboard
+      const backChat = e.target.closest('[data-action="back-chat"]');
+      if (backChat) {
+        navigateTo('home');
         return;
       }
 
