@@ -637,16 +637,27 @@
         return;
       }
 
-      // FAB Agendar / acao de agendar visita
+      // Notificação: abrir / marcar como lida
+      const notifItem = e.target.closest('.notif-item');
+      if (notifItem) {
+        const idx = Array.from(document.querySelectorAll('.notif-item')).indexOf(notifItem);
+        if (Number.isInteger(idx) && NOTIFICACOES[idx]) NOTIFICACOES[idx].lida = true;
+        state.notifLidas = true;
+        toast('Notificação aberta');
+        renderView('notificacoes');
+        return;
+      }
+
+      // FAB Agendar / acao de agendar visita -> leva para a agenda de visitas
       const fabAgendar = e.target.closest('#fab-agendar');
       if (fabAgendar) {
-        toast('Agenda de visitas aberta em breve!');
+        navigateTo('agenda');
         return;
       }
 
       const agendarVisita = e.target.closest('[data-action="agendar-visita"]');
       if (agendarVisita) {
-        toast('Agenda de visitas aberta em breve!');
+        navigateTo('agenda');
         return;
       }
 
@@ -690,6 +701,11 @@
       if (sendChat) {
         const input = $('#chat-input');
         if (input && input.value.trim()) {
+          const bubble = document.createElement('div');
+          bubble.className = 'chat-msg sent';
+          bubble.innerHTML = '<div class="chat-bubble">' + escapeHtml(input.value) + '</div><time>' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) + '</time>';
+          const msgs = document.querySelector('.chat-messages');
+          if (msgs) msgs.appendChild(bubble);
           toast('Mensagem enviada para Pastor!');
           input.value = '';
           return;
