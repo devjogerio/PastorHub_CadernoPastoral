@@ -26,7 +26,7 @@
       return this.dados.initials || this.dados.nome.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
     },
     isAuthed() {
-      return localStorage.getItem('usuario_auth_usuario') || localStorage.getItem('usuario_auth_goog').length;
+      return localStorage.getItem('usuario_authed') === 'true';
     }
   };
 
@@ -79,15 +79,24 @@
 
   // ---------- Auth ----------
   function authInit() {
-    if (localStorage.getItem('usuario_authed')) {
-      const auth = $('#auth');
-      if (auth) auth.hidden = true;
-      const app = $('#app');
-      if (app) app.hidden = false;
+    // Verify elements exist before checking
+    const appEl = $('#app');
+    const authEl = $('#auth');
+
+    if (!appEl || !authEl) {
+      // Elements not loaded yet
+      return;
+    }
+
+    const isAuthed = localStorage.getItem('usuario_authed') === 'true';
+
+    if (isAuthed) {
+      authEl.hidden = true;
+      appEl.hidden = false;
       initApp();
     } else {
-      $('#app').hidden = true;
-      $('#auth').hidden = false;
+      appEl.hidden = true;
+      authEl.hidden = false;
     }
 
     $('#auth-login').addEventListener('submit', (e) => {
@@ -141,12 +150,15 @@
   }
 
   function showSidebar() {
+    const sidebar = $('#user-sidebar');
+    if (!sidebar) return;
+
     if (SHELL === 'desktop') {
-      $('#user-sidebar').hidden = false;
+      sidebar.hidden = false;
     } else if (SHELL === 'tablet') {
-      $('#user-sidebar').hidden = false;
+      sidebar.hidden = false;
       $('#user-content').innerHTML = '';
-      $('#user-right').innerHTML = '';
+      if ($('#user-right')) $('#user-right').innerHTML = '';
     }
   }
 
@@ -601,5 +613,9 @@
   }
 
   // Initialize
-  authInit();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => authInit());
+  } else {
+    authInit();
+  }
 })();
