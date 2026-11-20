@@ -389,6 +389,25 @@
       toast(t.dataset.toast);
     }
 
+    // drawer menu - fechar e navegar
+    const drawerItem = e.target.closest('#drawer > aside > nav button, #drawer > aside > nav a');
+    if (drawerItem) {
+      closeDrawer();
+      // se houver data-nav, navegar; se tiver data-action, chamar ação
+      if (drawerItem.dataset.nav) {
+        App.navigate(drawerItem.dataset.nav);
+      } else if (drawerItem.dataset.action) {
+        const fn = Actions[drawerItem.dataset.action];
+        if (fn) fn(drawerItem);
+      } else if (drawerItem.href) {
+        const link = e.target.closest('a[href]');
+        if (link && link.dataset.action !== 'close-drawer') {
+          window.location.href = link.href;
+        }
+      }
+      return;
+    }
+
     // avatar do dashboard - abrir perfil
     const avatarDash = e.target.closest('#view > div.view-header > div:nth-child(1) > span, #view > div.view-header > div:nth-child(1) > div.avatar');
     if (avatarDash) {
