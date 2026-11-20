@@ -48,10 +48,10 @@
 
   // Usuários de pastor/líder (mock)
   const PASTORS = [
-    { nome: 'Pastor João Silva', cargo: 'Pastor de Culto', avatar: 'JV', online: true, ultimoMsg: 'Bom dia! Quer saber sobre o culto de hoje?' },
-    { nome: 'Pra. Maria Oliveira', cargo: 'Aconselhadora', avatar: 'MO', online: false, ultimoMsg: 'Teve uma reunião sobre casamentos amanhã' },
-    { nome: 'Líder de Configuracoes', cargo: 'Líder da Comunidade', avatar: 'LC', online: true, ultimoMsg: 'Agende sua visita geral' },
-    { nome: 'Pr. Carlos Santos', cargo: 'Pastor Principal', avatar: 'CS', online: true, ultimoMsg: 'Nova palestra disponível!' },
+    { id: 1, nome: 'Pastor João Silva', cargo: 'Pastor de Culto', avatar: 'JV', online: true, ultimoMsg: 'Bom dia! Quer saber sobre o culto de hoje?' },
+    { id: 2, nome: 'Pra. Maria Oliveira', cargo: 'Aconselhadora', avatar: 'MO', online: false, ultimoMsg: 'Teve uma reunião sobre casamentos amanhã' },
+    { id: 3, nome: 'Líder de Configuracoes', cargo: 'Líder da Comunidade', avatar: 'LC', online: true, ultimoMsg: 'Agende sua visita geral' },
+    { id: 4, nome: 'Pr. Carlos Santos', cargo: 'Pastor Principal', avatar: 'CS', online: true, ultimoMsg: 'Nova palestra disponível!' },
   ];
 
   // Agenda mock
@@ -296,8 +296,34 @@
     `).join('');
   }
 
+  function renderChatList() {
+    const items = CONVERSAS.map(c => `
+      <div class="chat-item" data-chat="${c.pastor.id}">
+        <div class="chat-profile">${escapeHtml(c.pastor.avatar)}</div>
+        <div class="chat-info">
+          <b>${escapeHtml(c.pastor.nome)}</b>
+          <small>${escapeHtml(c.pastor.ultimoMsg)}</small>
+        </div>
+        <span class="chat-time">${escapeHtml(c.data)}</span>
+      </div>
+    `).join('');
+
+    return `
+      <div class="user-notifs" style="padding: 16px;">
+        <div class="user-section-head">
+          <div><b>Conversas</b><small>Com pastores e líderes</small></div>
+        </div>
+        <div style="height: 12px;"></div>
+        <div class="chat-list">${items}</div>
+      </div>
+    `;
+  }
+
   function renderChat(chatId) {
-    const pastor = chatId ? PASTORS.find(p => p.id === chatId) : PASTORS[0];
+    // Lista de conversas quando não há id informado
+    if (!chatId) return renderChatList();
+
+    const pastor = PASTORS.find(p => p.id === chatId) || PASTORS[0];
     if (!pastor) {
       state.chatId = null;
       return renderChat(PASTORS[0].id);
@@ -571,7 +597,7 @@
       // Chat item (mobile/tablet)
       const chatItem = e.target.closest('.chat-item');
       if (chatItem) {
-        // Chat not yet implemented - navigate to chat
+        state.chatId = parseInt(chatItem.dataset.chat, 10) || null;
         navigateTo('chat');
         return;
       }
