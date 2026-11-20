@@ -234,5 +234,88 @@
     { v: '3', l: 'fases até o v2.0' },
   ];
 
-  window.BIBLIOTECA = { categorias, livros, planoAcao, roadmap, metricas };
+  /* ---------------------- Acervo importável / exportável e pedidos (compras/aluguel) ---------------------- */
+  const coresPaleta = ['#3261AB', '#95C121', '#f59e0b', '#0b7285', '#d4183d', '#7c3aed', '#16a34a', '#dc2626'];
+
+  function normalizarLivro(l, idx, catsVinc) {
+    const id = String(l && l.id || 'livro-' + (idx + 1));
+    const catId = l && l.categoria ? String(l.categoria) : 'geral';
+    let cat = (catsVinc || []).find((c) => c.id === catId);
+    if (!cat) {
+      cat = { id: catId, nome: catId, cor: coresPaleta[idx % coresPaleta.length] };
+      catsVinc.push(cat);
+    }
+    return {
+      id,
+      titulo: String(l.titulo || 'Sobre ' + id),
+      autor: String(l.autor || 'Autor não informado'),
+      ano: Number(l.ano) || 0,
+      paginas: Number(l.paginas) || 0,
+      categoria: cat.id,
+      licenca: String(l.licenca || 'Licença não especificada'),
+      emoji: String(l.emoji || '📖'),
+      gradiente: String(l.gradiente || 'linear-gradient(140deg, #7a7f9b, #b2b7c5)'),
+      descricao: String(l.descricao || ''),
+      destaques: Array.isArray(l.destaques) ? l.destaques.map(String) : [],
+    };
+  }
+
+  function validarImportacao(dados) {
+    if (!dados || typeof dados !== 'object') {
+      return { ok: false, erros: ['O arquivo não é um acervo válido (objeto JSON esperado).'] };
+    }
+    const catsVinc = [];
+    const seen = new Set();
+    (Array.isArray(dados.categorias) ? dados.categorias : []).forEach((c) => {
+      if (!c || !c.id || seen.has(String(c.id))) return;
+      seen.add(String(c.id));
+      catsVinc.push({ id: String(c.id), nome: String(c.nome || c.id), cor: String(c.cor || '#3261AB') });
+    });
+    const livros = Array.isArray(dados.livros) ? dados.livros : [];
+    const livrosNorm = livros.map((l, i) => normalizarLivro(l, i, catsVinc));
+    if (livrosNorm.length === 0) return { ok: false, erros: ['Nenhum livro encontrado no arquivo.'] };
+    return {
+      ok: true,
+      categorias: catsVinc,
+      livros: livrosNorm,
+      mensagem: livrosNorm.length + ' livros · ' + catsVinc.length + ' categorias importadas.',
+    };
+  }
+
+  window.BIBLIOTECA = {
+    categorias, livros, planoAcao, roadmap, metricas,
+    solicitacoes: [],
+    ultimoImport: null,
+    importar(jsonTexto) {
+      let dados;
+      try { dados = JSON.parse(jsonTexto); } catch (e) {
+        return { ok: false, erros: ['JSON inválido: ' + (e.message || 'formato inválido')] };
+      }
+      const r = validarImportacao(dados);
+      if (r.ok) { this.categorias = r.categorias; this.livros = r.livros; }
+      return r;
+    },
+    exportar() {
+      return JSON.stringify({
+        exportadoEm: new Date().toISOString(),
+        categorias: this.categorias,
+        livros: this.livros,
+      }, null, 2);
+    },
+    solicitar(livroId, tipo, meta) {
+      const l = this.livros.find((x) => x.id === livroId);
+      if (!l) return { ok: false, erros: ['Livro não encontrado no acervo.'] };
+      const pedido = {
+        id: 'bib-' + Date.now().toString(36) + '-' + this.solicitacoes.length,
+        livroId: l.id,
+        titulo: l.titulo,
+        tipo: tipo === 'alugar' ? 'alugar' : 'comprar',
+        meta: meta || {},
+        fechado: false,
+        data: new Date().toISOString(),
+      };
+      this.solicitacoes.push(pedido);
+      return { ok: true, pedido };
+    },
+  };
 })();
