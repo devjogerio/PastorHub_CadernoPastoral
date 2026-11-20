@@ -5,12 +5,28 @@
 (function () {
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => document.querySelectorAll(s);
-  const escapeHtml = window.escapeHtml;
-  const icon = window.icon;
+  // Fallbacks locais: o app continua funcionando mesmo se um script compartilhado falhar
+  const escapeHtml = window.escapeHtml || function (s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  };
+  const icon = window.icon || function (name, cls) {
+    return '<span class="icon ' + (cls || '') + '" aria-hidden="true">' + (name || '') + '</span>';
+  };
 
   // Shell
   const SHELL = window.APP_SHELL || 'mobile';
   document.body.classList.add('shell-' + SHELL);
+
+  // Remove a tela de carregamento (causa do "loop infinito" relatado)
+  function hideSplash() {
+    const splash = $('#splash');
+    if (splash) {
+      splash.hidden = true;
+      splash.style.display = 'none';
+    }
+  }
 
   // User data (mock)
   const User = {
@@ -79,6 +95,9 @@
 
   // ---------- Auth ----------
   function authInit() {
+    // A tela de carregamento deve sair em qualquer situação
+    hideSplash();
+
     // Verify elements exist before checking
     const appEl = $('#app');
     const authEl = $('#auth');
@@ -101,6 +120,8 @@
 
     $('#auth-login').addEventListener('submit', (e) => {
       e.preventDefault();
+      localStorage.setItem('usuario_authed', 'true');
+      localStorage.setItem('usuario_email', $('#login-email').value);
       toast('Autenticado com sucesso!');
       $('#app').hidden = false;
       $('#auth').hidden = true;
@@ -131,6 +152,19 @@
         renderView('home');
       });
     }
+
+    // Alternar entre as abas Entrar / Cadastrar
+    $$('[data-auth-tab]').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        $$('[data-auth-tab]').forEach((t) => t.classList.remove('active'));
+        tab.classList.add('active');
+        const isSignup = tab.dataset.authTab === 'signup';
+        const loginForm = $('#auth-login');
+        const signupForm = $('#auth-signup');
+        if (loginForm) loginForm.hidden = isSignup;
+        if (signupForm) signupForm.hidden = !isSignup;
+      });
+    });
   }
 
   // ---------- Inicialização do App ----------
@@ -238,7 +272,7 @@
           </div>
         </div>
         <div class="user-section">
-          <div class="user-section-head"><b>Conexões</b><small>De Videos e Relatorios</div></b></div>
+          <div class="user-section-head"><div><b>Conexões</b><small>De vídeos e relatórios</small></div></div>
           <div class="user-grid">
             ${renderConections()}
           </div>
@@ -434,9 +468,20 @@
   }
 
   // ---------- Event Handlers ----------
+  let eventsAttached = false;
   function attachEvents(view) {
-    // Auth
+    // Registra os handlers globais uma única vez (evita listeners duplicados)
+    if (eventsAttached) return;
+    eventsAttached = true;
+
     document.addEventListener('click', (e) => {
+      // Abrir menu (mobile)
+      const btnMenu = e.target.closest('#btn-menu');
+      if (btnMenu) {
+        openDrawer();
+        return;
+      }
+
       // Sair
       const sair = e.target.closest('[data-action="sair"]');
       if (sair) {
@@ -560,13 +605,7 @@
       }
     });
 
-    // Navigation via sidebar (mobile/tablet)
-    $$('.sidebar-item').forEach(item => {
-      item.addEventListener('click', () => {
-        if (SHELL === 'desktop') navigateTo(item.dataset.nav);
-        else navigateTo(item.dataset.nav);
-      });
-    });
+    // Navegação via sidebar/drawer é tratada pelo listener global acima.
   }
 
   // ---------- Helpers ----------
@@ -577,12 +616,18 @@
 
   function openDrawer() {
     const drawer = $('#drawer');
-    if (drawer) drawer.classList.add('open');
+    if (drawer) {
+      drawer.hidden = false;
+      drawer.classList.add('open');
+    }
   }
 
   function closeDrawer() {
     const drawer = $('#drawer');
-    if (drawer) drawer.classList.remove('open');
+    if (drawer) {
+      drawer.classList.remove('open');
+      drawer.hidden = true;
+    }
   }
 
   function openSidebar() {
@@ -595,7 +640,9 @@
 
   function closeSidebar() {
     const sidebar = $('#user-sidebar');
-    if (sidebar) sidebar.hidden = true;
+    // No desktop a sidebar é permanente: nunca escondê-la ao navegar
+    if (sidebar && SHELL !== 'desktop') sidebar.hidden = true;
+    closeDrawer();
   }
 
   function toast(msg) {
