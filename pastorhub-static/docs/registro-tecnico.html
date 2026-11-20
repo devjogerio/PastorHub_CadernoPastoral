@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PastorHub · Registro Técnico de Implementação</title>
-  <link rel="stylesheet" href="../css/docs.css">
+  <link rel="stylesheet" href="../css/docs.css?v=2">
 </head>
 <body>
 
@@ -17,6 +17,7 @@
       <a href="manual-usuario.html">Manual</a>
       <a href="roadmap.html">Roadmap</a>
       <a href="ecossistema-ia.html">Ecossistema de IA</a>
+      <a href="biblioteca.html" style="color:#d8ec9f;font-weight:700">Biblioteca</a>
     </div>
     <div class="t-right"><button class="btn-doc" onclick="window.print()">Imprimir / Salvar em PDF</button></div>
   </div>
@@ -68,10 +69,10 @@
           <tr><td><b>desktop.html</b></td><td>App versão desktop — sidebar fixa, painel de detalhes</td></tr>
           <tr><td><b>site.html</b></td><td>Site institucional (15 seções) + rodapé com links dos documentos</td></tr>
           <tr><td><b>admin.html</b></td><td>Painel administrativo (18 seções + Minha conta + 3 atalhos de plataforma)</td></tr>
-          <tr><td><b>docs/*.html</b></td><td>proposta-investimento · apresentacao · ficha-tecnica · manual-usuario · roadmap · ecossistema-ia · <b>registro-tecnico (este)</b></td></tr>
+          <tr><td><b>docs/*.html</b></td><td>proposta-investimento · apresentacao · ficha-tecnica · manual-usuario · roadmap · ecossistema-ia · <b>biblioteca</b> · <b>registro-tecnico (este)</b></td></tr>
         </tbody>
       </table>
-      <p class="doc-p"><b>Módulos JavaScript (22):</b></p>
+      <p class="doc-p"><b>Módulos JavaScript (25):</b></p>
       <table class="doc-table">
         <thead><tr><th style="width:24%">Módulo</th><th>Responsabilidade</th></tr></thead>
         <tbody>
@@ -85,6 +86,8 @@
           <tr><td><b>admin-planos.js</b></td><td><b>Planos & Assinaturas:</b> valores documentados, faturamento recorrente, gateways, Pix recorrente, bloqueio/regularização</td></tr>
           <tr><td><b>admin-ai.js · admin-vers.js</b></td><td>Integrações + Base de conhecimento (RAG) · Versículos diários no painel</td></tr>
           <tr><td><b>investidor.js</b></td><td>Fonte única dos dados da proposta (alimenta site, painel e documentos)</td></tr>
+          <tr><td><b>biblioteca.js</b></td><td><b>Biblioteca Digital:</b> acervo de obras teológicas em domínio público, categorias, plano de ação e roadmap</td></tr>
+          <tr><td><b>usuario.js · detalhes.js · demo.js</b></td><td>Versão do usuário (mobile/tablet/desktop com Biblioteca e favoritos), modais de detalhe dos cards e dados de demonstração</td></tr>
           <tr><td><b>site.js · docs.js · icons.js</b></td><td>Renderização do site, preenchimento dos documentos e biblioteca de ícones SVG</td></tr>
         </tbody>
       </table>

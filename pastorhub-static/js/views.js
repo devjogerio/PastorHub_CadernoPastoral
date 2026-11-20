@@ -309,7 +309,8 @@
   const Recursos = {
     render() {
       const r = MOCK.recursos;
-      const total = r.palestras.length + r.videos.length;
+      const bib = window.BIBLIOTECA || { categorias: [], livros: [] };
+      const total = r.palestras.length + r.videos.length + bib.livros.length;
 
       let conteudo;
       if (ui.recTab === 'palestras') {
@@ -328,7 +329,7 @@
               '</div>' + icon('chevron-right', 'icon-sm') +
             '</div>'
           ).join('') + '</div>';
-      } else {
+      } else if (ui.recTab === 'videos') {
         conteudo =
           '<div class="section-head" style="padding:0 1rem"><h3>Biblioteca de Vídeos</h3>' + verTodos('Abrindo todos os vídeos...') + '</div>' +
           '<div class="list-grid">' +
@@ -344,12 +345,35 @@
               '</div>' + icon('chevron-right', 'icon-sm') +
             '</div>'
           ).join('') + '</div>';
+      } else {
+        // Biblioteca Digital de livros teológicos (acervo em domínio público)
+        const cats = bib.categorias || [];
+        conteudo =
+          '<div class="section-head" style="padding:0 1rem">' +
+            '<h3>Biblioteca Digital</h3>' +
+            '<span class="item-meta">' + bib.livros.length + ' obras em domínio público</span>' +
+          '</div>' +
+          '<div class="list-grid">' +
+          bib.livros.map((l) => {
+            const cat = cats.find((c) => c.id === l.categoria) || { nome: l.categoria, cor: '#3261AB' };
+            return '<div class="item-card" style="border-left-color:' + cat.cor + '" data-action="detalhe" data-tipo="livro" data-id="' + escapeHtml(l.id) + '">' +
+              '<span class="item-icon-box" style="background:' + l.gradiente + ';color:#fff">' + icon('book-open') + '</span>' +
+              '<div class="item-body">' +
+                '<div class="item-title">' + escapeHtml(l.titulo) + '</div>' +
+                '<div class="item-badges">' +
+                  '<span class="badge badge-soft-lime">' + escapeHtml(cat.nome) + '</span>' +
+                  '<span class="item-meta">' + escapeHtml(l.autor) + ' · ' + l.ano + '</span>' +
+                '</div>' +
+              '</div>' + icon('chevron-right', 'icon-sm') +
+            '</div>';
+          }).join('') + '</div>' +
+          '<p class="item-meta" style="padding:.75rem 1rem 0">Leitor por capítulos, favoritos e progresso chegam na fase 2 do roadmap.</p>';
       }
 
       const html =
         '<div class="view-header">' +
           '<div style="display:flex;align-items:center;justify-content:space-between">' +
-            '<div><h2>Recursos Pastorais</h2><p class="subtitle">Palestras, vídeos e materiais</p></div>' +
+            '<div><h2>Recursos Pastorais</h2><p class="subtitle">Palestras, vídeos e livros teológicos</p></div>' +
             '<div class="avatar avatar-56" style="background:var(--lime)">' + icon('book-open') + '</div>' +
           '</div>' +
           '<div class="glass-card"><p class="small">Biblioteca Digital</p><p class="strong">' + total + ' recursos disponíveis</p></div>' +
@@ -363,7 +387,7 @@
             '<button class="qa-btn" data-action="adicionar-video" type="button">' + icon('video') + 'Adicionar Vídeo</button>' +
           '</div>' +
         '</div>' +
-        tabsHTML([{ id: 'palestras', label: 'Palestras IA' }, { id: 'videos', label: 'Vídeos' }], 'recTab') +
+        tabsHTML([{ id: 'palestras', label: 'Palestras IA' }, { id: 'videos', label: 'Vídeos' }, { id: 'biblioteca', label: 'Biblioteca' }], 'recTab') +
         conteudo;
 
       return { html, after: (el) => ativarTabs(el, 'recTab', () => App.rerender()) };

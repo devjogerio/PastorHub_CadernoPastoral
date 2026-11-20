@@ -31,6 +31,7 @@
         case 'notificacao': return this.notificacao(id);
         case 'palestra': return this.palestra(id);
         case 'video': return this.video(id);
+        case 'livro': return this.livro(id);
         default: return null;
       }
     },
@@ -259,6 +260,44 @@
           ]),
       });
     },
+
+    /* ---------- Livro da Biblioteca Digital ---------- */
+    livro(id) {
+      const B = window.BIBLIOTECA;
+      if (!B) return;
+      const l = B.livros.find((x) => x.id === id);
+      if (!l) return;
+      const cat = B.categorias.find((c) => c.id === l.categoria) || { nome: l.categoria };
+      const favs = JSON.parse(localStorage.getItem('pastorhub_biblioteca_favs') || '[]');
+      const fav = favs.indexOf(l.id) !== -1;
+      openSheet({
+        title: l.titulo,
+        desc: l.autor + ' · ' + l.ano,
+        icon: 'book-open',
+        body:
+          '<div class="det-top">' +
+            '<span class="det-icon" style="background:' + l.gradiente + ';color:#fff;font-size:1.5rem">' + (l.emoji || '📖') + '</span>' +
+            '<div><strong>' + escapeHtml(l.titulo) + '</strong><span>' + escapeHtml(l.autor) + '</span>' +
+              '<div class="det-chips">' + chip(cat.nome, 'badge-lime') + chip(l.licenca, 'badge-outline') + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<p class="item-meta" style="margin:.75rem 0">' + escapeHtml(l.descricao) + '</p>' +
+          '<div class="det-linhas">' +
+            linha('Categoria', cat.nome) +
+            linha('Ano', String(l.ano)) +
+            linha('Páginas', l.paginas + ' páginas') +
+            linha('Licença', l.licenca) +
+          '</div>' +
+          '<div class="det-linhas">' +
+            l.destaques.map((d) => '<div class="det-linha"><span>Destaque</span><b>' + escapeHtml(d) + '</b></div>').join('') +
+          '</div>' +
+          acoes([
+            { label: 'Ler agora', icone: 'book-open', action: 'bib-ler-inicio', classe: 'lime', id: l.id },
+            { label: fav ? 'Remover dos favoritos' : 'Favoritar', icone: 'star', action: 'bib-favoritar', id: l.id },
+            { label: 'Abrir a biblioteca', icone: 'file-text', action: 'bib-abrir-pagina' },
+          ]),
+      });
+    },
   };
 
   window.Detalhe = Detalhe;
@@ -273,6 +312,26 @@
   Actions['ir-para-agenda'] = function () { closeSheet(); App.navigate('agenda'); };
   Actions['ir-para-alertas'] = function () { closeSheet(); App.navigate('notificacoes'); };
   Actions['ir-para-recursos'] = function () { closeSheet(); App.navigate('recursos'); };
+
+  /* ---------- Ações da Biblioteca Digital ---------- */
+  Actions['bib-ler-inicio'] = function () {
+    toast('Leitor por capítulos chega na fase 2 da Biblioteca Digital.', 'success');
+  };
+
+  Actions['bib-favoritar'] = function (el) {
+    const id = el.dataset.id;
+    const favs = JSON.parse(localStorage.getItem('pastorhub_biblioteca_favs') || '[]');
+    const i = favs.indexOf(id);
+    if (i === -1) favs.push(id); else favs.splice(i, 1);
+    localStorage.setItem('pastorhub_biblioteca_favs', JSON.stringify(favs));
+    toast(i === -1 ? 'Livro salvo nos favoritos!' : 'Livro removido dos favoritos.', 'success');
+    Detalhe.abrir('livro', id);
+  };
+
+  Actions['bib-abrir-pagina'] = function () {
+    closeSheet();
+    window.open('docs/biblioteca.html', '_blank');
+  };
 
   Actions['enviar-lembrete'] = function (el) {
     const nome = el.dataset.id;

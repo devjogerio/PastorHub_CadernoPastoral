@@ -302,9 +302,93 @@
         ['Agenda', 'Compromissos, integrações de calendário, WhatsApp'],
         ['Atendimentos', 'Fichas, status, busca e histórico'],
         ['Conselho (Meet AI)', 'Transcrição, análise de sentimentos, relatório confidencial'],
-        ['Recursos', 'Palestras IA, vídeos, categorias'],
+        ['Recursos', 'Palestras IA, vídeos, categorias e Biblioteca Digital de livros'],
         ['Alertas', 'Notificações por prioridade e canal'],
       ].map((r) => '<tr><td><b>' + esc(r[0]) + '</b></td><td>' + esc(r[1]) + '</td></tr>').join(''));
+    },
+
+    /* ---------- Biblioteca Digital ---------- */
+    renderBiblioteca() {
+      const B = window.BIBLIOTECA;
+      if (!B) return;
+
+      const catNome = {};
+      B.categorias.forEach((c) => { catNome[c.id] = c.nome; });
+
+      // Métricas da capa
+      set('#bib-metricas', B.metricas.map((m) =>
+        '<div><div class="m-label">Acervo</div><div class="m-value">' + esc(m.v) + ' · ' + esc(m.l) + '</div></div>').join(''));
+
+      // Plano de ação
+      const statusLabel = { done: 'Concluída', wip: 'Em andamento', next: 'Planejada' };
+      const statusCor = { done: '#95C121', wip: '#f59e0b', next: '#3261AB' };
+      set('#bib-plano', B.planoAcao.map((p) =>
+        '<div class="mini-card" style="border-top:4px solid ' + statusCor[p.status] + '">' +
+          '<h4>' + esc(p.fase) + '</h4>' +
+          '<p style="color:' + statusCor[p.status] + ';font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">' +
+            esc(p.prazo) + ' · ' + esc(statusLabel[p.status]) + '</p>' +
+          '<ul>' + p.entregas.map((e) => '<li>' + esc(e) + '</li>').join('') + '</ul>' +
+        '</div>').join(''));
+
+      // Roadmap
+      const stMap = { done: 'done', wip: 'wip', next: 'next' };
+      set('#bib-roadmap', B.roadmap.map((r) =>
+        '<div class="tl-item ' + stMap[r.status] + '"><div class="tl-card"><div class="h"><b>' + esc(r.versao) + '</b>' +
+          '<span style="font-size:.82rem;color:#5b6775">' + esc(r.prazo) + '</span></div>' +
+          '<ul>' + r.entregas.map((e) => '<li>' + esc(e) + '</li>').join('') + '</ul></div></div>').join(''));
+
+      // Filtros
+      const filtros = [{ id: 'todos', nome: 'Todos' }].concat(B.categorias.map((c) => ({ id: c.id, nome: c.nome })));
+      set('#bib-filtros', filtros.map((f, i) =>
+        '<button class="bib-chip' + (i === 0 ? ' active' : '') + '" data-cat="' + esc(f.id) + '" type="button">' + esc(f.nome) + '</button>').join(''));
+
+      // Catálogo
+      const renderLivros = (lista) => lista.map((l) => {
+        const cat = B.categorias.find((c) => c.id === l.categoria) || { id: l.categoria, cor: '#3261AB' };
+        return '<article class="bib-card" data-cat="' + esc(l.categoria) + '" data-busca="' + esc((l.titulo + ' ' + l.autor + ' ' + l.descricao).toLowerCase()) + '">' +
+          '<div class="bib-capa" style="background:' + l.gradiente + '"><span>' + l.emoji + '</span>' +
+            '<small>' + esc(l.autor) + '</small></div>' +
+          '<div class="bib-body">' +
+            '<span class="bib-cat" style="background:' + esc(cat.cor) + '22;color:' + esc(cat.cor) + '">' + esc(catNome[l.categoria] || l.categoria) + '</span>' +
+            '<h4>' + esc(l.titulo) + '</h4>' +
+            '<p class="bib-meta">' + esc(l.autor) + ' · ' + esc(l.ano) + ' · ' + esc(l.paginas) + ' pág.</p>' +
+            '<p>' + esc(l.descricao) + '</p>' +
+            '<details><summary>Ver destaques e licença</summary><ul>' +
+              l.destaques.map((d) => '<li>' + esc(d) + '</li>').join('') +
+            '</ul><p class="bib-lic">' + esc(l.licenca) + ' · leitura livre</p></details>' +
+          '</div>' +
+        '</article>';
+      }).join('');
+
+      set('#bib-catalogo', renderLivros(B.livros));
+
+      // Busca + filtros (interação)
+      const grid = $('#bib-catalogo');
+      const vazio = $('#bib-vazio');
+      const aplicar = () => {
+        const termo = (($('#bib-busca') && $('#bib-busca').value) || '').toLowerCase().trim();
+        const ativo = $('#bib-filtros .bib-chip.active');
+        const cat = ativo ? ativo.dataset.cat : 'todos';
+        let visiveis = 0;
+        grid.querySelectorAll('.bib-card').forEach((card) => {
+          const okCat = cat === 'todos' || card.dataset.cat === cat;
+          const okBusca = !termo || card.dataset.busca.indexOf(termo) !== -1;
+          const ok = okCat && okBusca;
+          card.style.display = ok ? '' : 'none';
+          if (ok) visiveis++;
+        });
+        if (vazio) vazio.style.display = visiveis ? 'none' : 'block';
+      };
+      const busca = $('#bib-busca');
+      if (busca) busca.addEventListener('input', aplicar);
+      $('#bib-filtros').addEventListener('click', (e) => {
+        const chip = e.target.closest('.bib-chip');
+        if (!chip) return;
+        $('#bib-filtros').querySelectorAll('.bib-chip').forEach((c) => c.classList.remove('active'));
+        chip.classList.add('active');
+        aplicar();
+      });
+      aplicar();
     },
   };
 })();

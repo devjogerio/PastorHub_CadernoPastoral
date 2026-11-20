@@ -93,6 +93,8 @@
     notifLidas: false,
     favoritos: JSON.parse(localStorage.getItem('pastorhub_favoritos') || '[]'),
     sermaoId: null,
+    livroId: null,
+    bibFavs: JSON.parse(localStorage.getItem('pastorhub_biblioteca_favs') || '[]'),
   };
 
   // ---------- Auth ----------
@@ -220,6 +222,12 @@
       case 'sermao':
         view.innerHTML = renderSermaoDetail(state.sermaoId);
         break;
+      case 'biblioteca':
+        view.innerHTML = renderBibliotecaApp();
+        break;
+      case 'livro':
+        view.innerHTML = renderLivro(state.livroId);
+        break;
       case 'notificacoes':
         view.innerHTML = renderNotificacoes();
         break;
@@ -238,6 +246,7 @@
     ];
     const quickLinks = [
       { icon: 'video', title: 'Ver Sermões', id: 'sermoes', color: '#15803d', desc: 'Curso de preparação ao predico' },
+      { icon: 'book-open', title: 'Biblioteca Digital', id: 'biblioteca', color: '#7c3aed', desc: 'Livros teológicos clássicos' },
       { icon: 'message', title: 'Conversas com Pastor', id: 'chat', color: '#1d4ed8', desc: 'Mensagem pronta e responderá' },
       { icon: 'calendar', title: 'Visitar MIN', id: 'agenda', color: '#db2777', desc: 'Agende conversas e visitas' },
       { icon: 'notification', title: 'Notificações', id: 'notificacoes', color: '#f59e0b', desc: 'Alertas recentes e pendentes' },
@@ -480,6 +489,97 @@
     `;
   }
 
+  // ---------- Biblioteca Digital ----------
+  function renderBibliotecaApp() {
+    const B = window.BIBLIOTECA || { categorias: [], livros: [] };
+    const catNome = {};
+    const catCor = {};
+    B.categorias.forEach(c => { catNome[c.id] = c.nome; catCor[c.id] = c.cor; });
+
+    const filtros = [{ id: 'todos', nome: 'Todos' }].concat(B.categorias);
+    const chips = filtros.map((f, i) =>
+      `<button class="bib-filter-chip${i === 0 ? ' active' : ''}" data-bib-cat="${escapeHtml(f.id)}" type="button">${escapeHtml(f.nome)}</button>`
+    ).join('');
+
+    const cards = B.livros.map(l => `
+      <div class="bib-item" data-livro="${escapeHtml(l.id)}" data-cat="${escapeHtml(l.categoria)}" data-busca="${escapeHtml((l.titulo + ' ' + l.autor + ' ' + l.descricao).toLowerCase())}">
+        <div class="bib-cover" style="background:${l.gradiente}"><span>${l.emoji}</span></div>
+        <div class="bib-info">
+          <b>${escapeHtml(l.titulo)}</b>
+          <small>${escapeHtml(l.autor)} · ${escapeHtml(String(l.ano))}</small>
+          <span class="bib-tag" style="background:${catCor[l.categoria]}22;color:${catCor[l.categoria]}">${escapeHtml(catNome[l.categoria] || l.categoria)}</span>
+        </div>
+        <span class="user-card-right">${icon('chevron-right', 'icon-sm')}</span>
+      </div>
+    `).join('');
+
+    return `
+      <div class="bib-view">
+        <div class="user-section-head">
+          <div><b>Biblioteca Digital</b><small>Livros teológicos clássicos em domínio público</small></div>
+        </div>
+        <div class="bib-search">
+          <span class="icon" aria-hidden="true">${icon('search', 'icon-sm')}</span>
+          <input type="search" id="bib-search-input" placeholder="Buscar por título ou autor…" autocomplete="off" aria-label="Buscar na biblioteca">
+        </div>
+        <div class="bib-filters">${chips}</div>
+        <div class="bib-list" id="bib-list">${cards}</div>
+        <p class="bib-empty" id="bib-empty" hidden>Nenhuma obra encontrada para essa busca.</p>
+        <p class="bib-licenca-note">Acervo inicial com ${B.livros.length} obras em domínio público. Leitura por capítulos na fase 2.</p>
+      </div>
+    `;
+  }
+
+  function renderLivro(livroId) {
+    const B = window.BIBLIOTECA || { categorias: [], livros: [] };
+    const l = B.livros.find(x => x.id === livroId);
+    if (!l) { state.livroId = null; return renderBibliotecaApp(); }
+    const cat = B.categorias.find(c => c.id === l.categoria) || { nome: l.categoria, cor: '#3261AB' };
+    const fav = state.bibFavs.indexOf(l.id) !== -1;
+    return `
+      <div class="bib-view">
+        <button class="btn-small bib-back" data-action="bib-voltar" type="button">← Voltar</button>
+        <div class="bib-detail-head">
+          <div class="bib-cover lg" style="background:${l.gradiente}"><span>${l.emoji}</span></div>
+          <div>
+            <span class="bib-tag" style="background:${cat.cor}22;color:${cat.cor}">${escapeHtml(cat.nome)}</span>
+            <h1 class="bib-title">${escapeHtml(l.titulo)}</h1>
+            <p class="bib-meta">${escapeHtml(l.autor)} · ${escapeHtml(String(l.ano))} · ${escapeHtml(String(l.paginas))} páginas</p>
+          </div>
+        </div>
+        <p class="bib-desc">${escapeHtml(l.descricao)}</p>
+        <div class="bib-box">
+          <b>Destaques</b>
+          <ul>${l.destaques.map(d => `<li>${escapeHtml(d)}</li>`).join('')}</ul>
+          <p class="bib-licenca"><b>Licença:</b> ${escapeHtml(l.licenca)}</p>
+        </div>
+        <div class="bib-actions">
+          <button class="btn lime" data-action="bib-ler" data-livro="${escapeHtml(l.id)}" type="button">Ler agora</button>
+          <button class="btn outline" data-action="bib-fav" data-livro="${escapeHtml(l.id)}" type="button">${fav ? 'Remover dos favoritos' : 'Favoritar'}</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function filterBibList() {
+    const list = $('#bib-list');
+    if (!list) return;
+    const input = $('#bib-search-input');
+    const termo = ((input && input.value) || '').toLowerCase().trim();
+    const ativo = document.querySelector('.bib-filter-chip.active');
+    const cat = ativo ? ativo.dataset.bibCat : 'todos';
+    let visiveis = 0;
+    list.querySelectorAll('.bib-item').forEach(item => {
+      const okCat = cat === 'todos' || item.dataset.cat === cat;
+      const okBusca = !termo || item.dataset.busca.indexOf(termo) !== -1;
+      const ok = okCat && okBusca;
+      item.style.display = ok ? '' : 'none';
+      if (ok) visiveis++;
+    });
+    const vazio = $('#bib-empty');
+    if (vazio) vazio.hidden = visiveis > 0;
+  }
+
   function renderNotificacoes() {
     const items = NOTIFICACOES.map(n => `
       <div class="notif-item">
@@ -522,6 +622,7 @@
       { id: 'chat', label: 'Conversas', icon: 'message' },
       { id: 'agenda', label: 'Agenda', icon: 'calendar' },
       { id: 'sermoes', label: 'Sermões', icon: 'video' },
+      { id: 'biblioteca', label: 'Biblioteca', icon: 'book-open' },
       { id: 'notificacoes', label: 'Alertas', icon: 'bell' },
     ];
     return navItems.map(n => `
@@ -590,6 +691,50 @@
       const homeCard = e.target.closest('[data-nav-id]');
       if (homeCard) {
         navigateTo(homeCard.dataset.navId);
+        return;
+      }
+
+      // Biblioteca: abrir livro
+      const bibItem = e.target.closest('.bib-item');
+      if (bibItem) {
+        state.livroId = bibItem.dataset.livro;
+        navigateTo('livro');
+        return;
+      }
+
+      // Biblioteca: filtros por categoria
+      const bibFilter = e.target.closest('.bib-filter-chip');
+      if (bibFilter) {
+        $$('.bib-filter-chip').forEach(f => f.classList.remove('active'));
+        bibFilter.classList.add('active');
+        filterBibList();
+        return;
+      }
+
+      // Biblioteca: voltar para a estante
+      const bibVoltar = e.target.closest('[data-action="bib-voltar"]');
+      if (bibVoltar) {
+        navigateTo('biblioteca');
+        return;
+      }
+
+      // Biblioteca: favoritar livro
+      const bibFav = e.target.closest('[data-action="bib-fav"]');
+      if (bibFav) {
+        const id = bibFav.dataset.livro;
+        state.bibFavs = state.bibFavs.indexOf(id) === -1
+          ? state.bibFavs.concat(id)
+          : state.bibFavs.filter(x => x !== id);
+        localStorage.setItem('pastorhub_biblioteca_favs', JSON.stringify(state.bibFavs));
+        toast(state.bibFavs.indexOf(id) !== -1 ? 'Livro salvo nos favoritos!' : 'Livro removido dos favoritos.');
+        renderView('livro');
+        return;
+      }
+
+      // Biblioteca: leitor (fase 2)
+      const bibLer = e.target.closest('[data-action="bib-ler"]');
+      if (bibLer) {
+        toast('Leitor por capítulos chega na fase 2 da Biblioteca.');
         return;
       }
 
@@ -725,6 +870,11 @@
         closeSidebar();
         return;
       }
+    });
+
+    // Busca da Biblioteca Digital
+    document.addEventListener('input', (e) => {
+      if (e.target && e.target.id === 'bib-search-input') filterBibList();
     });
 
     // Navegação via sidebar/drawer é tratada pelo listener global acima.

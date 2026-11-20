@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PastorHub · Biblioteca Digital</title>
+  <link rel="stylesheet" href="../css/docs.css?v=2">
+</head>
+<body>
+
+  <div class="doc-toolbar">
+    <div class="t-left">
+      <a href="../site.html">← Site</a>
+      <a href="proposta-investimento.html">Proposta</a>
+      <a href="apresentacao.html">Deck</a>
+      <a href="ficha-tecnica.html">Ficha técnica</a>
+      <a href="manual-usuario.html">Manual</a>
+      <a href="ecossistema-ia.html">Ecossistema de IA</a>
+      <a href="registro-tecnico.html">Registro técnico</a>
+      <a href="biblioteca.html" style="color:#d8ec9f;font-weight:700">Biblioteca</a>
+    </div>
+    <div class="t-right"><button class="btn-doc" onclick="window.print()">Imprimir / Salvar em PDF</button></div>
+  </div>
+
+  <article class="doc">
+    <header class="cover">
+      <span class="kicker">Nova funcionalidade</span>
+      <h1>Biblioteca Digital</h1>
+      <p class="sub">Livros teológicos clássicos em português para estudo, preparação de sermões e cuidado pastoral — acessíveis dentro do PastorHub.</p>
+      <p class="tagline">Acervo inicial em domínio público · plano de ação e roadmap abaixo</p>
+      <div class="cover-meta" id="bib-metricas"></div>
+      <div class="cover-foot">PastorHub · Biblioteca Digital · v1.0</div>
+    </header>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">1</span> Plano de ação</h2>
+      <p class="lead-doc">Cada fase entrega valor imediato ao pastor e prepara a próxima — sem quebrar a arquitetura offline-first do projeto.</p>
+      <div class="grid-3" id="bib-plano"></div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">2</span> Roadmap</h2>
+      <div class="tl" id="bib-roadmap"></div>
+      <div class="callout lime" style="margin-top:20px">
+        <strong>Critério de avanço</strong>
+        A fase seguinte só começa com a anterior validada no app real: catálogo navegável, leitura funcional e acervo curado pela liderança.
+      </div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">3</span> Acervo inicial</h2>
+      <p class="lead-doc">Obras teológicas em domínio público, organizadas por área de estudo. Use a busca e os filtros para explorar.</p>
+
+      <div class="bib-busca">
+        <input type="search" id="bib-busca" placeholder="Buscar por título, autor ou tema…" autocomplete="off" aria-label="Buscar no acervo">
+      </div>
+      <div class="bib-filtros" id="bib-filtros"></div>
+      <div class="bib-grid" id="bib-catalogo"></div>
+      <p class="bib-vazio" id="bib-vazio">Nenhuma obra encontrada para essa busca. Tente outro termo ou categoria.</p>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">4</span> Como funciona</h2>
+      <div class="grid-2">
+        <div class="mini-card">
+          <h4>📚 Acervo curado</h4>
+          <p>Os títulos são selecionados pela liderança e organizados por categoria teológica, com metadados de autor, época e licença.</p>
+        </div>
+        <div class="mini-card">
+          <h4>📱 Offline-first</h4>
+          <p>O catálogo segue o princípio do projeto: os dados ficam disponíveis no dispositivo e a leitura funciona mesmo sem internet.</p>
+        </div>
+        <div class="mini-card">
+          <h4>🔐 Licenças abertas</h4>
+          <p>Apenas obras em domínio público ou com licença aberta entram no acervo — sem violar direitos autorais.</p>
+        </div>
+        <div class="mini-card">
+          <h4>🤖 Integração com IA (v2.0)</h4>
+          <p>No futuro, resumos, planos de estudo e busca semântica serão conectados ao assistente de estudo do PastorHub.</p>
+        </div>
+      </div>
+      <div class="callout blue" style="margin-top:20px">
+        <strong>Disponibilidade</strong>
+        A vitrine da Biblioteca já está no app do usuário. A leitura por capítulos e o progresso chegam na fase 2 do plano.
+      </div>
+    </section>
+
+    <footer class="legal">
+      <p><b>PastorHub · Biblioteca Digital</b> — Acervo inicial composto por obras em domínio público. Datas de publicação e licenças são informativas; consulte a edição utilizada em cada título.</p>
+    </footer>
+  </article>
+
+  <script src="../js/biblioteca.js"></script>
+  <script src="../js/docs.js?v=2"></script>
+  <script>Docs.renderBiblioteca();</script>
+</body>
+</html>
