@@ -92,6 +92,7 @@
     chatId: null,
     notifLidas: false,
     favoritos: JSON.parse(localStorage.getItem('pastorhub_favoritos') || '[]'),
+    sermaoId: null,
   };
 
   // ---------- Auth ----------
@@ -215,6 +216,9 @@
         break;
       case 'sermoes':
         view.innerHTML = renderSermoes();
+        break;
+      case 'sermao':
+        view.innerHTML = renderSermaoDetail(state.sermaoId);
         break;
       case 'notificacoes':
         view.innerHTML = renderNotificacoes();
@@ -428,7 +432,7 @@
       </div>
     `;
     const sermonsList = sermoes.map(s => `
-      <div class="sermon-card">
+      <div class="sermon-card" data-serm-id="${s.id}">
         <div class="sermon-thumb" style="background: ${s.autor.includes('João') ? 'linear-gradient(135deg, var(--navy), #002947)' : s.autor.includes('Carlos') ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'linear-gradient(135deg, #10b981, #047857)'}">${icon('video', 'icon-lg')}</div>
         <div class="sermon-body">
           <b>${escapeHtml(s.titulo)}</b>
@@ -445,6 +449,35 @@
         ${sermonsList}
       </div>
     </div>`;
+  }
+
+  function renderSermaoDetail(s) {
+    if (!s) { state.sermaoId = null; return renderSermoes(); }
+    const favoritado = state.favoritos.includes(s.id);
+    return `
+      <div class="user-notifs" style="padding: 16px;">
+        <div class="user-section-head">
+          <div><b>${escapeHtml(s.titulo)}</b><small>${escapeHtml(s.autor)} • ${escapeHtml(s.tipo)}</small></div>
+        </div>
+        <div class="sermon-card" data-serm-id="${s.id}">
+          <div class="sermon-thumb" style="background: linear-gradient(135deg, var(--navy), #002947);">${icon('video', 'icon-lg')}</div>
+          <div class="sermon-body">
+            <b>${escapeHtml(s.titulo)}</b>
+            <small>${escapeHtml(s.autor)}</small>
+            <span class="sermon-tag">${escapeHtml(s.tipo)}</span>
+          </div>
+          <button class="sermon-fav ${favoritado ? 'ativo' : ''}" data-action="serm-fav" data-serm-id="${s.id}" aria-label="Favoritar sermão" type="button">${icon('star', 'icon-sm')}</button>
+        </div>
+        <div style="margin-top: 16px; padding: 18px; background: #fff; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); font-size: .92rem; line-height: 1.7;">
+          ${escapeHtml(s.texto)}
+        </div>
+        <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn outline" data-action="serm-acoes" data-serm-id="${s.id}" type="button">Compartilhar</button>
+          <button class="btn outline" data-action="serm-acoes" data-serm-id="${s.id}" type="button">Exportar PDF</button>
+          <button class="btn outline" data-action="serm-acoes" data-serm-id="${s.id}" type="button">Copiar texto</button>
+        </div>
+      </div>
+    `;
   }
 
   function renderNotificacoes() {
@@ -634,6 +667,21 @@
         localStorage.setItem('pastorhub_favoritos', JSON.stringify(state.favoritos));
         toast(state.favoritos.includes(id) ? 'Sermão salvo nos favoritos!' : 'Sermão removido dos favoritos.');
         renderView('sermoes');
+        return;
+      }
+
+      // Abrir detalhe do sermão
+      const sermCard = e.target.closest('[data-serm-id]');
+      if (sermCard) {
+        state.sermaoId = parseInt(sermCard.dataset.sermId, 10) || null;
+        navigateTo('sermao');
+        return;
+      }
+
+      // Ações do detalhe do sermão (compartilhar/exportar/copiar)
+      const sermAcoes = e.target.closest('[data-action="serm-acoes"]');
+      if (sermAcoes) {
+        toast('Ação do sermão: recurso em preparação');
         return;
       }
 
