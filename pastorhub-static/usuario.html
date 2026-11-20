@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#002645">
+  <title>PastorHub – Versão Usuário</title>
+  <link rel="stylesheet" href="css/usuario.css">
+</head>
+<body>
+
+  <!-- ===== Splash (carregamento) ===== -->
+  <div id="splash">
+    <div class="spinner spinner-lime"></div>
+    <p>Carregando PastorHub...</p>
+  </div>
+
+  <!-- ===== Tela de Autenticação ===== -->
+  <div id="auth" hidden>
+    <div class="auth-inner">
+      <div class="auth-logo">
+        <div class="auth-logo-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <h1>PastorHub</h1>
+        <p>For Imáfia</p>
+      </div>
+
+      <div class="auth-card">
+        <h2>Bem-vindo, Parceiro</h2>
+        <p class="auth-desc">Entre para conversar com pastores, ver sermões e agendar visitas</p>
+
+        <div class="tabs auth-tabs">
+          <button class="tab active" data-auth-tab="login" type="button">Entrar</button>
+          <button class="tab" data-auth-tab="signup" type="button">Cadastrar</button>
+        </div>
+
+        <form id="auth-login" class="auth-form" autocomplete="off">
+          <div class="field">
+            <label for="login-email">Email</label>
+            <input id="login-email" type="email" placeholder="seu@email.com" required>
+          </div>
+          <div class="field">
+            <label for="login-senha">Senha</label>
+            <input id="login-senha" type="password" placeholder="••••••••" required>
+          </div>
+          <button class="btn primary block" type="submit">Entrar</button>
+          <div class="divider"><span>Ou continue com</span></div>
+          <button class="btn outline block" type="button" data-action="auth-google">
+            <svg class="icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.66-.22-2.45H12v4.64h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.86c2.26-2.09 3.58-5.17 3.58-8.81z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3a7.26 7.26 0 0 1-10.7-3.82H1.4v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.37 14.27a7.2 7.2 0 0 1 0-4.54v-3.1H1.4a12 12 0 0 0 0 10.74l3.97-3.1z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42A11.97 11.97 0 0 0 12 0 12 12 0 0 0 1.4 6.63l3.97 3.1A7.26 7.26 0 0 1 12 4.75z"/></svg>
+            Google
+          </button>
+        </form>
+
+        <form id="auth-signup" class="auth-form" hidden autocomplete="off">
+          <div class="field">
+            <label for="cad-nome">Seu Nome</label>
+            <input id="cad-nome" type="text" placeholder="Maria Souza" required>
+          </div>
+          <div class="field">
+            <label for="cad-email">Email</label>
+            <input id="cad-email" type="email" placeholder="seu@email.com" required>
+          </div>
+          <div class="field">
+            <label for="cad-senha">Senha</label>
+            <input id="cad-senha" type="password" placeholder="Mínimo 6 caracteres" minlength="6" required>
+          </div>
+          <button class="btn lime block" type="submit">Criar Conta</button>
+          <div class="hint-alert">
+            <span>Você receberá notificações dos pastores.</span>
+          </div>
+        </form>
+
+        <div class="hint-alert info">
+          <strong>Versão Usuário:</strong> Interaja com pastores, veja sermões e agende conversas.
+        </div>
+        <p class="auth-foot">PastorHub • Versão Usuário • Dados seguros</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== App principal (Versão Usuário) ===== -->
+  <div id="app" hidden>
+    <!-- Barra superior -->
+    <header id="topbar">
+      <button class="btn-icon" id="btn-menu" aria-label="Abrir menu" type="button">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="topbar-title">
+        <h1>Olá, Parceiro</h1>
+      </div>
+    </header>
+
+    <!-- Drawer -->
+    <div id="drawer" hidden>
+      <div class="drawer-backdrop" data-action="close-drawer"></div>
+      <aside class="drawer-panel" role="dialog" aria-label="Menu do Usuário">
+        <header class="drawer-head">
+          <div>
+            <h2>Menu do Usuário</h2>
+            <p>Versão para believer</p>
+          </div>
+          <button class="btn-icon dark" data-action="close-drawer" aria-label="Fechar" type="button">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </header>
+        <div class="drawer-profile" id="drawer-profile"></div>
+        <nav class="drawer-menu">
+          <button data-action="meu-perfil" type="button">Meu Perfil</button>
+          <button data-nav="chat" type="button">Conversas com Pastores</button>
+          <button data-nav="agenda" type="button">Agenda de Visitação</button>
+          <button data-nav="sermoes" type="button">Ver Sermões</button>
+          <button data-nav="notificacoes" type="button">Notificações</button>
+          <button data-action="sair" type="button">Sair</button>
+        </nav>
+      </aside>
+    </div>
+
+    <!-- View principal -->
+    <main id="view"></main>
+
+    <!-- Botão flutuante -->
+    <button class="fab-btn" id="fab-agendar" type="button">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10 10.3 10.3 0 0 1-.8 6.2 2 2 0 0 1-1.4 1.58 2 2 0 0 1-.98.09H8.56A2 2 0 0 1 7 17.39l-1.16-.93A10 10 0 0 1 12 2Z"/><path d="M2.08 7.61A10 10 0 0 1 12 2Z"/><path d="M22 10v6a10 10 0 0 1-.8 4.36L17 14"/></svg>
+    </button>
+
+    <!-- Sheet -->
+    <div id="sheet" hidden>
+      <div class="sheet-backdrop" data-action="close-sheet"></div>
+      <div class="sheet-panel">
+        <div class="sheet-head"><span class="sheet-title"></span><button class="btn-icon" data-action="close-sheet" type="button"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+        <p class="sheet-desc"></p>
+        <div id="sheet-body"></div>
+        <div id="sheet-footer" hidden></div>
+      </div>
+    </div>
+
+    <!-- Confirm Dialog -->
+    <div id="confirm" hidden>
+      <div class="confirm-backdrop" data-action="close-confirm"></div>
+      <div class="confirm-card">
+        <span id="confirm-title"></span>
+        <p id="confirm-message"></p>
+        <div class="confirm-actions">
+          <button class="btn outline" data-action="cancel-action" type="button">Cancelar</button>
+          <button class="btn lime" id="confirm-ok" type="button">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast-root"></div>
+
+  <script src="js/usuario.js"></script>
+</body>
+</html>

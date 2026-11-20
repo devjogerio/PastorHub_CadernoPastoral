@@ -1,0 +1,605 @@
+/* ============================================================
+   PastorHub – Versão Usuário JS
+   Interactions for believers to interact with pastor/leader content
+   ============================================================ */
+(function () {
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => document.querySelectorAll(s);
+  const escapeHtml = window.escapeHtml;
+  const icon = window.icon;
+
+  // Shell
+  const SHELL = window.APP_SHELL || 'mobile';
+  document.body.classList.add('shell-' + SHELL);
+
+  // User data (mock)
+  const User = {
+    dados: {
+      nome: 'Maria Souza',
+      email: 'maria.souza@email.com',
+      initials: 'MS',
+      igreja: 'Igreja São João',
+      tipo: 'usuario',
+      origem: 'local'
+    },
+    iniciais() {
+      return this.dados.initials || this.dados.nome.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    },
+    isAuthed() {
+      return localStorage.getItem('usuario_auth_usuario') || localStorage.getItem('usuario_auth_goog').length;
+    }
+  };
+
+  // Usuários de pastor/líder (mock)
+  const PASTORS = [
+    { nome: 'Pastor João Silva', cargo: 'Pastor de Culto', avatar: 'JV', online: true, ultimoMsg: 'Bom dia! Quer saber sobre o culto de hoje?' },
+    { nome: 'Pra. Maria Oliveira', cargo: 'Aconselhadora', avatar: 'MO', online: false, ultimoMsg: 'Teve uma reunião sobre casamentos amanhã' },
+    { nome: 'Líder de Configuracoes', cargo: 'Líder da Comunidade', avatar: 'LC', online: true, ultimoMsg: 'Agende sua visita geral' },
+    { nome: 'Pr. Carlos Santos', cargo: 'Pastor Principal', avatar: 'CS', online: true, ultimoMsg: 'Nova palestra disponível!' },
+  ];
+
+  // Agenda mock
+  const AGENDA = [
+    { id: 1, tipo: 'Visitação', local: 'Igreja São João', data: 'Hoje, 14:00', status: 'agendado' },
+    { id: 2, tipo: 'Visitação', local: 'Casa 34, Seara Street', data: 'Amanhã, 10:00', status: 'pendente' },
+    { id: 3, tipo: 'Visitação', local: 'Casa 15, Oliveira Street', data: 'Sábado, 15:00', status: 'pendente' },
+  ];
+
+  // Sermões mock
+  const SERMOES = [
+    { id: 1, titulo: 'Fé Que Remove Montanhas', autor: 'Pastor João Silva', tipo: 'Expositivo', texto: 'Existem terrenos que só teremos acesso quando atravessarmos certas montanhas. Nossa fé precisa ser forte nessas escaladas.', data: 'Há 2 dias' },
+    { id: 2, titulo: 'Amizade que Inspira', autor: 'Pr. Carlos Santos', tipo: 'Temático', texto: 'A verdadeira amizade não te espanta ao sobre inferno, ela te faz ficar de pé na tempestade.', data: '5 de Novembro' },
+    { id: 3, titulo: 'Comida e Hospitalidade', autor: 'Líder', tipo: 'Narrativo', texto: 'A família local organizou um café preto para receber as famílias de doentes da cidade, e lá surgiu uma conversa de milagres.', data: '3 de Novembro' },
+  ];
+
+  // Conversas mock
+  const CONVERSAS = [
+    { id: 1, pastor: PASTORS[0], ultimaMsg: 'Bom dia! Tudo bem? Tenho algumas perguntas sobre o culto hoje.', data: '10 min ago', naoLida: 2 },
+    { id: 2, pastor: PASTORS[1], ultimaMsg: 'Teve uma reunião sobre casamentos amanhã. Você quer participar?', data: '2 h ago', naoLida: 1 },
+    { id: 3, pastor: PASTORS[2], ultimaMsg: 'Agende sua visita geral conosco! Temos disponibilidade esta semana.', data: '5 h ago', naoLida: 0 },
+  ];
+
+  // Notificações mock
+  const NOTIFICACOES = [
+    { id: 1, tipo: 'chat', titulo: 'Nova mensagem de Pastor João', descricao: 'Mensagem recdaldehyde', data: '10 min ago', lida: false, entidade: PASTORS[0].nome },
+    { id: 2, tipo: 'agenda', titulo: 'Visitação amanhã', descricao: 'Visita no casal 34 comendo', data: '2 h ago', lida: false, entidade: 'Igreja São João' },
+    { id: 3, tipo: 'fatura', titulo: 'Pagamento pendente', descricao: 'Água e luz serão liberados em breve', data: '3 h ago', lida: false, entidade: 'Igreja São João' },
+    { id: 4, tipo: 'sermon', titulo: 'Novo sermão disponível', descricao: 'Pr. Carlos Santos lançou uma nova palestra', data: '1 dia atrás', lida: true, entidade: 'Pr. Carlos Santos' },
+  ];
+
+  // Registro para chat (mock, pra implementação simples)
+  const CHAT_REGISTRY = {};
+
+  // ---------- Estado do App ----------
+  const state = {
+    view: 'home',
+    chatId: null,
+    notifLidas: false,
+  };
+
+  // ---------- Auth ----------
+  function authInit() {
+    if (localStorage.getItem('usuario_authed')) {
+      const auth = $('#auth');
+      if (auth) auth.hidden = true;
+      const app = $('#app');
+      if (app) app.hidden = false;
+      initApp();
+    } else {
+      $('#app').hidden = true;
+      $('#auth').hidden = false;
+    }
+
+    $('#auth-login').addEventListener('submit', (e) => {
+      e.preventDefault();
+      toast('Autenticado com sucesso!');
+      $('#app').hidden = false;
+      $('#auth').hidden = true;
+      initApp();
+      renderView('home');
+      closeSheet();
+    });
+
+    $('#auth-signup').addEventListener('submit', (e) => {
+      e.preventDefault();
+      localStorage.setItem('usuario_authed', 'true');
+      localStorage.setItem('usuario_email', $('#cad-email').value);
+      toast('Conta criada! Bem-vindo!');
+      $('#app').hidden = false;
+      $('#auth').hidden = true;
+      initApp();
+      renderView('home');
+    });
+
+    const googleBtn = $('[data-action="auth-google"]');
+    if (googleBtn) {
+      googleBtn.addEventListener('click', () => {
+        localStorage.setItem('usuario_authed', 'true');
+        toast('Autenticado com Google!');
+        $('#app').hidden = false;
+        $('#auth').hidden = true;
+        initApp();
+        renderView('home');
+      });
+    }
+  }
+
+  // ---------- Inicialização do App ----------
+  function initApp() {
+    // Mobile: renderizar home initial
+    if (SHELL === 'mobile') {
+      renderView('home');
+    } else if (SHELL === 'tablet') {
+      // Tablet: mostrar sidebar default
+      showSidebar();
+      renderView('home');
+    } else if (SHELL === 'desktop') {
+      // Desktop: mostrar sidebar default
+      showSidebar();
+      renderView('home');
+    }
+  }
+
+  function showSidebar() {
+    if (SHELL === 'desktop') {
+      $('#user-sidebar').hidden = false;
+    } else if (SHELL === 'tablet') {
+      $('#user-sidebar').hidden = false;
+      $('#user-content').innerHTML = '';
+      $('#user-right').innerHTML = '';
+    }
+  }
+
+  // ---------- Renderização de Views ----------
+  function renderView(viewId) {
+    state.view = viewId;
+    const view = SHELL === 'desktop' ? $('#user-content') : SHELL === 'tablet' ? $('#user-content') : $('#view');
+    if (!view) return;
+
+    switch (viewId) {
+      case 'home':
+        view.innerHTML = renderHome();
+        break;
+      case 'chat':
+        view.innerHTML = renderChat(state.chatId);
+        break;
+      case 'agenda':
+        view.innerHTML = renderAgenda();
+        break;
+      case 'sermoes':
+        view.innerHTML = renderSermoes();
+        break;
+      case 'notificacoes':
+        view.innerHTML = renderNotificacoes();
+        break;
+      default:
+        view.innerHTML = renderHome();
+    }
+    attachEvents(view);
+  }
+
+  function renderHome() {
+    const stats = [
+      { icon: 'users', label: 'Usuários', value: 28, color: '#1d4ed8' },
+      { icon: 'users', label: 'Atividades', value: 156, color: '#15803d' },
+      { icon: 'message', label: 'Mensagens', value: 12, color: '#db2777' },
+      { icon: 'heart', label: 'Compatibilidade', value: 94, color: '#f59e0b' },
+    ];
+    const quickLinks = [
+      { icon: 'video', title: 'Ver Sermões', id: 'sermoes', color: '#15803d', desc: 'Curso de preparação ao predico' },
+      { icon: 'message', title: 'Conversas com Pastor', id: 'chat', color: '#1d4ed8', desc: 'Mensagem pronta e responderá' },
+      { icon: 'calendar', title: 'Visitar MIN', id: 'agenda', color: '#db2777', desc: 'Agende conversas e visitas' },
+      { icon: 'notification', title: 'Notificações', id: 'notificacoes', color: '#f59e0b', desc: 'Alertas recentes e pendentes' },
+    ];
+
+    return `
+      <div class="user-home">
+        <div class="user-hero">
+          <h1>Olá, ${escapeHtml(User.iniciais())}!</h1>
+          <p>Bem-vindo à sua versão Usuário</p>
+        </div>
+        <div class="user-stats">
+          ${stats.map(s => `
+            <div class="user-stat-card">
+              <span class="icon" style="color: ${s.color};">${icon(s.icon, 'icon-lg')}</span>
+              <b>${s.value}</b>
+              <small>${s.label}</small>
+            </div>
+          `).join('')}
+        </div>
+        <div class="user-section">
+          <div class="user-section-head">
+            <div><b>Explore</b><small>Uma caminhada do serviço com os pastor</small></div>
+            <button class="btn-small">Ver todos</button>
+          </div>
+          <div class="user-grid">
+            ${quickLinks.map(l => `
+              <a class="user-card" href="#" data-nav-id="${l.id}">
+                <div class="user-card-icon ${l.id}">${icon(l.icon, 'icon-lg')}</div>
+                <div class="user-card-body">
+                  <b>${escapeHtml(l.title)}</b>
+                  <small>${escapeHtml(l.desc)}</small>
+                </div>
+                <span class="user-card-right">${icon('chevron-right', 'icon-sm')}</span>
+              </a>
+            `).join('')}
+          </div>
+        </div>
+        <div class="user-section">
+          <div class="user-section-head"><b>Conexões</b><small>De Videos e Relatorios</div></b></div>
+          <div class="user-grid">
+            ${renderConections()}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderConections() {
+    return [
+      { icon: 'calendar', title: 'Agenda Community', desc: 'Próximas visitation e eventos', id: 'agenda', color: '#f59e0b' },
+      { icon: 'message', title: 'Mensagens Recentes', desc: 'Conversas', id: 'chat', color: '#1d4ed8' },
+      { icon: 'star', title: 'Favoritos', desc: 'Sermões salvo', id: 'sermoes', color: '#f59e0b' },
+      { icon: 'users', title: 'Membros', desc: 'Compatibilidade', id: 'home', color: '#15803d' },
+    ].map(c => `
+      <a class="user-card" href="#" data-nav-id="${c.id}">
+        <div class="user-card-icon">${icon(c.icon, 'icon-lg')}</div>
+        <div class="user-card-body"><b>${c.title}</b><small>${c.desc}</small></div>
+        <span class="user-card-right">${icon('chevron-right', 'icon-sm')}</span>
+      </a>
+    `).join('');
+  }
+
+  function renderChat(chatId) {
+    const pastor = chatId ? PASTORS.find(p => p.id === chatId) : PASTORS[0];
+    if (!pastor) {
+      state.chatId = null;
+      return renderChat(PASTORS[0].id);
+    }
+    state.chatId = pastor.id;
+    const offlineMsg = !pastor.online ? '<p class="chat-offline">Pastor está offline - mensagens enviadas</p>' : '';
+
+    return `
+      <div class="chat-header">
+        <div class="chat-profile">${escapeHtml(pastor.avatar)}</div>
+        <div class="chat-info">
+          <b>${escapeHtml(pastor.nome)}</b>
+          <span class="chat-role">${escapeHtml(pastor.cargo)}</span>
+        </div>
+        <div class="chat-actions">
+          <button class="btn-icon" onclick="return false" data-action="back-chat"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+        </div>
+      </div>
+      <div class="chat-messages">
+        <div class="chat-msg received">
+          <div class="chat-bubble">Bom dia ${escapeHtml(User.iniciais())}! Quer saber sobre o culto de hoje?</div>
+          <time>14:00</time>
+        </div>
+        <div class="chat-msg sent">
+          <div class="chat-bubble">Bom dia! Sim, quero saber sobre os horários.</div>
+          <time>14:02</time>
+        </div>
+        <div class="chat-msg received">
+          <div class="chat-bubble">Os serviços começam às 9:00 e às 19:00. Quer participar?</div>
+          <time>14:03</time>
+        </div>
+        ${pastor.online ? '<div class="chat-msg received"><div class="chat-bubble">Estou ao vivo agora! Responda com vontade.</div><time>Online</time></div>' : ''}
+        ${offlineMsg}
+      </div>
+      <div class="chat-input">
+        <input type="text" id="chat-input" placeholder="Digite sua mensagem..." autocomplete="off">
+        <button class="btn" onclick="return false" data-action="send-chat"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+      </div>
+    `;
+  }
+
+  function renderAgenda() {
+    const filters = [
+      { id: 'all', label: 'Agenda' },
+      { id: 'pendente', label: 'Pendentes' },
+      { id: 'agendado', label: 'Agendados' },
+      { id: 'concluido', label: 'Concluidos' },
+    ];
+
+    return `
+      <div class="agenda-filters" id="agenda-filters">
+        ${filters.map(f => `<button class="agenda-filter-btn ${state.view === 'agenda' && !AGENDA.some(a => a.status === f.id) ? 'active' : ''}" data-filter="${f.id}">${f.label}</button>`).join('')}
+      </div>
+      <div class="agenda-calendar" id="agenda-calendar">
+        ${renderAgendaDays()}
+      </div>
+      <div class="agenda-list" id="agenda-list">
+        ${AGENDA.filter(a => !state.view || state.view === 'agenda' || a.status === state.view).map(a => renderAgendaItem(a)).join('')}
+      </div>
+      <div class="agenda-action-bar">
+        <button class="btn lime" id="fab-agendar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 10 10 10.3 10.3 0 0 1-.8 6.2 2 2 0 0 1-1.4 1.58 2 2 0 0 1-.98.09H8.56a2 2 0 0 1-1.94-1.58L7 11Z"/></svg>Agendar visita</button>
+      </div>
+    `;
+  }
+
+  function renderAgendaDays() {
+    return ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'].map((day, i) => `
+      <div class="agenda-day ${i === 1 || i === 3 ? 'has-events' : ''}" data-day="${i}">${day}</div>
+    `).join('');
+  }
+
+  function renderAgendaItem(a) {
+    const iconClass = a.local.includes('Igreja') ? 'igreja' : 'casa';
+    const statusBadge = a.status === 'agendado' ? '<span class="agenda-tag presencial">Agendado</span>' :
+                        a.status === 'pendente' ? '<span class="agenda-tag presencial">Pendente</span>' : '';
+    return `
+      <div class="agenda-item">
+        <div class="ai-icon ${iconClass}">${icon('map-pin', 'icon-lg')}</div>
+        <div class="ai-body">
+          <b>${escapeHtml(a.tipo)} - ${escapeHtml(a.local)}</b>
+          <small>${escapeHtml(a.data)}</small>
+        </div>
+        ${statusBadge}
+      </div>
+    `;
+  }
+
+  function renderSermoes() {
+    const sermoes = SERMOES;
+    const searchBar = `
+      <div class="sermoes-search">
+        <input type="text" id="sermoes-search" placeholder="Buscar nobre..." autocomplete="off">
+        <div class="sermoes-filters">
+          <button class="sermoes-filter active" data-filter="todos">Todos</button>
+          <button class="sermoes-filter" data-filter="expositivo">Expositivo</button>
+          <button class="sermoes-filter" data-filter="tematico">Temático</button>
+          <button class="sermoes-filter" data-filter="narrativo">Narrativo</button>
+        </div>
+      </div>
+    `;
+    const sermonsList = sermoes.map(s => `
+      <div class="sermon-card">
+        <div class="sermon-thumb" style="background: ${s.autor.includes('João') ? 'linear-gradient(135deg, var(--navy), #002947)' : s.autor.includes('Carlos') ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'linear-gradient(135deg, #10b981, #047857)'}">${icon('video', 'icon-lg')}</div>
+        <div class="sermon-body">
+          <b>${escapeHtml(s.titulo)}</b>
+          <small>${escapeHtml(s.autor)}</small>
+          <span class="sermon-tag">${escapeHtml(s.tipo)}</span>
+        </div>
+      </div>
+    `).join('');
+
+    return `<div style="padding: 16px;">
+      ${searchBar}
+      <div class="sermoes-list">
+        ${sermonsList}
+      </div>
+    </div>`;
+  }
+
+  function renderNotificacoes() {
+    const items = NOTIFICACOES.map(n => `
+      <div class="notif-item">
+        <div class="notif-icon ${n.tipo}">${icon(getNotifIcon(n.tipo), 'icon-lg')}</div>
+        <div class="notif-body">
+          <b>${escapeHtml(n.titulo)}</b>
+          <small>${escapeHtml(n.descricao)}</small>
+          <time>${escapeHtml(n.data)}</time>
+        </div>
+        ${n.lida ? '' : '<span class="notif-unread"></span>'}
+      </div>
+    `).join('');
+    return `
+      <div style="padding: 16px;">
+        <h1>Notificações</h1>
+        <div style="height: 12px;"></div>
+        ${items}
+      </div>
+    `;
+  }
+
+  function getNotifIcon(tipo) {
+    return {
+      chat: 'message',
+      agenda: 'calendar',
+      fatura: 'dollar-sign',
+      sermon: 'video',
+      solitute: 'star',
+      relatorios: 'bar-chart',
+      notificacoes: 'bell',
+    }[tipo] || 'bell';
+  }
+
+  // ---------- Renderização de Sidebar ----------
+  function renderSidebar() {
+    const navItems = [
+      { id: 'dashboard', label: 'Início', icon: 'home', active: true },
+      { id: 'chat', label: 'Conversas', icon: 'message' },
+      { id: 'agenda', label: 'Agenda', icon: 'calendar' },
+      { id: 'sermoes', label: 'Sermões', icon: 'video' },
+      { id: 'notificacoes', label: 'Alertas', icon: 'bell' },
+    ];
+    return navItems.map(n => `
+      <button class="sidebar-item ${n.active ? 'active' : ''}" data-nav="${n.id}" type="button">
+        <span class="icon">${icon(n.icon)}</span>
+        <span>${escapeHtml(n.label)}</span>
+      </button>
+    `).join('');
+  }
+
+  // ---------- Event Handlers ----------
+  function attachEvents(view) {
+    // Auth
+    document.addEventListener('click', (e) => {
+      // Sair
+      const sair = e.target.closest('[data-action="sair"]');
+      if (sair) {
+        localStorage.removeItem('usuario_authed');
+        localStorage.removeItem('usuario_email');
+        location.reload();
+        return;
+      }
+
+      // Meu perfil
+      const perfil = e.target.closest('[data-action="meu-perfil"]');
+      if (perfil) {
+        toast('Perfil aberto');
+        return;
+      }
+
+      // Nav sidebar (mobile/tablet)
+      const navItem = e.target.closest('.sidebar-item');
+      if (navItem) {
+        closeSidebar();
+        navigateTo(navItem.dataset.nav);
+        return;
+      }
+
+      // Nav (desktop)
+      const navItemDesktop = e.target.closest('.sidebar-item');
+      if (navItemDesktop) {
+        navigateTo(navItemDesktop.dataset.nav);
+        return;
+      }
+
+      // Drawer nav
+      const drawerNav = e.target.closest('#drawer > aside > nav button');
+      if (drawerNav) {
+        closeDrawer();
+        navigateTo(drawerNav.dataset.nav);
+        return;
+      }
+
+      // Home cards
+      const homeCard = e.target.closest('[data-nav-id]');
+      if (homeCard) {
+        navigateTo(homeCard.dataset.navId);
+        return;
+      }
+
+      // Agenda filter
+      const agendaFilter = e.target.closest('.agenda-filter-btn');
+      if (agendaFilter) {
+        $$('.agenda-filter-btn').forEach(f => f.classList.remove('active'));
+        agendaFilter.classList.add('active');
+        toast('Filtrando agenda');
+        return;
+      }
+
+      // Agenda day
+      const agendaDay = e.target.closest('.agenda-day');
+      if (agendaDay) {
+        toast('Filtro de dia ativo');
+        return;
+      }
+
+      // Sermoes search
+      const searchInput = e.target.closest('#sermoes-search');
+      if (searchInput) {
+        const term = searchInput.value.toLowerCase();
+        const sermoes = $('#user-content')?.querySelectorAll('.sermon-card') || $('#view').querySelectorAll('.sermon-card');
+        sermoes.forEach(s => {
+          const text = (s.textContent || '').toLowerCase();
+          s.style.display = text.includes(term) ? 'flex' : 'none';
+        });
+        return;
+      }
+
+      // Sermoes filter
+      const sermonFilter = e.target.closest('.sermoes-filter');
+      if (sermonFilter) {
+        $$('.sermoes-filter').forEach(f => f.classList.remove('active'));
+        sermonFilter.classList.add('active');
+        return;
+      }
+
+      // Chat item (mobile/tablet)
+      const chatItem = e.target.closest('.chat-item');
+      if (chatItem) {
+        // Chat not yet implemented - navigate to chat
+        navigateTo('chat');
+        return;
+      }
+
+      // FAB Agendar
+      const fabAgendar = e.target.closest('#fab-agendar');
+      if (fabAgendar) {
+        toast('Agenda de visitas aberta em breve!');
+        return;
+      }
+
+      // Chat send
+      const sendChat = e.target.closest('[data-action="send-chat"]');
+      if (sendChat) {
+        const input = $('#chat-input');
+        if (input && input.value.trim()) {
+          toast('Mensagem enviada para Pastor!');
+          input.value = '';
+          return;
+        }
+      }
+
+      // Close Sheet
+      const closeSheet = e.target.closest('[data-action="close-sheet"]');
+      if (closeSheet) {
+        window.closeSheet ? window.closeSheet() : (document.querySelector('#sheet').hidden = true);
+        return;
+      }
+
+      // Close Drawer
+      const closeDrawer = e.target.closest('[data-action="close-drawer"]');
+      if (closeDrawer) {
+        closeSidebar();
+        return;
+      }
+    });
+
+    // Navigation via sidebar (mobile/tablet)
+    $$('.sidebar-item').forEach(item => {
+      item.addEventListener('click', () => {
+        if (SHELL === 'desktop') navigateTo(item.dataset.nav);
+        else navigateTo(item.dataset.nav);
+      });
+    });
+  }
+
+  // ---------- Helpers ----------
+  function navigateTo(id) {
+    closeSidebar();
+    renderView(id);
+  }
+
+  function openDrawer() {
+    const drawer = $('#drawer');
+    if (drawer) drawer.classList.add('open');
+  }
+
+  function closeDrawer() {
+    const drawer = $('#drawer');
+    if (drawer) drawer.classList.remove('open');
+  }
+
+  function openSidebar() {
+    const sidebar = $('#user-sidebar');
+    if (sidebar) {
+      sidebar.hidden = false;
+      renderSidebar();
+    }
+  }
+
+  function closeSidebar() {
+    const sidebar = $('#user-sidebar');
+    if (sidebar) sidebar.hidden = true;
+  }
+
+  function toast(msg) {
+    if (window.toast) window.toast(msg);
+    else {
+      const toastRoot = $('#toast-root');
+      if (toastRoot) {
+        const el = document.createElement('div');
+        el.className = 'toast lime';
+        el.textContent = msg;
+        toastRoot.appendChild(el);
+        setTimeout(() => el.style.opacity = '0', 2000);
+      }
+    }
+  }
+
+  // Initialize
+  authInit();
+})();
