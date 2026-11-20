@@ -656,8 +656,8 @@
       }
 
       // Close Drawer
-      const closeDrawer = e.target.closest('[data-action="close-drawer"]');
-      if (closeDrawer) {
+      const closeDrawerBtn = e.target.closest('[data-action="close-drawer"]');
+      if (closeDrawerBtn) {
         closeSidebar();
         return;
       }
