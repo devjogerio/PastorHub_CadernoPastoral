@@ -30,8 +30,9 @@ figma-project/
 ├── index.html              # 13 telas do protótipo (hash routing)
 ├── css/styles.css          # tokens, componentes e responsividade
 ├── js/app.js               # dados e interações (sem backend)
-├── assets/*.svg            # vetores exportados do Figma
-├── design-reference/*.png  # screenshots de referência (não usados em runtime)
+├── assets/            # SVGs exportados do Figma, organizados por tela (assets/figma/<tela>/)
+├── ASSETS.md          # inventário de assets importados e pendentes
+├── design-reference/  # screenshots e metadados do arquivo Figma (referência, não runtime)
 ├── tests/validate.mjs      # validação estática sem dependências
 ├── .nojekyll               # permite publicar no GitHub Pages
 └── README.md

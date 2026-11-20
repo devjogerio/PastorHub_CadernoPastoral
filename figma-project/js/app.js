@@ -24,9 +24,9 @@
 
   /* ---------- Conteúdo derivado do Figma (localizado) ---------- */
   const funcionalidades = [
-    { titulo: 'Encontrar igreja', tela: 'find', icone: 'assets/asset-04.svg' },
+    { titulo: 'Encontrar igreja', tela: 'find', icone: 'assets/figma/home/feature-icone-a.svg' },
     { titulo: 'Culto online', tela: 'churches', icone: '▣' },
-    { titulo: 'Culto presencial', tela: 'churches', icone: 'assets/asset-14.svg' },
+    { titulo: 'Culto presencial', tela: 'churches', icone: 'assets/figma/home/feature-icone-b.svg' },
     { titulo: 'Gravações de cultos', tela: 'recordings', icone: '▤' },
     { titulo: 'Cantinho das crianças', tela: 'sermons', icone: '♟' },
     { titulo: 'Cantinho do testemunho', tela: 'testimony', icone: '☀' },
@@ -135,7 +135,7 @@
 
   function renderizarMensagens() {
     $('#posts').innerHTML = mensagens.map((p) =>
-      '<article class="post"><div class="post-head"><span class="avatar-mini"><img src="assets/asset-02.svg" alt=""></span>' +
+      '<article class="post"><div class="post-head"><span class="avatar-mini"><img src="assets/figma/home/priest.svg" alt=""></span>' +
       '<div><b>' + esc(p.nome) + '</b><time>' + esc(p.tempo) + '</time></div><span class="more">⋯</span></div>' +
       '<p>' + esc(p.texto) + '</p><div class="post-actions"><button class="like" type="button">♥ 25 curtidas</button>' +
       '<span class="comments">💬 13 comentários</span></div></article>').join('');

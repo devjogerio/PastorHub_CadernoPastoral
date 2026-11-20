@@ -42,13 +42,18 @@ if (!/nav-open/.test(css) || !/@media \(max-width: 920px\)/.test(css)) fail('CSS
 if (!/mark \{/.test(css)) fail('realce de termos ausente');
 ok('menu responsivo, submenus e pesquisa global presentes');
 
-const refs = [...all.matchAll(/(?:src|url\(|href)="?\/?(assets\/[A-Za-z0-9._-]+\.svg)/g)].map(m => m[1]);
+const refs = [...all.matchAll(/(?:src|url\(|href)="?\/?(assets\/[A-Za-z0-9._\/-]+\.svg)/g)].map(m => m[1]);
 const uniqueRefs = [...new Set(refs)];
 for (const ref of uniqueRefs) {
   const p = path.join(root, ref);
   if (!fs.existsSync(p) || fs.statSync(p).size < 50) fail('asset inválido: ' + ref);
 }
 ok('assets referenciados: ' + uniqueRefs.length);
+
+if (!fs.existsSync(path.join(root, 'ASSETS.md'))) fail('inventário de assets ausente (ASSETS.md)');
+const importados = fs.readdirSync(path.join(root, 'assets/figma/home')).filter(f => f.endsWith('.svg'));
+if (importados.length < 25) fail('assets insuficientes em assets/figma/home: ' + importados.length);
+else ok('assets organizados por tela: ' + importados.length + ' SVG');
 
 if (/figma\.com\/api\/mcp\/asset/.test(all)) fail('URL temporária do Figma no código');
 else ok('sem URLs temporárias do Figma');
