@@ -186,9 +186,12 @@
       '<h3>' + esc(p.etapa) + '</h3><span class="passo-prazo">' + esc(p.prazo) + '</span></div>').join('');
 
   /* ---------- Rodapé e CTA ---------- */
-  $('#footer-desc').textContent = INV.produto.descricao;
-  $('#footer-contato').textContent = INV.produto.contato;
-  $('#cta-contato').textContent = INV.produto.contato;
+  const footerDesc = $('#footer-desc');
+  if (footerDesc) footerDesc.textContent = INV.produto.descricao;
+  const footerContato = $('#footer-contato');
+  if (footerContato) footerContato.textContent = INV.produto.contato;
+  const ctaContato = $('#cta-contato');
+  if (ctaContato) ctaContato.textContent = INV.produto.contato;
 
   /* ---------- Reveal ---------- */
   const revealables = document.querySelectorAll('.feature, .step, .plan, .version-card, .int-card, .testimonials blockquote, .market-card, .tam-card, .gtm-card, .doc-card, .passo, .problem-card, .tl-card');
