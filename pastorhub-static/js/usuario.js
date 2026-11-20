@@ -91,6 +91,7 @@
     view: 'home',
     chatId: null,
     notifLidas: false,
+    favoritos: JSON.parse(localStorage.getItem('pastorhub_favoritos') || '[]'),
   };
 
   // ---------- Auth ----------
@@ -434,6 +435,7 @@
           <small>${escapeHtml(s.autor)}</small>
           <span class="sermon-tag">${escapeHtml(s.tipo)}</span>
         </div>
+        <button class="sermon-fav ${state.favoritos.includes(s.id) ? 'ativo' : ''}" data-action="serm-fav" data-serm-id="${s.id}" aria-label="Favoritar sermão" type="button">${icon('star', 'icon-sm')}</button>
       </div>
     `).join('');
 
@@ -619,6 +621,18 @@
       const backChat = e.target.closest('[data-action="back-chat"]');
       if (backChat) {
         navigateTo('home');
+        return;
+      }
+
+      // Favoritar / desfavoritar sermão
+      const sermFav = e.target.closest('[data-action="serm-fav"]');
+      if (sermFav) {
+        const id = parseInt(sermFav.dataset.sermId, 10);
+        state.favoritos = state.favoritos.includes(id)
+          ? state.favoritos.filter(x => x !== id)
+          : [...state.favoritos, id];
+        localStorage.setItem('pastorhub_favoritos', JSON.stringify(state.favoritos));
+        toast(state.favoritos.includes(id) ? 'Sermão salvo nos favoritos!' : 'Sermão removido dos favoritos.');
         return;
       }
 

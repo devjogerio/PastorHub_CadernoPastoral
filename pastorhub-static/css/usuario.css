@@ -312,10 +312,12 @@ body {
 
 .sermoes-list { display: flex; flex-direction: column; gap: 12px; }
 .sermon-card {
-  display: flex; gap: 14px; padding: 14px; background: #fff; border: 1px solid var(--line);
+  position: relative; display: flex; gap: 14px; padding: 14px; background: #fff; border: 1px solid var(--line);
   border-radius: 12px; align-items: flex-start; cursor: pointer; transition: all .15s;
 }
 .sermon-card:hover { border-color: var(--lime); }
+.sermon-fav { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: #fff; color: var(--muted); cursor: pointer; display: grid; place-items: center; }
+.sermon-fav.ativo { color: #db2777; border-color: #fbcfe8; background: #fdf2f8; }
 .sermon-card .sermon-thumb {
   width: 56px; height: 56px; border-radius: 10px; flex-shrink: 0; display: grid; place-items: center;
   background: linear-gradient(135deg, var(--navy), #002947); color: #fff; font-size: 1.5rem;
