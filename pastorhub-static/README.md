@@ -191,8 +191,8 @@ financeiro 3 anos** com gráfico · **Captação** (R$ 50.000, tranches, uso dos
 
 ## 📱 Módulos do app
 
-Início · Agenda (Eventos / WhatsApp / Integrações) · Atendimento · Sermões · **Conselho (Meet AI)** · Alertas —
-mais Configurações, Recursos pastorais e Busca global.
+Início · Agenda (Eventos / WhatsApp / Integrações) · Atendimento · Sermões · **Conselho (Meet AI)** —
+mais Configurações, Recursos pastorais, Alertas (pelo cartão do dashboard) e Busca global.
 
 ## 🗂️ Estrutura
 

@@ -1,4 +1,4 @@
-import { Home, Calendar, Users, BookOpen, Bell } from "lucide-react";
+import { Home, Calendar, Users, BookOpen } from "lucide-react";
 
 interface MobileBottomNavProps {
   activeView: string;
@@ -11,7 +11,6 @@ export function MobileBottomNav({ activeView, onViewChange }: MobileBottomNavPro
     { id: "agenda", label: "Agenda", icon: Calendar },
     { id: "atendimentos", label: "Atendimento", icon: Users },
     { id: "sermoes", label: "Sermões", icon: BookOpen },
-    { id: "notificacoes", label: "Alertas", icon: Bell },
   ];
 
   return (

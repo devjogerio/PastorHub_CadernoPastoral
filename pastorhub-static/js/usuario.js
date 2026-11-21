@@ -624,7 +624,6 @@
       { id: 'agenda', label: 'Agenda', icon: 'calendar' },
       { id: 'sermoes', label: 'Sermões', icon: 'video' },
       { id: 'biblioteca', label: 'Biblioteca', icon: 'book-open' },
-      { id: 'notificacoes', label: 'Alertas', icon: 'bell' },
     ];
     return navItems.map(n => `
       <button class="sidebar-item ${n.active ? 'active' : ''}" data-nav="${n.id}" type="button">

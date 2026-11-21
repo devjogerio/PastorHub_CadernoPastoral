@@ -19,7 +19,6 @@
     { id: 'atendimentos', label: 'Atendimento', icon: 'users' },
     { id: 'sermoes', label: 'Sermões', icon: 'book-open' },
     { id: 'conselho', label: 'Conselho', icon: 'video' },
-    { id: 'notificacoes', label: 'Alertas', icon: 'bell' },
   ];
 
   /* ---------- Render ---------- */
