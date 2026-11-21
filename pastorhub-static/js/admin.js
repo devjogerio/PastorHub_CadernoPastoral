@@ -165,8 +165,8 @@
 
   /* ================= CONTAS DO PAINEL ================= */
   const CONTAS = [
-    { email: 'admin@pastorhub.app', senha: 'admin1234', nome: 'Administrador', papel: 'admin', desde: '2025-01-15' },
-    { email: 'ana.b.rocha@email.com', senha: 'ana1234', nome: 'Ana Beatriz Rocha', papel: 'usuario', desde: '2025-06-03' },
+    { email: 'admin@pastorhub.app', nome: 'Administrador', papel: 'admin', desde: '2025-01-15' },
+    { email: 'ana.b.rocha@email.com', nome: 'Ana Beatriz Rocha', papel: 'usuario', desde: '2025-06-03' },
     /* conta vinculada ao Google (demonstração do login social) */
     { email: 'pastorhub.oficial@gmail.com', senha: null, nome: 'PastorHub Oficial', papel: 'admin', origem: 'google', desde: '2025-09-21' },
   ];
@@ -2444,26 +2444,22 @@
 
   $('#login-form').addEventListener('submit', (e) => {
     e.preventDefault();
-    /* normaliza: espaços nas pontas, caixa e acentos colados do copy/paste */
+    /* login demo: não há senhas reais no painel estático — só o e-mail identifica a conta */
     const email = $('#adm-email').value.trim().toLowerCase().replace(/\s+/g, '');
-    const senha = $('#adm-senha').value.trim();
-    if (!email || !senha) {
-      toast('Preencha e-mail e senha.', 'err');
+    if (!email) {
+      toast('Informe o e-mail.', 'err');
       return;
     }
     const conta = CONTAS.find((c) => c.email === email);
     if (!conta) {
-      toast('E-mail ou senha inválidos.', 'err');
+      toast('E-mail não encontrado (modo demo).', 'err');
       return;
     }
     if (conta.origem === 'google') {
       toast('Esta conta entra com Google. Use "Continuar com Google".', 'err');
       return;
     }
-    if (conta.senha !== senha) {
-      toast('E-mail ou senha inválidos.', 'err');
-      return;
-    }
+    /* qualquer senha (ou nenhuma) é aceita neste modo de demonstração */
     realizarLogin(conta);
   });
 

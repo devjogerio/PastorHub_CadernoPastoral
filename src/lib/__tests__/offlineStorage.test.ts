@@ -63,6 +63,15 @@ describe('OfflineStorage', () => {
     expect(OfflineStorage.getSyncQueue().length).toBe(0);
   });
 
+  it('removeFromSyncQueue remove somente a ação informada', () => {
+    OfflineStorage.addToSyncQueue({ id: 'a', type: 'create', data: {} });
+    OfflineStorage.addToSyncQueue({ id: 'b', type: 'delete', data: null });
+    OfflineStorage.removeFromSyncQueue('a');
+    const q = OfflineStorage.getSyncQueue();
+    expect(q.length).toBe(1);
+    expect(q[0].id).toBe('b');
+  });
+
   it('last sync e needsSync funcionam', () => {
     OfflineStorage.setLastSync(Date.now());
     expect(OfflineStorage.getLastSync()).toBeTypeOf('number');

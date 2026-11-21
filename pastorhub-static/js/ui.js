@@ -138,7 +138,7 @@
       '<button class="btn btn-sm btn-outline-stats" data-stat-edit type="button"><span class="action-icon">' + icon('edit', 'icon-sm') + '</span><span>Editar</span></button>' +
       '<button class="btn btn-sm btn-outline-stats" data-stat-save type="button" style="display:none"><span class="action-icon">' + icon('check', 'icon-sm') + '</span><span>Salvar</span></button>' +
       '<button class="btn btn-sm btn-outline-stats" data-stat-add type="button" style="display:none"><span class="action-icon">' + icon('plus', 'icon-sm') + '</span><span>Adicionar</span></button>' +
-      '<button class="btn btn-sm btn-outline-stats danger" data-stat-delete type="button"><span class="action-icon">' + icon('trash', 'icon-sm') + '</span><span>Excluir</span></button>' +
+      '<button class="btn btn-sm btn-outline-stats danger" data-stat-delete type="button"><span class="action-icon">' + icon('trash-2', 'icon-sm') + '</span><span>Excluir</span></button>' +
       '</div>';
 
     openSheet({

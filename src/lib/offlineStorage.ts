@@ -90,6 +90,16 @@ export class OfflineStorage {
     localStorage.removeItem(this.SYNC_QUEUE_KEY);
   }
 
+  // Remove uma ação da fila após sincronizar com sucesso (evita reprocessamento)
+  static removeFromSyncQueue(id: string): void {
+    try {
+      const queue = this.getSyncQueue().filter((a) => a.id !== id);
+      localStorage.setItem(this.SYNC_QUEUE_KEY, JSON.stringify(queue));
+    } catch (error) {
+      console.error("Erro ao remover da fila de sincronização:", error);
+    }
+  }
+
   // ==================== SINCRONIZAÇÃO ====================
 
   // Salvar timestamp da última sincronização

@@ -12,7 +12,6 @@
     telefone: '(86) 98903-8050',
     cargo: 'Pastor，顺便 titular',
     avatar: '',
-    senha: 'pastor123',
     criadoEm: null,
   };
 

@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
 
-// Importa funções de configuração do Vite
-import { defineConfig } from 'vite';
+// Importa defineConfig do Vitest (reexporta o do Vite) para configurar test.exclude
+import { defineConfig, defaultExclude } from 'vitest/config';
 // Plugin para React com SWC (mais rápido que Babel)
 import react from '@vitejs/plugin-react-swc';
 // Plugin oficial do Tailwind CSS para Vite 4.0+
@@ -44,6 +44,8 @@ export default defineConfig({
   ],
   test: {
     setupFiles: ['./src/test/setup.ts'],
+    // Evita coletar testes de worktrees do Claude (.claude/) além dos excludes padrão
+    exclude: [...defaultExclude, '**/.claude/**'],
   },
   // Configuração de resolução de módulos e aliases
   resolve: {

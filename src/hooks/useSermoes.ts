@@ -268,6 +268,8 @@ export function useSermoes(
             await SupabaseService.deleteSermao(action.id);
             break;
         }
+        // Remove cada ação já sincronizada para não reprocessar em caso de falha parcial
+        OfflineStorage.removeFromSyncQueue(action.id);
       }
 
       // Limpar fila após sincronização bem-sucedida

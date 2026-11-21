@@ -39,6 +39,10 @@ vi.mock('../../lib/supabaseService', () => {
 vi.mock('../../lib/offlineStorage', () => {
   let sermoes: any[] = [];
   let queue: any[] = [];
+  // Espião para verificar a remoção individual de cada ação sincronizada
+  const removeFromSyncQueue = vi.fn((id: string) => {
+    queue = queue.filter((a) => a.id !== id);
+  });
   return {
     OfflineStorage: {
       saveSermoes: (s: any[]) => {
@@ -58,6 +62,7 @@ vi.mock('../../lib/offlineStorage', () => {
         queue.push(action);
       },
       getSyncQueue: () => queue,
+      removeFromSyncQueue,
       clearSyncQueue: () => {
         queue = [];
       },
@@ -135,5 +140,34 @@ describe('useSermoes (integração)', () => {
 
     expect(result.useSupabase).toBe(false);
     expect(Array.isArray(result.sermoes)).toBe(true);
+  });
+
+  it('sincroniza a fila removendo cada ação individualmente', async () => {
+    vi.stubGlobal('navigator', { onLine: true } as any);
+    const { OfflineStorage } = await import('../../lib/offlineStorage');
+
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    const root = createRoot(container);
+
+    const result: any = await new Promise((resolve) => {
+      root.render(
+        <TestHost
+          isAuthenticated={true}
+          isConfigured={true}
+          onReady={resolve}
+        />
+      );
+    });
+
+    OfflineStorage.addToSyncQueue({ id: 'a1', type: 'create', data: { id: 'a1' } });
+    OfflineStorage.addToSyncQueue({ id: 'a2', type: 'delete', data: null });
+
+    await result.syncWithSupabase();
+
+    // Cada ação sincronizada é removida individualmente e a fila fica vazia no fim
+    expect(OfflineStorage.removeFromSyncQueue).toHaveBeenCalledWith('a1');
+    expect(OfflineStorage.removeFromSyncQueue).toHaveBeenCalledWith('a2');
+    expect(OfflineStorage.getSyncQueue().length).toBe(0);
   });
 });
