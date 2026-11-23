@@ -18,6 +18,7 @@ import {
   type TipoAquisicao,
 } from '../../lib/biblioteca';
 import { Link, navegar } from '../../app/router';
+import { AmostraDialog } from './AmostraDialog';
 import { AquisicaoDialog } from './AquisicaoDialog';
 import { useFavoritosBiblioteca } from './useFavoritosBiblioteca';
 
@@ -30,6 +31,7 @@ export function BibliotecaCatalogo() {
   const [termo, setTermo] = useState('');
   const [categoria, setCategoria] = useState('todos');
   const [aquisicao, setAquisicao] = useState<AquisicaoAberta | null>(null);
+  const [amostra, setAmostra] = useState<LivroBiblioteca | null>(null);
   const { alternar, ehFavorito } = useFavoritosBiblioteca();
 
   const livros = useMemo(
@@ -173,7 +175,7 @@ export function BibliotecaCatalogo() {
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   <Button
                     size="sm"
-                    className="h-7 px-2 text-xs"
+                    className="h-11 px-2 text-xs sm:h-7"
                     onClick={() => navegar(`biblioteca/${livro.id}`)}
                   >
                     Ler
@@ -182,7 +184,8 @@ export function BibliotecaCatalogo() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="h-7 px-2 text-xs"
+                    className="h-11 px-2 text-xs sm:h-7"
+                    aria-label={`Comprar ${livro.titulo}`}
                     onClick={() => setAquisicao({ livro, tipo: 'comprar' })}
                   >
                     Comprar
@@ -190,10 +193,21 @@ export function BibliotecaCatalogo() {
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="h-7 px-2 text-xs text-[#3261AB]"
+                    className="h-11 px-2 text-xs text-[#3261AB] sm:h-7"
+                    aria-label={`Alugar ${livro.titulo}`}
                     onClick={() => setAquisicao({ livro, tipo: 'alugar' })}
                   >
                     Alugar
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-11 border-dashed border-[#3261AB] px-2 text-xs text-[#3261AB] sm:h-7"
+                    aria-label={`Ver amostra de ${livro.titulo}`}
+                    aria-haspopup="dialog"
+                    onClick={() => setAmostra(livro)}
+                  >
+                    Amostra
                   </Button>
                 </div>
               </div>
@@ -208,6 +222,18 @@ export function BibliotecaCatalogo() {
           categoria.
         </p>
       )}
+
+      <AmostraDialog
+        livro={amostra}
+        aberto={Boolean(amostra)}
+        onOpenChange={(aberto) => {
+          if (!aberto) setAmostra(null);
+        }}
+        onEscolherTipo={(tipo) => {
+          if (amostra) setAquisicao({ livro: amostra, tipo });
+          setAmostra(null);
+        }}
+      />
 
       <AquisicaoDialog
         livro={aquisicao?.livro ?? null}
