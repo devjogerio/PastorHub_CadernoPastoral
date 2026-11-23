@@ -1,0 +1,68 @@
+services:
+  # Aplicação React/Vite compilada e servida via Nginx (Produção)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+      args:
+        VITE_SUPABASE_URL: ${VITE_SUPABASE_URL:-}
+        VITE_SUPABASE_ANON_KEY: ${VITE_SUPABASE_ANON_KEY:-}
+    image: pastorhub-app:latest
+    container_name: pastorhub-app
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    restart: unless-stopped
+    networks:
+      - pastorhub-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+
+  # Ambiente de desenvolvimento com hot-reload (execute com: docker compose --profile dev up)
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    image: pastorhub-app:dev
+    container_name: pastorhub-app-dev
+    ports:
+      - "${VITE_DEV_PORT:-5173}:5173"
+    environment:
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL:-}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY:-}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: unless-stopped
+    networks:
+      - pastorhub-net
+    profiles:
+      - dev
+
+  # Versão estática HTML/JS pura (execute com: docker compose --profile static up)
+  static:
+    image: nginx:1.27-alpine
+    container_name: pastorhub-static
+    ports:
+      - "${STATIC_PORT:-8081}:80"
+    volumes:
+      - ./pastorhub-static:/usr/share/nginx/html:ro
+    restart: unless-stopped
+    networks:
+      - pastorhub-net
+    profiles:
+      - static
+
+networks:
+  pastorhub-net:
+    driver: bridge
