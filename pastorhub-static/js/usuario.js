@@ -332,7 +332,6 @@
         // Referência fixa do contêiner principal, conforme solicitado.
         view = document.querySelector('#view') || view;
         view.innerHTML = window.UsuarioPerfil.render();
-        window.UsuarioPerfil.ativarEventos(view);
         break;
       default:
         state.view = 'home';
@@ -985,6 +984,16 @@
       }
       if (e.target.closest('[data-action="perfil-foto-remover"]')) {
         window.UsuarioPerfil.removerFoto();
+        return;
+      }
+
+      // Perfil: modal do card "Meu perfil" (abrir/fechar)
+      if (e.target.closest('[data-action="perfil-modal-abrir"]')) {
+        window.UsuarioPerfil.abrirModal();
+        return;
+      }
+      if (e.target.closest('[data-action="perfil-modal-fechar"]')) {
+        window.UsuarioPerfil.fecharModal();
         return;
       }
 

@@ -136,8 +136,30 @@
     });
   }
 
-  function abrirGaleria() { el('#perfil-foto-input')?.click(); }
-  function abrirCamera() { el('#perfil-foto-cam')?.click(); }
+  /* Cria um input[type=file] sob demanda (galeria/câmera): nenhum input
+     fixo permanece no DOM. O elemento é removido ao confirmar ou
+     cancelar a seleção, sem deixar vestígios visuais/funcionais. */
+  function criarInputFoto(aceitos, rotulo, captura) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = aceitos;
+    input.setAttribute('aria-label', rotulo);
+    input.style.display = 'none';
+    const limpar = () => input.remove();
+    input.addEventListener('change', () => {
+      const arquivo = input.files && input.files[0];
+      limpar();
+      if (arquivo) escolherFoto(arquivo);
+    });
+    input.addEventListener('cancel', limpar);
+    document.body.appendChild(input);
+    input.click();
+  }
+
+  function abrirGaleria() {
+    criarInputFoto('image/jpeg, image/png, image/webp, image/gif', 'Escolher da galeria');
+  }
+  function abrirCamera() { criarInputFoto('image/*', 'Tirar foto', 'environment'); }
   function abrirZoom() {
     const zoom = el('#perfil-zoom');
     if (!zoom) return;
@@ -226,6 +248,8 @@
           '<button type="button" class="perfil-btn outline perfil-btn-block" data-action="perfil-foto-camera">' + ico('camera') + 'Tirar foto</button>' +
         '</div>' +
         '<button type="button" id="perfil-foto-remover" class="perfil-btn danger perfil-btn-block" data-action="perfil-foto-remover" ' + (d.fotoUrl ? '' : 'disabled') + '>' + ico('trash-2') + 'Remover foto</button>' +
+        /* Abre o modal com o card "Meu perfil" (artigo não renderizado direto) */
+        '<button type="button" id="perfil-editar-btn" class="perfil-btn outline perfil-btn-block" data-action="perfil-modal-abrir">' + ico('edit') + 'Editar perfil</button>' +
       '</div>' +
       /* ----- Ampliação da foto ----- */
       '<div class="perfil-zoom" id="perfil-zoom" hidden>' +
@@ -238,46 +262,46 @@
       '</div>' +
       /* ----- menu (padrão anterior, mantido) ----- */
       '<nav class="perfil-menu">' + MENU.map(itemMenu).join('') + '</nav>' +
-      /* ----- card de informações (padrão anterior, mantido) ----- */
-      '<article class="perfil-card">' +
-        '<div class="perfil-card-head">' +
-          '<div><h3>Meu perfil</h3><p>Veja e edite suas informações.</p></div>' +
-          '<button class="perfil-edit-ico" type="button" data-action="perfil-editar" aria-label="Editar informações">' + ico('edit') + '</button>' +
+      /* ----- card de informações: exibido exclusivamente em modal ----- */
+      '<div class="perfil-modal" id="perfil-modal" hidden>' +
+        '<div class="perfil-modal-backdrop" data-action="perfil-modal-fechar"></div>' +
+        '<div class="perfil-modal-panel" role="dialog" aria-modal="true" aria-label="Meu perfil">' +
+          '<article class="perfil-card">' +
+            '<div class="perfil-card-head">' +
+              '<div><h3>Meu perfil</h3><p>Veja e edite suas informações.</p></div>' +
+              '<button class="perfil-edit-ico" type="button" data-action="perfil-editar" aria-label="Editar informações">' + ico('edit') + '</button>' +
+            '</div>' +
+            '<div class="perfil-card-body">' +
+              '<div class="perfil-fields">' +
+                campo('user', d.nome) +
+                campo('mail', d.email) +
+                campo('map-pin', d.cidade) +
+                campo('calendar', 'Membro desde ' + d.membroDesde) +
+              '</div>' +
+            '</div>' +
+            '<div class="perfil-actions">' +
+              '<button class="perfil-btn primary" type="button" data-action="perfil-editar">' + ico('user') + ' Editar perfil</button>' +
+              '<button class="perfil-btn outline" type="button" data-action="perfil-compartilhar">' + ico('share') + ' Compartilhar</button>' +
+            '</div>' +
+          '</article>' +
+          '<button type="button" class="perfil-btn outline perfil-btn-block" data-action="perfil-modal-fechar">' + ico('x') + 'Fechar</button>' +
         '</div>' +
-        '<div class="perfil-card-body">' +
-          '<div class="perfil-fields">' +
-            campo('user', d.nome) +
-            campo('mail', d.email) +
-            campo('map-pin', d.cidade) +
-            campo('calendar', 'Membro desde ' + d.membroDesde) +
-          '</div>' +
-        '</div>' +
-        '<div class="perfil-actions">' +
-          '<button class="perfil-btn primary" type="button" data-action="perfil-editar">' + ico('user') + ' Editar perfil</button>' +
-          '<button class="perfil-btn outline" type="button" data-action="perfil-compartilhar">' + ico('share') + ' Compartilhar</button>' +
-        '</div>' +
-      '</article>' +
-      /* ----- inputs ocultos de seleção de foto ----- */
-      '<input id="perfil-foto-input" type="file" accept="image/jpeg, image/png, image/webp, image/gif" class="perfil-foto-input">' +
-      '<input id="perfil-foto-cam" type="file" accept="image/*" capture="environment" class="perfil-foto-input">' +
+      '</div>' +
     '</section>';
   }
 
-  /* Ativa listeners de mudança dos inputs após renderizar no #view. */
-  function ativarEventos(viewEl) {
-    const inputs = [
-      ['perfil-foto-input', 'galeria'],
-      ['perfil-foto-cam', 'camera'],
-    ];
-    for (const [id, ] of inputs) {
-      const elIn = viewEl ? viewEl.querySelector('#' + id) : document.querySelector('#' + id);
-      if (!elIn) continue;
-      elIn.addEventListener('change', () => {
-        const arquivo = elIn.files && elIn.files[0];
-        elIn.value = '';
-        if (arquivo) escolherFoto(arquivo);
-      });
-    }
+  /* Abre/fecha o modal do card "Meu perfil" (#perfil-modal). */
+  function abrirModal() {
+    const modal = el('#perfil-modal');
+    if (!modal) return;
+    modal.hidden = false;
+    const fechar = modal.querySelector('[data-action="perfil-modal-fechar"].perfil-btn');
+    if (fechar) fechar.focus();
+  }
+
+  function fecharModal() {
+    const modal = el('#perfil-modal');
+    if (modal) modal.hidden = true;
   }
 
   /* ---------------- Edição e compartilhamento (mantidos) ---------------- */
@@ -337,7 +361,7 @@
   }
 
   window.UsuarioPerfil = {
-    render, ativarEventos,
+    render, abrirModal, fecharModal,
     abrirEdicao, salvarFormulario, compartilhar, carregar, iniciais,
     abrirGaleria, abrirCamera, abrirZoom, fecharZoom,
     confirmarFoto, removerFoto, escolherFoto,

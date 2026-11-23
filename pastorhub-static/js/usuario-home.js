@@ -27,7 +27,7 @@
   // Navegação inferior (item ativo acompanha a view atual)
   const NAV = [
     { id: 'home', rotulo: 'Início', icone: 'home' },
-    { id: 'biblioteca', rotulo: 'Bíblia', icone: 'book-open' },
+    { id: 'biblioteca', rotulo: 'biblioteca', icone: 'book-open' },
     { id: 'chat', rotulo: 'Comunidade', icone: 'users' },
     { id: 'agenda', rotulo: 'Eventos', icone: 'calendar' },
     { id: 'perfil', rotulo: 'Perfil', icone: 'user' },
