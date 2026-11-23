@@ -1,2 +1,4 @@
 @import "tailwindcss";
 @import "./styles/globals.css";
+/* Site institucional — CSS portado de pastorhub-static/css/site.css */
+@import "./styles/site.css";

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PastorHub · Roadmap v1.0 → v2.0</title>
+  <link rel="stylesheet" href="../css/docs.css?v=4">
+</head>
+<body>
+
+  <div class="doc-toolbar">
+    <div class="t-left">
+      <a href="../site.html">← Site</a>
+      <a href="proposta-investimento.html">Proposta</a>
+      <a href="apresentacao.html">Deck</a>
+      <a href="ficha-tecnica.html">Ficha técnica</a>
+      <a href="manual-usuario.html">Manual</a>
+      <a href="ecossistema-ia.html">Ecossistema de IA</a>
+      <a href="registro-tecnico.html">Registro técnico</a>
+      <a href="biblioteca.html" style="color:#d8ec9f;font-weight:700">Biblioteca</a>
+    </div>
+    <div class="t-right"><button class="btn-doc" onclick="window.print()">Imprimir / Salvar em PDF</button></div>
+  </div>
+
+  <article class="doc">
+    <header class="cover">
+      <span class="kicker">Roadmap do produto</span>
+      <h1>Do MVP ao v2.0</h1>
+      <p class="sub">Tranche 1 destrava os gargalos técnicos. Tranche 2 financia o motor de vendas.</p>
+      <p class="tagline">v1.0 concluído · v1.5 em 3–6 meses · v2.0 em 6–12 meses</p>
+      <div class="cover-meta">
+        <div><div class="m-label">v1.0</div><div class="m-value">Concluído — MVP funcional</div></div>
+        <div><div class="m-label">v1.5</div><div class="m-value">3–6 meses · Tranche 1 (R$ 15.000)</div></div>
+        <div><div class="m-label">v2.0</div><div class="m-value">6–12 meses · Tranche 2 (R$ 35.000)</div></div>
+        <div><div class="m-label">Meta</div><div class="m-value">1.000 assentos pagantes</div></div>
+      </div>
+    </header>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">1</span> Visão por versão</h2>
+      <div class="grid-3" id="roadmap-cards"></div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">2</span> Linha do tempo</h2>
+      <div class="tl" id="roadmap-timeline-doc"></div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">3</span> Marcos de investimento</h2>
+      <div class="keyfacts" id="marcos-doc"></div>
+      <div class="callout lime" style="margin-top:20px">
+        <strong>Critério de desbloqueio</strong>
+        A Tranche 2 é liberada quando a Tranche 1 tiver entregue: IA em produção contínua, migração da stack concluída,
+        lançamento público validado e CAC medido dentro da faixa de R$ 60–90.
+      </div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">4</span> Riscos acompanhados no roadmap</h2>
+      <table class="doc-table">
+        <thead><tr><th style="width:34%">Risco</th><th style="width:14%">Probabilidade</th><th>Mitigação</th></tr></thead>
+        <tbody id="riscos-doc"></tbody>
+      </table>
+    </section>
+
+    <footer class="legal">
+      <p><b>PastorHub · Roadmap</b> — Prazos e entregas sujeito a ajuste em due diligence e execução das tranches.</p>
+    </footer>
+  </article>
+
+  <script src="../js/investidor.js"></script>
+  <script src="../js/docs.js?v=2"></script>
+  <script>Docs.renderRoadmap();</script>
+</body>
+</html>

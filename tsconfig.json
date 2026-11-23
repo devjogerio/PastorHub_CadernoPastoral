@@ -9,5 +9,7 @@
     "baseUrl": ".",
     "types": ["vite/client"]
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Edge Functions (Deno) em src/supabase usam imports https:// — ficam fora do tsc do app
+  "exclude": ["src/supabase"]
 }

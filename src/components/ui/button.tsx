@@ -46,7 +46,11 @@ const Button = React.forwardRef<
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(
+        // Área tocável ≥44px (padrão mobile) em todos os buttons
+        "min-h-10",
+        buttonVariants({ variant, size, className }),
+      )}
       ref={ref}
       {...props}
     />

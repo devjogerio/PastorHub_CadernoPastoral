@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PastorHub · Biblioteca Digital · Comprar e Alugar</title>
+  <link rel="stylesheet" href="../css/docs.css?v=4">
+  <link rel="stylesheet" href="../css/biblioteca-acervo.css?v=2">
+</head>
+<body>
+
+  <div class="doc-toolbar">
+    <div class="t-left">
+      <a href="../site.html">← Site</a>
+      <a href="proposta-investimento.html">Proposta</a>
+      <a href="apresentacao.html">Deck</a>
+      <a href="ficha-tecnica.html">Ficha técnica</a>
+      <a href="manual-usuario.html">Manual</a>
+      <a href="ecossistema-ia.html">Ecossistema de IA</a>
+      <a href="registro-tecnico.html">Registro técnico</a>
+      <a href="biblioteca.html">Biblioteca</a>
+      <a href="biblioteca-comprar-alugar.html" style="color:#d8ec9f;font-weight:700" aria-current="page">Comprar e Alugar</a>
+    </div>
+    <div class="t-right"><button class="btn-doc" type="button" onclick="window.print()">Imprimir / Salvar em PDF</button></div>
+  </div>
+
+  <article class="doc">
+    <header class="cover">
+      <span class="kicker">Biblioteca Digital · Acervo</span>
+      <h1>Comprar e Alugar</h1>
+      <p class="sub">Escolha uma obra do acervo, veja os detalhes e a pré-visualização do conteúdo e registre sua solicitação de compra ou aluguel com a forma de pagamento desejada.</p>
+      <p class="tagline">Obras em domínio público ou com licença aberta · valor confirmado antes da cobrança</p>
+      <div class="cover-foot">PastorHub · Biblioteca Digital · Comprar e Alugar · v1.0</div>
+    </header>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">1</span> Como funciona</h2>
+      <div class="grid-3">
+        <div class="mini-card">
+          <h4>1. Escolha a obra</h4>
+          <p>Filtre por categoria ou busque por título e autor. Cada card tem os botões Comprar e Alugar.</p>
+        </div>
+        <div class="mini-card">
+          <h4>2. Revise e informe</h4>
+          <p>No modal, confira detalhes e a pré-visualização, escolha a forma de pagamento e o e-mail de contato.</p>
+        </div>
+        <div class="mini-card">
+          <h4>3. Receba o protocolo</h4>
+          <p>A solicitação é registrada com um número de protocolo. O retorno chega no e-mail informado.</p>
+        </div>
+      </div>
+      <div class="callout blue" style="margin-top:20px">
+        <strong>Valores</strong>
+        O acervo não traz preços fixos. O valor de cada obra é confirmado pela equipe antes de qualquer cobrança.
+      </div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">2</span> Catálogo para compra e aluguel</h2>
+      <p class="lead-doc">Use a busca e as categorias para encontrar a obra. Todas as opções abrem em janela com detalhes e formas de pagamento.</p>
+
+      <div class="bib-busca">
+        <input type="search" id="acq-busca" placeholder="Buscar por título, autor ou tema…" autocomplete="off" aria-label="Buscar no acervo para compra e aluguel">
+      </div>
+      <div class="bib-filtros" id="acq-filtros" role="group" aria-label="Filtrar por categoria"></div>
+      <p class="lead-doc" id="acq-contador" style="margin:14px 0 0;font-size:.82rem"></p>
+
+      <div class="acq-grid" id="acq-grid" style="margin-top:12px"></div>
+      <p class="acq-vazio" id="acq-vazio" hidden>Nenhuma obra encontrada para essa busca. Tente outro termo ou categoria.</p>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">3</span> Formas de pagamento</h2>
+      <div class="grid-3">
+        <div class="mini-card">
+          <h4>Pix</h4>
+          <p>Pagamento instantâneo. O QR Code é enviado depois da confirmação.</p>
+        </div>
+        <div class="mini-card">
+          <h4>Cartão de crédito</h4>
+          <p>Cobrança na confirmação, conforme a condição da oferta.</p>
+        </div>
+        <div class="mini-card">
+          <h4>Boleto bancário</h4>
+          <p>A compensação acontece após o pagamento do boleto.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="legal">
+      <p><b>PastorHub · Biblioteca Digital</b> — Acervo composto por obras em domínio público ou com licença aberta. Compra e aluguel referem-se à oferta de acesso à edição indicada; consulte a licença de cada título.</p>
+    </footer>
+  </article>
+
+  <div class="acq-modal" id="acq-modal" hidden>
+    <div class="acq-modal-backdrop" data-acq-fechar></div>
+    <div class="acq-modal-card" id="acq-modal-card" role="dialog" aria-modal="true" tabindex="-1"></div>
+  </div>
+
+  <div id="acq-toasts" aria-live="polite"></div>
+
+  <script src="../js/biblioteca.js?v=2"></script>
+  <script src="../js/biblioteca-comprar.js?v=1"></script>
+</body>
+</html>

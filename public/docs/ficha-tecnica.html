@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PastorHub · Ficha Técnica do Produto</title>
+  <link rel="stylesheet" href="../css/docs.css?v=4">
+</head>
+<body>
+
+  <div class="doc-toolbar">
+    <div class="t-left">
+      <a href="../site.html">← Site</a>
+      <a href="proposta-investimento.html">Proposta</a>
+      <a href="apresentacao.html">Deck</a>
+      <a href="manual-usuario.html">Manual</a>
+      <a href="roadmap.html">Roadmap</a>
+      <a href="registro-tecnico.html">Registro técnico</a>
+      <a href="biblioteca.html" style="color:#d8ec9f;font-weight:700">Biblioteca</a>
+    </div>
+    <div class="t-right"><button class="btn-doc" onclick="window.print()">Imprimir / Salvar em PDF</button></div>
+  </div>
+
+  <article class="doc">
+    <header class="cover">
+      <span class="kicker">Documento técnico · Confidencial</span>
+      <h1>Ficha Técnica do Produto</h1>
+      <p class="sub">PastorHub — Caderno do Pastor (v1.0 MVP)</p>
+      <p class="tagline">Stack atual, stack futura, módulos, autenticação, persistência e uso responsável de IA.</p>
+      <div class="cover-meta">
+        <div><div class="m-label">Plataformas</div><div class="m-value">Web responsiva / PWA (mobile-first)</div></div>
+        <div><div class="m-label">Volume construído</div><div class="m-value">3.500+ linhas de código</div></div>
+        <div><div class="m-label">Documentação</div><div class="m-value">3.000+ linhas técnicas e de usuário</div></div>
+        <div><div class="m-label">Cores de marca</div><div class="m-value">#002645 · #95C121 · #3261AB</div></div>
+      </div>
+    </header>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">1</span> Atributos do produto</h2>
+      <table class="doc-table">
+        <thead><tr><th style="width:32%">Atributo</th><th>Especificação</th></tr></thead>
+        <tbody id="ficha-table"></tbody>
+      </table>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">2</span> Stack e arquitetura</h2>
+      <div class="grid-3" id="stack-grid"></div>
+      <div class="callout lime" style="margin-top:20px">
+        <strong>Por que migrar para FastAPI + Vue 3</strong>
+        <span id="porque-migrar"></span>
+      </div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">3</span> Módulos do produto</h2>
+      <div class="grid-2" id="modulos-doc"></div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">4</span> Fluxo técnico ponta a ponta</h2>
+      <div class="grid-2" id="fluxo-doc"></div>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">5</span> Maturidade e checklist de lançamento</h2>
+      <table class="doc-table">
+        <thead><tr><th style="width:62%">Item do produto</th><th>Status</th></tr></thead>
+        <tbody id="maturidade-doc"></tbody>
+      </table>
+      <div class="callout blue" style="margin-top:18px">
+        <strong>Estático de demonstração</strong>
+        Além do MVP em React/Supabase, existe uma versão 100% estática (HTML, CSS e JavaScript puro) nas versões mobile,
+        tablet e desktop, com site institucional e painel administrativo completo — usada como material de demonstração
+        para investidores, sem build e sem dependências.
+      </div>
+    </section>
+
+    <footer class="legal">
+      <p><b>PastorHub · Documento Confidencial</b> — Documento informativo. Estimativas e especificações sujeitas a revisão.</p>
+    </footer>
+  </article>
+
+  <script src="../js/investidor.js"></script>
+  <script src="../js/docs.js?v=2"></script>
+  <script>Docs.renderFicha();</script>
+</body>
+</html>
