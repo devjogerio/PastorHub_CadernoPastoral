@@ -62,6 +62,7 @@
         '<div class="acq-actions">' +
           '<button class="acq-btn" type="button" data-acq-livro="' + esc(l.id) + '" data-acq-tipo="comprar" aria-label="Comprar ' + esc(l.titulo) + '">Comprar</button>' +
           '<button class="acq-btn-outline" type="button" data-acq-livro="' + esc(l.id) + '" data-acq-tipo="alugar" aria-label="Alugar ' + esc(l.titulo) + '">Alugar</button>' +
+          '<button class="acq-btn-ghost" type="button" data-acq-livro="' + esc(l.id) + '" data-acq-tipo="amostra" aria-haspopup="dialog" aria-label="Ver amostra de ' + esc(l.titulo) + '">Amostra</button>' +
         '</div>' +
       '</div>' +
     '</article>';
@@ -142,23 +143,49 @@
     '</form>';
   }
 
+  function cabecalhoModal(l) {
+    return '<header class="acq-modal-head">' +
+      '<div class="acq-modal-cover" aria-hidden="true">' + esc(l.emoji) + '</div>' +
+      '<div><h2 id="acq-modal-titulo">' + esc(l.titulo) + '</h2><p>' + esc(l.autor) + '</p></div>' +
+      '<button class="acq-modal-close" type="button" data-acq-fechar aria-label="Fechar">×</button>' +
+    '</header>';
+  }
+
+  function corpoAquisicao(l, tipo) {
+    return '<div class="acq-modal-body" id="acq-modal-corpo" data-livro="' + esc(l.id) + '">' +
+      abas(tipo) +
+      '<section class="acq-sec"><h3>Detalhes da obra</h3>' + linhasDetalhe(l) + '</section>' +
+      '<section class="acq-sec"><h3>Visualização do conteúdo</h3>' + previewHtml(l) + '</section>' +
+      '<section class="acq-sec" id="acq-bloco-form">' + formularioHtml(tipo) + '</section>' +
+    '</div>';
+  }
+
+  /* Amostra: somente leitura, sem formulário de pagamento. Os botões
+     Comprar/Alugar abrem o fluxo de aquisição no mesmo modal. */
+  function corpoAmostra(l) {
+    const acao = (tipo, classe, rotulo) =>
+      '<button class="' + classe + '" type="button" data-acq-livro="' + esc(l.id) + '" data-acq-tipo="' + tipo + '">' + rotulo + '</button>';
+    return '<div class="acq-modal-body" id="acq-modal-corpo" data-livro="' + esc(l.id) + '">' +
+      '<section class="acq-sec"><h3>Detalhes da obra</h3>' + linhasDetalhe(l) + '</section>' +
+      '<section class="acq-sec"><h3>Amostra do conteúdo</h3>' + previewHtml(l) + '</section>' +
+      '<div class="acq-modal-foot">' +
+        '<button class="acq-btn-outline" type="button" data-acq-fechar>Fechar</button>' +
+        acao('alugar', 'acq-btn-outline', 'Alugar') +
+        acao('comprar', 'acq-btn', 'Comprar') +
+      '</div>' +
+    '</div>';
+  }
+
   function abrirModal(livroId, tipo, gatilho) {
     const l = buscarLivro(livroId);
-    if (!l || !TIPOS[tipo]) return;
-    estado.gatilho = gatilho || null;
+    if (!l || (!TIPOS[tipo] && tipo !== 'amostra')) return;
+    // Ação disparada de dentro do modal preserva o gatilho original (o card),
+    // que recebe o foco ao fechar.
+    const dentroDoModal = !!(gatilho && gatilho.closest && gatilho.closest('#acq-modal'));
+    if (!dentroDoModal) estado.gatilho = gatilho || null;
     const card = $('#acq-modal-card');
-    card.innerHTML =
-      '<header class="acq-modal-head">' +
-        '<div class="acq-modal-cover" aria-hidden="true">' + esc(l.emoji) + '</div>' +
-        '<div><h2 id="acq-modal-titulo">' + esc(l.titulo) + '</h2><p>' + esc(l.autor) + '</p></div>' +
-        '<button class="acq-modal-close" type="button" data-acq-fechar aria-label="Fechar">×</button>' +
-      '</header>' +
-      '<div class="acq-modal-body" id="acq-modal-corpo" data-livro="' + esc(l.id) + '">' +
-        abas(tipo) +
-        '<section class="acq-sec"><h3>Detalhes da obra</h3>' + linhasDetalhe(l) + '</section>' +
-        '<section class="acq-sec"><h3>Visualização do conteúdo</h3>' + previewHtml(l) + '</section>' +
-        '<section class="acq-sec" id="acq-bloco-form">' + formularioHtml(tipo) + '</section>' +
-      '</div>';
+    card.innerHTML = cabecalhoModal(l) +
+      (tipo === 'amostra' ? corpoAmostra(l) : corpoAquisicao(l, tipo));
     card.dataset.tipo = tipo;
     card.setAttribute('aria-labelledby', 'acq-modal-titulo');
     const m = modalEl();

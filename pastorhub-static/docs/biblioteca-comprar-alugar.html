@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PastorHub · Biblioteca Digital · Comprar e Alugar</title>
   <link rel="stylesheet" href="../css/docs.css?v=4">
-  <link rel="stylesheet" href="../css/biblioteca-acervo.css?v=2">
+  <link rel="stylesheet" href="../css/biblioteca-acervo.css?v=3">
 </head>
 <body>
 
@@ -55,15 +55,17 @@
       </div>
     </section>
 
-    <section class="page">
-      <h2 class="doc-h"><span class="n">2</span> Catálogo para compra e aluguel</h2>
-      <p class="lead-doc">Use a busca e as categorias para encontrar a obra. Todas as opções abrem em janela com detalhes e formas de pagamento.</p>
+    <section class="page acq-secao" aria-labelledby="acq-secao-titulo">
+      <h2 class="doc-h" id="acq-secao-titulo"><span class="n">2</span> Catálogo para compra e aluguel</h2>
+      <p class="lead-doc">Use a busca e as categorias para encontrar a obra. Veja uma amostra antes de comprar ou alugar; todas as opções abrem em janela com detalhes e formas de pagamento.</p>
 
-      <div class="bib-busca">
-        <input type="search" id="acq-busca" placeholder="Buscar por título, autor ou tema…" autocomplete="off" aria-label="Buscar no acervo para compra e aluguel">
+      <div class="acq-toolbar">
+        <div class="bib-busca">
+          <input type="search" id="acq-busca" placeholder="Buscar por título, autor ou tema…" autocomplete="off" aria-label="Buscar no acervo para compra e aluguel">
+        </div>
+        <div class="bib-filtros" id="acq-filtros" role="group" aria-label="Filtrar por categoria"></div>
+        <p class="lead-doc" id="acq-contador" role="status" style="margin:4px 0 0;font-size:.82rem"></p>
       </div>
-      <div class="bib-filtros" id="acq-filtros" role="group" aria-label="Filtrar por categoria"></div>
-      <p class="lead-doc" id="acq-contador" style="margin:14px 0 0;font-size:.82rem"></p>
 
       <div class="acq-grid" id="acq-grid" style="margin-top:12px"></div>
       <p class="acq-vazio" id="acq-vazio" hidden>Nenhuma obra encontrada para essa busca. Tente outro termo ou categoria.</p>
@@ -100,6 +102,6 @@
   <div id="acq-toasts" aria-live="polite"></div>
 
   <script src="../js/biblioteca.js?v=2"></script>
-  <script src="../js/biblioteca-comprar.js?v=1"></script>
+  <script src="../js/biblioteca-comprar.js?v=3"></script>
 </body>
 </html>

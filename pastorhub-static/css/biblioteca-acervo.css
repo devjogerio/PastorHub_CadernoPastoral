@@ -45,9 +45,23 @@
 .acq-btn-lime { background: var(--lime); color: var(--navy); }
 .acq-btn-lime:hover { background: #7ea51a; color: #fff; }
 .acq-btn:active, .acq-btn-outline:active, .acq-btn-lime:active { transform: scale(.97); }
+/* Amostra: ação de leitura, secundária em relação a Comprar/Alugar.
+   Azul #3261AB sobre branco tem contraste ≥ 4.5:1 (WCAG AA) e a borda
+   atinge 3:1 para estados de controle. */
+.acq-btn-ghost {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border-radius: 9px; padding: 8px 14px; font-family: inherit; font-size: .8rem; font-weight: 600; line-height: 1.2;
+  cursor: pointer; white-space: nowrap; background: #fff; color: var(--blue);
+  border: 1.5px dashed var(--blue); transition: background .16s, color .16s, border-color .16s, transform .12s;
+}
+.acq-btn-ghost:hover { background: var(--soft); color: var(--navy); border-color: var(--navy); }
+.acq-btn-ghost:active { transform: scale(.97); }
+.acq-btn-ghost:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+.acq-btn-ghost:disabled { opacity: .6; cursor: wait; }
+
 .acq-btn:focus-visible, .acq-btn-outline:focus-visible, .acq-btn-lime:focus-visible,
 .acq-card button:focus-visible, .acq-modal button:focus-visible, .acq-modal input:focus-visible {
-  outline: 2px solid var(--lime); outline-offset: 2px;
+  outline: 2px solid var(--navy); outline-offset: 2px;
 }
 .acq-btn:disabled, .acq-btn-lime:disabled { opacity: .6; cursor: wait; }
 
@@ -144,10 +158,17 @@
 .acq-toast.show { opacity: 1; transform: none; }
 
 /* ---------- Responsivo ---------- */
+.acq-actions > button { flex: 1 1 auto; min-height: 40px; }
+.acq-toolbar { display: grid; gap: 10px; }
+
 @media (max-width: 760px) {
   .acq-grid { grid-template-columns: 1fr; }
   .acq-linhas { grid-template-columns: 1fr; }
   .acq-modal-foot .acq-btn, .acq-modal-foot .acq-btn-outline, .acq-modal-foot .acq-btn-lime { flex: 1 1 100%; }
+  .acq-actions > button, .acq-modal-foot > button { min-height: 44px; }
+}
+@media (min-width: 761px) and (max-width: 1100px) {
+  .acq-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 420px) {
   .acq-modal-head { padding: 18px 52px 16px 16px; }
