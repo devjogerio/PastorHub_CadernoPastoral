@@ -909,6 +909,13 @@
         return;
       }
 
+      // Avatar do cabeçalho: abre o card "Meu perfil" em modal
+      if (e.target.closest('.topbar-avatar')) {
+        navigateTo('perfil');
+        window.UsuarioPerfil.abrirModal();
+        return;
+      }
+
       // Navegação por [data-nav], [data-hnav], [data-home-ir] ou [data-nav-id]
       const navTrigger = e.target.closest('[data-nav], [data-hnav], [data-home-ir], [data-nav-id]');
       if (navTrigger) {
