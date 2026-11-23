@@ -38,6 +38,12 @@
     localStorage.setItem(KEY, JSON.stringify(dados));
   }
 
+  // Extrai até duas iniciais do nome do usuário para avatares do menu e topbar.
+  function iniciais(nome) {
+    const base = String(nome || carregar().nome || 'AS').trim();
+    return base.split(/\s+/).map((p) => p[0] || '').join('').toUpperCase().slice(0, 2) || 'AS';
+  }
+
   function itemMenu(m) {
     return '<button class="perfil-menu-item" type="button" data-nav-id="' + m.nav + '">' +
       '<span class="perfil-ico">' + ico(m.icone) + '</span>' +
@@ -140,5 +146,5 @@
     }
   }
 
-  window.UsuarioPerfil = { render, abrirEdicao, salvarFormulario, compartilhar };
+  window.UsuarioPerfil = { render, abrirEdicao, salvarFormulario, compartilhar, carregar, iniciais };
 })();

@@ -1,18 +1,19 @@
 /* ============================================================
-   Tela "Perfil" do app do usuário (layout de referência).
-   Paleta própria (verde-sálvia e bege), isolada em .perfil-view.
+   Tela "Perfil" do app do usuário.
+   Mantém a estrutura do layout de referência com a paleta
+   oficial da versão pastoral (--navy, --blue, --lime).
    ============================================================ */
 .perfil-view {
-  --pf-bg: #f6f4ee;
-  --pf-green: #5d6f4e;
-  --pf-green-dark: #465739;
-  --pf-card: #e9ede3;
-  --pf-card-line: #dbe2d0;
-  --pf-cream: #f8f5ea;
-  --pf-gold: #c9ad6a;
-  --pf-field: #e3e8da;
-  --pf-text: #2b2e27;
-  --pf-muted: #6e7265;
+  --pf-bg: var(--soft, #f5f8fb);
+  --pf-green: var(--navy, #002645);
+  --pf-green-dark: var(--blue, #3261AB);
+  --pf-card: #ffffff;
+  --pf-card-line: var(--line, #e5e8ec);
+  --pf-cream: #ffffff;
+  --pf-gold: var(--lime, #95C121);
+  --pf-field: var(--soft, #f5f8fb);
+  --pf-text: var(--navy, #002645);
+  --pf-muted: var(--muted, #5b6775);
   display: grid; gap: 12px;
   padding: 20px 14px 18px;
   background: var(--pf-bg);
@@ -25,9 +26,10 @@
 .perfil-head { display: flex; align-items: center; gap: 16px; padding: 2px 4px 8px; }
 .perfil-avatar {
   width: 84px; height: 84px; border-radius: 50%; flex-shrink: 0;
-  display: grid; place-items: center; color: #6f7a5c;
-  background: linear-gradient(160deg, #e4e9da, #c8d0b8);
-  border: 3px solid #fff; box-shadow: 0 4px 10px rgba(60, 70, 40, .18);
+  display: grid; place-items: center; color: #ffffff;
+  background: linear-gradient(135deg, var(--navy, #002645), var(--blue, #3261AB));
+  border: 3px solid var(--lime, #95C121);
+  box-shadow: 0 6px 16px rgba(0, 38, 69, .18);
 }
 .perfil-avatar svg { width: 44px; height: 44px; }
 .perfil-head h2 { font-size: 1.45rem; font-weight: 700; line-height: 1.15; color: var(--pf-text); }
@@ -37,44 +39,57 @@
 .perfil-menu-item {
   display: flex; align-items: center; gap: 14px; width: 100%;
   padding: 12px 14px; text-align: left; cursor: pointer;
-  background: var(--pf-card); border: 1px solid var(--pf-card-line); border-radius: 16px;
-  box-shadow: 0 2px 6px rgba(60, 70, 40, .08); color: inherit; font: inherit;
+  background: var(--pf-card); border: 1.5px solid var(--pf-card-line); border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 38, 69, .06); color: inherit; font: inherit;
+  transition: transform .18s, border-color .18s, box-shadow .18s;
 }
-.perfil-menu-item:hover { background: #e0e7d4; }
+.perfil-menu-item:hover {
+  border-color: var(--lime, #95C121);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 38, 69, .1);
+}
 .perfil-menu-item > span:nth-child(2) { flex: 1; min-width: 0; }
 .perfil-menu-item b { display: block; font-size: 1rem; font-weight: 700; color: var(--pf-text); }
 .perfil-menu-item small { display: block; font-size: .8rem; color: var(--pf-muted); margin-top: 2px; }
 .perfil-ico {
   width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
-  display: grid; place-items: center; background: var(--pf-green); color: #fff;
+  display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--navy, #002645), var(--blue, #3261AB));
+  color: #fff;
 }
 .perfil-ico svg { width: 24px; height: 24px; }
-.perfil-chev { color: var(--pf-text); display: grid; place-items: center; }
+.perfil-chev { color: var(--blue, #3261AB); display: grid; place-items: center; }
 
 .perfil-card {
   margin-top: 6px; padding: 16px 14px;
-  background: var(--pf-cream); border: 1.5px solid var(--pf-gold); border-radius: 16px;
+  background: var(--pf-cream); border: 2px solid var(--pf-gold); border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(0, 38, 69, .06);
 }
 .perfil-card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
 .perfil-card-head h3 { font-size: 1.05rem; font-weight: 700; color: var(--pf-text); }
 .perfil-card-head p { font-size: .8rem; color: var(--pf-muted); margin-top: 2px; }
 .perfil-edit-ico {
-  border: 0; background: none; cursor: pointer; padding: 4px; color: var(--pf-gold);
+  border: 0; background: rgba(149, 193, 33, .16); border-radius: 8px;
+  cursor: pointer; padding: 6px; color: var(--navy, #002645);
+  transition: background .15s;
 }
-.perfil-edit-ico svg { width: 20px; height: 20px; }
+.perfil-edit-ico:hover { background: var(--lime, #95C121); color: #fff; }
+.perfil-edit-ico svg { width: 18px; height: 18px; }
 
 .perfil-card-body { display: flex; gap: 12px; margin-top: 12px; align-items: stretch; }
 .perfil-fields { flex: 1; min-width: 0; display: grid; gap: 8px; }
 .perfil-field {
   display: flex; align-items: center; gap: 9px; min-width: 0;
   padding: 9px 10px; border-radius: 10px; background: var(--pf-field);
+  border: 1px solid var(--pf-card-line);
   font-size: .8rem; color: var(--pf-text);
 }
-.perfil-field .icon-sm { color: var(--pf-muted); }
+.perfil-field .icon-sm { color: var(--blue, #3261AB); }
 .perfil-field span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .perfil-photo {
   width: 84px; min-height: 96px; flex-shrink: 0; border-radius: 12px;
-  display: grid; place-items: center; background: var(--pf-field); color: #9aa28a;
+  display: grid; place-items: center; background: var(--pf-field);
+  border: 1px dashed var(--blue, #3261AB); color: var(--blue, #3261AB);
 }
 .perfil-photo svg { width: 34px; height: 34px; }
 
@@ -84,11 +99,12 @@
   padding: 11px 10px; border-radius: 999px; cursor: pointer;
   font-family: inherit; font-size: .88rem; font-weight: 600; line-height: 1;
   border: 1.5px solid var(--pf-green);
+  transition: background .15s, color .15s, border-color .15s;
 }
 .perfil-btn svg { width: 17px; height: 17px; }
 .perfil-btn.primary { background: var(--pf-green); color: #fff; }
-.perfil-btn.primary:hover { background: var(--pf-green-dark); }
-.perfil-btn.outline { background: transparent; color: var(--pf-green-dark); }
-.perfil-btn.outline:hover { background: var(--pf-card); }
+.perfil-btn.primary:hover { background: var(--pf-green-dark); border-color: var(--pf-green-dark); }
+.perfil-btn.outline { background: transparent; color: var(--pf-green); }
+.perfil-btn.outline:hover { background: var(--pf-field); border-color: var(--pf-green-dark); color: var(--pf-green-dark); }
 
 .perfil-form { display: grid; gap: 12px; }
