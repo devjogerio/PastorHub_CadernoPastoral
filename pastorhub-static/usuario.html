@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR" data-shell="mobile">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https: ws: wss:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#002645">
-  <title>PastorHub – Versão Usuário</title>
+  <title>PastorHub â€“ VersÃ£o UsuÃ¡rio</title>
   <link rel="stylesheet" href="css/usuario.css?v=6">
   <link rel="stylesheet" href="css/usuario-perfil.css?v=2">
   <link rel="stylesheet" href="css/usuario-home.css?v=2">
@@ -18,7 +18,7 @@
     <p>Carregando PastorHub...</p>
   </div>
 
-  <!-- ===== Tela de Autenticação ===== -->
+  <!-- ===== Tela de AutenticaÃ§Ã£o ===== -->
   <div id="auth" hidden>
     <div class="auth-inner">
       <div class="auth-logo">
@@ -31,7 +31,7 @@
 
       <div class="auth-card">
         <h2>Bem-vindo, Parceiro</h2>
-        <p class="auth-desc">Entre para conversar com pastores, ver sermões e agendar visitas</p>
+        <p class="auth-desc">Entre para conversar com pastores, ver sermÃµes e agendar visitas</p>
 
         <div class="tabs auth-tabs">
           <button class="tab active" data-auth-tab="login" type="button">Entrar</button>
@@ -45,7 +45,7 @@
           </div>
           <div class="field">
             <label for="login-senha">Senha</label>
-            <input id="login-senha" type="password" placeholder="••••••••" required>
+            <input id="login-senha" type="password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" required>
           </div>
           <button class="btn primary block" type="submit">Entrar</button>
           <div class="divider"><span>Ou continue com</span></div>
@@ -66,23 +66,23 @@
           </div>
           <div class="field">
             <label for="cad-senha">Senha</label>
-            <input id="cad-senha" type="password" placeholder="Mínimo 6 caracteres" minlength="6" required>
+            <input id="cad-senha" type="password" placeholder="MÃ­nimo 6 caracteres" minlength="6" required>
           </div>
           <button class="btn lime block" type="submit">Criar Conta</button>
           <div class="hint-alert">
-            <span>Você receberá notificações dos pastores.</span>
+            <span>VocÃª receberÃ¡ notificaÃ§Ãµes dos pastores.</span>
           </div>
         </form>
 
         <div class="hint-alert info">
-          <strong>Versão Usuário:</strong> Interaja com pastores, veja sermões e agende conversas.
+          <strong>VersÃ£o UsuÃ¡rio:</strong> Interaja com pastores, veja sermÃµes e agende conversas.
         </div>
-        <p class="auth-foot" data-auth-foot>PastorHub • Versão Usuário</p>
+        <p class="auth-foot" data-auth-foot>PastorHub â€¢ VersÃ£o UsuÃ¡rio</p>
       </div>
     </div>
   </div>
 
-  <!-- ===== App principal (Versão Usuário) ===== -->
+  <!-- ===== App principal (VersÃ£o UsuÃ¡rio) ===== -->
   <div id="app" hidden>
     <!-- Barra superior -->
     <header id="topbar">
@@ -90,18 +90,18 @@
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
       <div class="topbar-title">
-        <h1>Olá, Parceiro</h1>
+        <h1>OlÃ¡, Parceiro</h1>
       </div>
     </header>
 
     <!-- Drawer -->
     <div id="drawer" hidden>
       <div class="drawer-backdrop" data-action="close-drawer"></div>
-      <aside class="drawer-panel" role="dialog" aria-label="Menu do Usuário">
+      <aside class="drawer-panel" role="dialog" aria-label="Menu do UsuÃ¡rio">
         <header class="drawer-head">
           <div>
-            <h2>Menu do Usuário</h2>
-            <p>Versão para believer</p>
+            <h2>Menu do UsuÃ¡rio</h2>
+            <p>VersÃ£o para believer</p>
           </div>
           <button class="btn-icon dark" data-action="close-drawer" aria-label="Fechar" type="button">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
@@ -111,10 +111,10 @@
         <nav class="drawer-menu">
           <button data-action="meu-perfil" type="button">Meu Perfil</button>
           <button data-nav="chat" type="button">Conversas com Pastores</button>
-          <button data-nav="agenda" type="button">Agenda de Visitação</button>
-          <button data-nav="sermoes" type="button">Ver Sermões</button>
+          <button data-nav="agenda" type="button">Agenda de VisitaÃ§Ã£o</button>
+          <button data-nav="sermoes" type="button">Ver SermÃµes</button>
           <button data-nav="biblioteca" type="button">Biblioteca Digital</button>
-          <button data-nav="notificacoes" type="button">Notificações</button>
+          <button data-nav="notificacoes" type="button">NotificaÃ§Ãµes</button>
           <button data-action="sair" type="button">Sair</button>
         </nav>
       </aside>
@@ -123,7 +123,7 @@
     <!-- View principal -->
     <main id="view"></main>
 
-    <!-- Botão flutuante -->
+    <!-- BotÃ£o flutuante -->
     <button class="fab-btn" id="fab-agendar" type="button">
       <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10 10.3 10.3 0 0 1-.8 6.2 2 2 0 0 1-1.4 1.58 2 2 0 0 1-.98.09H8.56A2 2 0 0 1 7 17.39l-1.16-.93A10 10 0 0 1 12 2Z"/><path d="M2.08 7.61A10 10 0 0 1 12 2Z"/><path d="M22 10v6a10 10 0 0 1-.8 4.36L17 14"/></svg>
     </button>
@@ -162,10 +162,16 @@
   <script src="js/config.js"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/biblioteca.js?v=2"></script>
-  <script src="js/usuario-perfil.js?v=2"></script>
+  <script src="js/usuario-perfil.js?v=8"></script>
   <script src="js/usuario-home.js?v=2"></script>
   <script src="js/usuario-menu.js?v=1"></script>
-  <script src="js/usuario.js?v=7"></script>
+  <script src="js/usuario.js?v=8"></script>
   <script src="js/demo.js"></script>
 </body>
 </html>
+
+
+
+
+
+

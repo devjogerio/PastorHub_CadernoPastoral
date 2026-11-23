@@ -76,6 +76,10 @@
     'dollar-sign': '<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
     'bar-chart': '<line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>',
     'arrow-left': '<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
+    'zoom-in': '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+    image: '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
+    camera: '<path d="M14.5 4h-5L7 6H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V10l-2.5-6a2 2 0 0 0-2-2Z"/><circle cx="12" cy="16" r="3"/>',
+    loader: '<path d="M12 2v4m0 12v4M2 12h4M18 12h4M4.93 4.93l2.83 2.83M17.17 17.17l2.83 2.83M4.93 19.07l2.83-2.83M17.17 6.83l2.83-2.83"/>',
   };
 
   window.icon = function (name, cls) {

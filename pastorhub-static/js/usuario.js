@@ -300,7 +300,7 @@
   function renderView(viewId) {
     if (viewId === 'dashboard') viewId = 'home';
     state.view = viewId;
-    const view = (SHELL === 'desktop' || SHELL === 'tablet') ? ($('#user-content') || $('#view')) : $('#view');
+    let view = (SHELL === 'desktop' || SHELL === 'tablet') ? ($('#user-content') || $('#view')) : $('#view');
     if (!view) return;
 
     switch (viewId) {
@@ -329,7 +329,10 @@
         view.innerHTML = renderNotificacoes();
         break;
       case 'perfil':
+        // Referência fixa do contêiner principal, conforme solicitado.
+        view = document.querySelector('#view') || view;
         view.innerHTML = window.UsuarioPerfil.render();
+        window.UsuarioPerfil.ativarEventos(view);
         break;
       default:
         state.view = 'home';
@@ -952,6 +955,36 @@
       }
       if (e.target.closest('[data-action="perfil-compartilhar"]')) {
         window.UsuarioPerfil.compartilhar().then((msg) => { if (msg) toast(msg); });
+        return;
+      }
+
+      // Perfil: foto do perfil — exibição, seleção, ampliação e remoção
+      if (e.target.closest('[data-action="perfil-foto-alterar"]')) {
+        window.UsuarioPerfil.abrirGaleria();
+        return;
+      }
+      if (e.target.closest('[data-action="perfil-foto-galeria"]')) {
+        window.UsuarioPerfil.abrirGaleria();
+        return;
+      }
+      if (e.target.closest('[data-action="perfil-foto-camera"]')) {
+        window.UsuarioPerfil.abrirCamera();
+        return;
+      }
+      if (e.target.closest('[data-action="perfil-foto-zoom"]')) {
+        window.UsuarioPerfil.abrirZoom();
+        return;
+      }
+      if (e.target.closest('[data-action="perfil-foto-fechar"]')) {
+        window.UsuarioPerfil.fecharZoom();
+        return;
+      }
+      if (e.target.closest('[data-action="perfil-foto-confirmar"]')) {
+        window.UsuarioPerfil.confirmarFoto();
+        return;
+      }
+      if (e.target.closest('[data-action="perfil-foto-remover"]')) {
+        window.UsuarioPerfil.removerFoto();
         return;
       }
 
