@@ -249,7 +249,7 @@
         '</div>' +
         '<button type="button" id="perfil-foto-remover" class="perfil-btn danger perfil-btn-block" data-action="perfil-foto-remover" ' + (d.fotoUrl ? '' : 'disabled') + '>' + ico('trash-2') + 'Remover foto</button>' +
         /* Abre o modal com o card "Meu perfil" (artigo não renderizado direto) */
-        '<button type="button" id="perfil-editar-btn" class="perfil-btn outline perfil-btn-block" data-action="perfil-modal-abrir">' + ico('edit') + 'Editar perfil</button>' +
+        '<button type="button" id="perfil-editar-btn" class="perfil-btn outline perfil-btn-block" data-action="perfil-editar">' + ico('edit') + 'Editar perfil</button>' +
       '</div>' +
       /* ----- Ampliação da foto ----- */
       '<div class="perfil-zoom" id="perfil-zoom" hidden>' +
@@ -311,6 +311,7 @@
   }
 
   function abrirEdicao() {
+    fecharModal();
     const d = carregar();
     const corpo = '<form id="perfil-form" class="perfil-form" autocomplete="off">' +
       campoForm('nome', 'Nome', d.nome) +
