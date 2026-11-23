@@ -41,7 +41,11 @@ body {
 }
 .doc-toolbar a { color: #cfe0f0; text-decoration: none; white-space: nowrap; }
 .doc-toolbar a:hover { color: var(--lime); }
-.doc-toolbar .t-left { display: flex; align-items: center; gap: 16px; }
+@media (max-width: 600px) {
+  .doc-toolbar { position: static; padding: 10px 14px; font-size: .8rem; }
+  .doc-toolbar .t-left { gap: 6px 12px; }
+}
+.doc-toolbar .t-left { display: flex; flex: 1 1 auto; flex-wrap: wrap; align-items: center; gap: 8px 16px; min-width: 0; }
 .doc-toolbar .t-right { display: flex; gap: 8px; }
 .btn-doc {
   display: inline-flex; align-items: center; gap: 6px;

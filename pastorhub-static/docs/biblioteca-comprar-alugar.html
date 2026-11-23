@@ -3,228 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PastorHub · BIBLIOTECA Digital · Comprar e Alugar</title>
-  <link rel="stylesheet" href="../css/docs.css?v=2">
-  <style>
-    /* ---------- BIBLIOTECA Digital · Comprar e Alugar: cards + modais ---------- */
-    .acq-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
-    .acq-card {
-      display: flex; gap: 12px; align-items: center; background: #fff;
-      border: 1px solid var(--line); border-radius: 12px; padding: 12px; transition: .15s;
-    }
-    .acq-card:hover { border-color: var(--blue); box-shadow: 0 8px 22px rgba(0, 38, 69, .08); }
-    .acq-cover {
-      width: 64px; min-width: 64px; height: 88px; border-radius: 7px; color: #fff;
-      display: grid; place-items: center; font-size: 1.3rem;
-      box-shadow: inset -5px 0 8px rgba(0, 0, 0, .18);
-    }
-    .acq-info { flex: 1; min-width: 0; }
-    .acq-info b { color: var(--navy); font-size: .95rem; }
-    .acq-info small { display: block; color: var(--muted); font-size: .72rem; margin: 2px 0 5px; }
-    .acq-tag {
-      display: inline-block; font-size: .62rem; font-weight: 800; letter-spacing: .05em;
-      text-transform: uppercase; padding: 2px 8px; border-radius: 999px;
-    }
-    .acq-desc { font-size: .82rem; color: #33404f; margin: 6px 0 8px; }
-    .acq-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .acq-actions button { display: flex; align-items: center; gap: 5px; font-size: .8rem; }
-    .acq-vazio { text-align: center; color: var(--muted); font-size: .9rem; padding: 16px; }
-
-    /* Modais */
-    .acq-modal {
-      display: none; position: fixed; inset: 0; z-index: 999;
-      align-items: center; justify-content: center; padding: 20px;
-    }
-    .acq-modal[open] { display: flex; }
-    .acq-modal-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, .45); }
-    .acq-modal-card {
-      position: relative; background: #fff; border-radius: 14px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, .2); width: min(780px, 100%);
-      max-height: 88vh; overflow-y: auto; color: var(--ink);
-    }
-    .acq-modal-close { position: absolute; top: 10px; right: 10px; border: none; background: none; cursor: pointer; color: #fff; font-size: 1.2rem; }
-    .acq-modal-close:hover { opacity: .75; }
-    .acq-modal-head {
-      padding: 20px 24px; color: #fff; border-radius: 14px 14px 0 0;
-      display: flex; align-items: center; gap: 14px;
-    }
-    .acq-modal-cover { font-size: 1.6rem; }
-    .acq-modal-head div { flex: 1; min-width: 0; }
-    .acq-modal-head b { display: block; }
-    .acq-modal-head span { display: block; font-size: .8rem; opacity: .85; }
-    .acq-modal-body { padding: 18px 24px 26px; }
-    .acq-sec { margin: 14px 0; }
-    .acq-sec h4 { color: var(--navy); font-size: .88rem; margin-bottom: 8px; }
-    .acq-linha { color: var(--muted); font-size: .82rem; margin-bottom: 6px; }
-    .acq-linha b { color: var(--navy); }
-    .acq-destaques { display: flex; flex-direction: column; gap: 6px; }
-    .acq-destaques b { display: block; color: var(--navy); font-size: .8rem; }
-    .acq-destaques span { color: var(--muted); font-size: .78rem; }
-    .acq-pay { list-style: none; margin: 0 0 14px; padding: 0; }
-    .acq-pay li { padding: 10px 0; border-bottom: 1px solid var(--line); }
-    .acq-pay li:last-child { border-bottom: none; }
-    .acq-pay li b { color: var(--navy); }
-    .acq-pay li span { color: var(--muted); font-size: .78rem; display: block; margin-top: 2px; }
-    .acq-modal-foot { display: flex; gap: 10px; flex-wrap: wrap; }
-    .acq-btn, .acq-btn-outline { display: inline-flex; align-items: center; gap: 5px; }
-    .acq-btn-outline { border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; font-size: .8rem; background: #fff; color: var(--navy); }
-    .acq-toast {
-      position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
-      background: var(--navy); color: #fff; padding: 10px 18px; border-radius: 999px;
-      font-size: .8rem; z-index: 1000; box-shadow: 0 6px 20px rgba(0, 0, 0, .2);
-      opacity: 0; transition: opacity .25s;
-    }
-    .acq-toast[show] { opacity: 1; }
-    @media (max-width: 760px) {
-      .acq-grid { grid-template-columns: 1fr; }
-      .acq-modal-card { width: 95%; }
-    }
-  </style>
+  <title>PastorHub · Biblioteca Digital · Comprar e Alugar</title>
+  <link rel="stylesheet" href="../css/docs.css?v=4">
+  <link rel="stylesheet" href="../css/biblioteca-acervo.css?v=2">
 </head>
 <body>
 
   <div class="doc-toolbar">
     <div class="t-left">
       <a href="../site.html">← Site</a>
-      <a href="BIBLIOTECA.html">BIBLIOTECA Digital</a>
       <a href="proposta-investimento.html">Proposta</a>
       <a href="apresentacao.html">Deck</a>
       <a href="ficha-tecnica.html">Ficha técnica</a>
       <a href="manual-usuario.html">Manual</a>
       <a href="ecossistema-ia.html">Ecossistema de IA</a>
       <a href="registro-tecnico.html">Registro técnico</a>
+      <a href="biblioteca.html">Biblioteca</a>
+      <a href="biblioteca-comprar-alugar.html" style="color:#d8ec9f;font-weight:700" aria-current="page">Comprar e Alugar</a>
     </div>
-    <div class="t-right">
-      <button class="btn-doc" onclick="window.open('../admin.html','_blank')">Painel admin</button>
-      <button class="btn-doc" onclick="window.print()">Imprimir</button>
-    </div>
+    <div class="t-right"><button class="btn-doc" type="button" onclick="window.print()">Imprimir / Salvar em PDF</button></div>
   </div>
 
   <article class="doc">
     <header class="cover">
-      <span class="kicker">Nova funcionalidade · Acervo · Comprar / Alugar</span>
-      <h1>BIBLIOTECA Digital · Comprar e Alugar</h1>
-      <p class="sub">Opções de compra e aluguel para obras teológicas clássicas do acervo — detalhes, visualização do conteúdo e as formas de pagamento disponíveis.</p>
-      <div class="cover-foot">PastorHub · Acervo · v1.0</div>
+      <span class="kicker">Biblioteca Digital · Acervo</span>
+      <h1>Comprar e Alugar</h1>
+      <p class="sub">Escolha uma obra do acervo, veja os detalhes e a pré-visualização do conteúdo e registre sua solicitação de compra ou aluguel com a forma de pagamento desejada.</p>
+      <p class="tagline">Obras em domínio público ou com licença aberta · valor confirmado antes da cobrança</p>
+      <div class="cover-foot">PastorHub · Biblioteca Digital · Comprar e Alugar · v1.0</div>
     </header>
 
     <section class="page">
-      <h2 class="doc-h">Como funciona</h2>
-      <p class="lead-doc">Escolha <b>Comprar</b> ou <b>Alugar</b> em cada obra. A janela que se abre traz detalhes do livro, uma visualização do conteúdo, os destaques e as formas de pagamento.</p>
-      <div class="acq-grid" id="acq-grid"></div>
-      <p class="acq-vazio" id="acq-vazio" hidden>Nenhuma obra no acervo.</p>
+      <h2 class="doc-h"><span class="n">1</span> Como funciona</h2>
+      <div class="grid-3">
+        <div class="mini-card">
+          <h4>1. Escolha a obra</h4>
+          <p>Filtre por categoria ou busque por título e autor. Cada card tem os botões Comprar e Alugar.</p>
+        </div>
+        <div class="mini-card">
+          <h4>2. Revise e informe</h4>
+          <p>No modal, confira detalhes e a pré-visualização, escolha a forma de pagamento e o e-mail de contato.</p>
+        </div>
+        <div class="mini-card">
+          <h4>3. Receba o protocolo</h4>
+          <p>A solicitação é registrada com um número de protocolo. O retorno chega no e-mail informado.</p>
+        </div>
+      </div>
+      <div class="callout blue" style="margin-top:20px">
+        <strong>Valores</strong>
+        O acervo não traz preços fixos. O valor de cada obra é confirmado pela equipe antes de qualquer cobrança.
+      </div>
     </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">2</span> Catálogo para compra e aluguel</h2>
+      <p class="lead-doc">Use a busca e as categorias para encontrar a obra. Todas as opções abrem em janela com detalhes e formas de pagamento.</p>
+
+      <div class="bib-busca">
+        <input type="search" id="acq-busca" placeholder="Buscar por título, autor ou tema…" autocomplete="off" aria-label="Buscar no acervo para compra e aluguel">
+      </div>
+      <div class="bib-filtros" id="acq-filtros" role="group" aria-label="Filtrar por categoria"></div>
+      <p class="lead-doc" id="acq-contador" style="margin:14px 0 0;font-size:.82rem"></p>
+
+      <div class="acq-grid" id="acq-grid" style="margin-top:12px"></div>
+      <p class="acq-vazio" id="acq-vazio" hidden>Nenhuma obra encontrada para essa busca. Tente outro termo ou categoria.</p>
+    </section>
+
+    <section class="page">
+      <h2 class="doc-h"><span class="n">3</span> Formas de pagamento</h2>
+      <div class="grid-3">
+        <div class="mini-card">
+          <h4>Pix</h4>
+          <p>Pagamento instantâneo. O QR Code é enviado depois da confirmação.</p>
+        </div>
+        <div class="mini-card">
+          <h4>Cartão de crédito</h4>
+          <p>Cobrança na confirmação, conforme a condição da oferta.</p>
+        </div>
+        <div class="mini-card">
+          <h4>Boleto bancário</h4>
+          <p>A compensação acontece após o pagamento do boleto.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="legal">
+      <p><b>PastorHub · Biblioteca Digital</b> — Acervo composto por obras em domínio público ou com licença aberta. Compra e aluguel referem-se à oferta de acesso à edição indicada; consulte a licença de cada título.</p>
+    </footer>
   </article>
 
   <div class="acq-modal" id="acq-modal" hidden>
-    <div class="acq-modal-backdrop" onclick="acqFechar()"></div>
-    <div class="acq-modal-card" id="acq-modal-body"></div>
-    <button class="acq-modal-close" onclick="acqFechar()" type="button" aria-label="Fechar">×</button>
+    <div class="acq-modal-backdrop" data-acq-fechar></div>
+    <div class="acq-modal-card" id="acq-modal-card" role="dialog" aria-modal="true" tabindex="-1"></div>
   </div>
 
-  <div id="acq-toasts"></div>
+  <div id="acq-toasts" aria-live="polite"></div>
 
   <script src="../js/biblioteca.js?v=2"></script>
-  <script>
-    const $ = (s) => document.querySelector(s);
-    const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-
-    function acqToast(msg) {
-      const holder = $('#acq-toasts');
-      if (!holder) return;
-      const t = document.createElement('div');
-      t.className = 'acq-toast';
-      t.textContent = msg;
-      holder.appendChild(t);
-      const fim = () => { t.classList.remove('toast-show'); t.remove(); };
-      setTimeout(() => t.setAttribute('show', '1'), 50);
-      setTimeout(fim, 4000);
-    }
-
-    function acqFechar() { const m = $('#acq-modal'); if (m) m.hidden = true; }
-
-    function acqSolicitar(tipo, id) {
-      const B = window.BIBLIOTECA;
-      const l = B && B.livros.find((x) => x.id === id);
-      if (!l) return;
-      B.solicitar(id, tipo, { fonte: 'docs/BIBLIOTECA-comprar-alugar.html' });
-      acqToast(tipo === 'comprar' ? 'Solicitação de compra registrada.' : 'Solicitação de aluguel registrada.');
-      acqFechar();
-    }
-
-    function acqOpen(id) {
-      const B = window.BIBLIOTECA;
-      const l = B && B.livros.find((x) => x.id === id);
-      if (!l) return;
-      const cat = B.categorias.find((c) => c.id === l.categoria) || { nome: l.categoria, cor: '#3261AB' };
-      const dest = (l.destaques && l.destaques.length ? l.destaques.slice(0, 3) : []).join('; ');
-      const pay = [
-        ['Pix', 'Informe o valor no aplicativo de carteira e repasse o QR Code retornado ao administrador do PastorHub.'],
-        ['Cartão de crédito', 'Dados para o processamento no motor de cobrança do PastorHub (vencimento, valor e bandeira).'],
-        ['Boleto bancário', 'Informe o valor e efetue o pagamento — a solicitação fica registrada no painel administrativo.'],
-      ];
-      const card = $('#acq-modal-body');
-      card.innerHTML =
-        '<div class="acq-modal-head" style="background:' + esc(l.gradiente) + '">' +
-          '<button class="acq-modal-close" onclick="acqFechar()" type="button" aria-label="Fechar">×</button>' +
-          '<div class="acq-modal-cover">' + esc(l.emoji) + '</div>' +
-          '<div><b>' + esc(l.titulo) + '</b><span>' + esc(l.autor) + '</span></div>' +
-        '</div>' +
-        '<div class="acq-modal-body">' +
-          '<div class="acq-sec">' +
-            '<h4>Detalhes da obra</h4>' +
-            '<span class="acq-tag" style="background:' + esc(cat.cor) + '22;color:' + esc(cat.cor) + '">' + esc(cat.nome) + '</span>' +
-            '<div class="acq-linha"><b>Autor</b>: ' + esc(l.autor) + '</div>' +
-            '<div class="acq-linha"><b>Ano</b>: ' + esc(l.ano) + ' · <b>Páginas</b>: ' + esc(l.paginas + ' pág.') + '</div>' +
-            '<div class="acq-linha"><b>Licença</b>: ' + esc(l.licenca) + '</div>' +
-          '</div>' +
-          '<div class="acq-sec">' +
-            '<h4>Visualização do conteúdo</h4>' +
-            (dest ? '<p class="acq-destaques"><b>Destaques:</b> ' + esc(dest) + '</p>' : '') +
-            '<p class="acq-desc">' + esc(l.descricao) + '</p>' +
-          '</div>' +
-          '<div class="acq-sec">' +
-            '<h4>Formas de pagamento</h4>' +
-            '<ul class="acq-pay">' +
-              pay.map((m) => '<li><b>' + esc(m[0]) + '</b><span>' + esc(m[1]) + '</span></li>').join('') +
-            '</ul>' +
-          '</div>' +
-          '<div class="acq-modal-foot">' +
-            '<button class="acq-btn btn-doc lime" data-acq="comprar" type="button">Solicitar compra</button>' +
-            '<button class="acq-btn-outline" data-acq="alugar" type="button">Solicitar aluguel</button>' +
-          '</div>' +
-        '</div>';
-      card.querySelectorAll('[data-acq]').forEach((btn) =>
-        btn.addEventListener('click', () => acqSolicitar(btn.dataset.acq, id)));
-      $('#acq-modal').hidden = false;
-    }
-
-    function acqCatalog() {
-      const B = window.BIBLIOTECA;
-      if (!B) return;
-      const cats = B.categorias || [];
-      $('#acq-grid').innerHTML = B.livros.map((l) => {
-        const cat = cats.find((c) => c.id === l.categoria) || { nome: l.categoria, cor: '#3261AB' };
-        return '<article class="acq-card">' +
-          '<div class="acq-cover" style="background:' + esc(l.gradiente) + '">' + esc(l.emoji) + '</div>' +
-          '<div class="acq-info">' +
-            '<span class="acq-tag" style="background:' + esc(cat.cor) + '22;color:' + esc(cat.cor) + '">' + esc(cat.nome) + '</span>' +
-            '<b>' + esc(l.titulo) + '</b>' +
-            '<small>' + esc(l.autor) + ' · ' + esc(l.ano) + ' · ' + esc(l.paginas + ' pág.') + '</small>' +
-            '<p class="acq-desc">' + esc(l.descricao.slice(0, 100) + '…') + '</p>' +
-            '<div class="acq-actions">' +
-              '<button class="btn-doc" data-acq-livro="' + esc(l.id) + '" data-acq-tipo="comprar" type="button">Comprar</button>' +
-              '<button class="btn-doc" data-acq-livro="' + esc(l.id) + '" data-acq-tipo="alugar" type="button">Alugar</button>' +
-            '</div>' +
-          '</div>' +
-        '</article>';
-      }).join('');
-      $('#acq-grid').querySelectorAll('[data-acq-livro]').forEach((btn) =>
-        btn.addEventListener('click', () => acqOpen(btn.dataset.acqLivro, btn.dataset.acqTipo)));
-      $('#acq-vazio').hidden = B.livros.length > 0;
-    }
-
-    acqCatalog();
-  </script>
+  <script src="../js/biblioteca-comprar.js?v=1"></script>
 </body>
 </html>
