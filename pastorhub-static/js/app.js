@@ -224,45 +224,113 @@
     });
   });
 
-  $('#auth-login').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const email = $('#login-email').value.trim();
+  /* true quando há Supabase configurado (js/config.js): auth real; senão, modo demonstração */
+  function authReal() {
+    return !!(window.PastorAuth && PastorAuth.configurado());
+  }
+
+  /* Rodapé honesto da tela de auth: não promete privacidade quando é demo */
+  function atualizarAuthFoot() {
+    const real = authReal();
+    document.querySelectorAll('[data-auth-foot]').forEach((el) => {
+      el.textContent = real
+        ? 'PastorHub v1.0 • Autenticação real via Supabase'
+        : 'PastorHub v1.0 • Modo demonstração — dados fictícios, nada é enviado';
+    });
+  }
+
+  /* Aplica a sessão real do Supabase ao perfil local e entra no app */
+  async function aplicarSessaoReal(session) {
+    const u = session && session.user;
+    if (!u) return;
+    const meta = u.user_metadata || {};
+    Usuario.dados.email = u.email || Usuario.dados.email;
+    Usuario.dados.nome = meta.nome || meta.full_name || Usuario.dados.nome;
+    Usuario.dados.igreja = meta.igreja || Usuario.dados.igreja;
+    Usuario.salvar();
+    App.enterApp();
+  }
+
+  /* Login no modo demonstração: nada é enviado a servidor algum */
+  function loginDemo(email) {
     const nome = email ? email.split('@')[0] : 'Pastor';
-    // atualiza o perfil logado
     Usuario.dados.email = email || Usuario.dados.email;
     Usuario.dados.nome = Usuario.dados.nome || capitalize(nome);
     Usuario.salvar();
-    toast('Login realizado com sucesso!', 'success');
+    toast('Modo demonstração: nenhum dado foi enviado (auth não configurada).', 'error');
     App.enterApp();
+  }
+
+  /* Login com autenticação real via Supabase Auth */
+  async function loginReal(email, senha) {
+    const r = await PastorAuth.entrar(email, senha);
+    if (!r.ok) { toast(r.erro, 'error'); return; }
+    if (r.session) {
+      await aplicarSessaoReal(r.session);
+      toast('Login realizado com sucesso!', 'success');
+    } else {
+      toast('Verifique seu e-mail para confirmar o cadastro.', 'success');
+    }
+  }
+
+  $('#auth-login').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = $('#login-email').value.trim();
+    if (authReal()) { loginReal(email, $('#login-senha').value); return; }
+    loginDemo(email);
   });
+
+  /* Cadastro no modo demonstração: conta só existe neste dispositivo */
+  function signupDemo(email, nome, igreja) {
+    Usuario.dados.email = email || Usuario.dados.email;
+    Usuario.dados.nome = nome || Usuario.dados.nome;
+    Usuario.dados.igreja = igreja || Usuario.dados.igreja;
+    Usuario.salvar();
+    toast('Modo demonstração: conta criada apenas neste dispositivo.', 'error');
+    App.enterApp();
+  }
+
+  /* Cadastro com autenticação real */
+  async function signupReal(email, senha, nome, igreja) {
+    const r = await PastorAuth.cadastrar(email, senha, { nome: nome, igreja: igreja });
+    if (!r.ok) { toast(r.erro, 'error'); return; }
+    if (r.session) {
+      await aplicarSessaoReal(r.session);
+      toast('Cadastro realizado!', 'success');
+    } else {
+      toast('Cadastro realizado! Verifique seu email para confirmar.', 'success');
+    }
+  }
 
   $('#auth-signup').addEventListener('submit', (e) => {
     e.preventDefault();
     const email = $('#cad-email').value.trim();
     const nome = $('#cad-nome').value.trim();
-    Usuario.dados.email = email || Usuario.dados.email;
-    Usuario.dados.nome = nome || Usuario.dados.nome;
-    Usuario.dados.igreja = $('#cad-igreja').value.trim() || Usuario.dados.igreja;
-    Usuario.salvar();
-    toast('Cadastro realizado! Verifique seu email para confirmar.', 'success');
-    App.enterApp();
+    const igreja = $('#cad-igreja').value.trim();
+    if (authReal()) { signupReal(email, $('#cad-senha').value, nome, igreja); return; }
+    signupDemo(email, nome, igreja);
   });
 
   Actions['auth-google'] = function () {
-    toast('Conectando com Google...', 'success');
-    setTimeout(() => {
-      toast('Login realizado com sucesso!', 'success');
-      App.enterApp();
-    }, 900);
+    if (authReal()) {
+      PastorAuth.entrarGoogle().then((r) => { if (!r.ok) toast(r.erro, 'error'); });
+      return;
+    }
+    toast('Login com Google indisponível: configure o Supabase em js/config.js.', 'error');
   };
 
   Actions['usar-offline'] = function () {
+    try { localStorage.setItem('pastorhub_modo_offline', '1'); } catch (err) { /* storage indisponível */ }
     toast('Modo offline ativado. Seus dados serão salvos localmente.');
     App.enterApp();
   };
 
-  Actions['sair'] = function () {
+  Actions['sair'] = async function () {
     closeDrawer();
+    if (authReal()) {
+      await PastorAuth.sair();
+      try { localStorage.removeItem('pastorhub_modo_offline'); } catch (err) { /* ignora */ }
+    }
     toast('Sessão encerrada');
     App.showAuth();
   };
@@ -562,11 +630,27 @@
 
     updateConnectionUI();
     App.rerender();
-    setTimeout(() => {
-      $('#splash').hidden = true;
-      $('#app').hidden = false;
-      checarBloqueio();
-    }, 800);
+    atualizarAuthFoot();
+    if (authReal()) {
+      PastorAuth.onAuthStateChange((_evento, session) => {
+        if (session) aplicarSessaoReal(session);
+        else App.showAuth();
+      });
+    }
+    setTimeout(decidirTelaInicial, 800);
+  }
+
+  /* Após o splash: com auth real exige sessão válida; sem auth, entra direto (demo) */
+  async function decidirTelaInicial() {
+    $('#splash').hidden = true;
+    if (authReal()) {
+      const session = await PastorAuth.sessaoAtual();
+      if (session) { await aplicarSessaoReal(session); checarBloqueio(); return; }
+      App.showAuth();
+      return;
+    }
+    $('#app').hidden = false;
+    checarBloqueio();
   }
 
   boot();

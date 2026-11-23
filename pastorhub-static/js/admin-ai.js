@@ -77,8 +77,8 @@
         '<button class="btn btn-primary btn-sm" data-action="int-configurar" data-id="' + p.id + '">' + ic('edit', 'icon-sm') + (configurada ? 'Editar' : 'Configurar') + '</button>' +
         '<button class="btn btn-outline btn-sm" data-action="int-testar" data-id="' + p.id + '"' + (configurada ? '' : ' disabled') + '>' + ic('zap', 'icon-sm') + 'Testar conexão</button>' +
         (configurada ? '<button class="btn btn-outline btn-sm" data-action="int-toggle" data-id="' + p.id + '">' + ic(r.ativo ? 'x' : 'check', 'icon-sm') + (r.ativo ? 'Pausar' : 'Ativar') + '</button>' : '') +
-        (configurada ? '<button class="btn btn-outline btn-sm" data-action="int-mostrar" data-id="' + p.id + '">' + ic('eye', 'icon-sm') + 'Ver chave</button>' : '') +
-        (configurada ? '<button class="btn btn-outline btn-sm" data-action="int-rotacionar" data-id="' + p.id + '">' + ic('refresh-cw', 'icon-sm') + 'Rotacionar</button>' : '') +
+        (configurada && p.campos.some((f) => f.secreto) ? '<button class="btn btn-outline btn-sm" data-action="int-mostrar" data-id="' + p.id + '">' + ic('eye', 'icon-sm') + 'Ver chave</button>' : '') +
+        (configurada && p.campos.some((f) => f.secreto) ? '<button class="btn btn-outline btn-sm" data-action="int-rotacionar" data-id="' + p.id + '">' + ic('refresh-cw', 'icon-sm') + 'Rotacionar</button>' : '') +
         (configurada ? '<button class="btn btn-danger btn-sm" data-action="int-remover" data-id="' + p.id + '">' + ic('trash-2', 'icon-sm') + 'Remover</button>' : '') +
         (p.console ? '<a class="btn btn-outline btn-sm" href="' + p.console + '" target="_blank" rel="noopener">' + ic('chevron-right', 'icon-sm') + 'Console</a>' : '') +
       '</div></div>';
@@ -130,10 +130,12 @@
   }
 
   function abrirConfig(p, limpar) {
-    const corpo = (p.console
-      ? '<div class="info-box blue"><div>🔑</div><div>Obtenha a chave em <a href="' + p.console + '" target="_blank" rel="noopener">console do provedor</a>. ' +
-        'Ela fica guardada apenas neste navegador e é usada pelos agentes e integrações do PastorHub.</div></div>'
-      : '') +
+    const notaChave = p.servidor
+      ? '<div class="info-box blue"><div>🔑</div><div>Este serviço é chamado pelo <b>servidor</b> (Edge Function <code>ai-proxy</code> via <code>supabase secrets</code>). Nenhuma chave fica neste navegador.</div></div>'
+      : (p.console
+        ? '<div class="info-box blue"><div>🔑</div><div>Obtenha a chave em <a href="' + p.console + '" target="_blank" rel="noopener">console do provedor</a>. Ela fica guardada apenas neste navegador e é usada pelos agentes e integrações do PastorHub.</div></div>'
+        : '');
+    const corpo = notaChave +
       (limpar ? '<div class="info-box yellow"><div>♻️</div><div>Rotação: cole a chave nova. Ao salvar, a chave anterior deixa de ser usada pelo PastorHub.</div></div>' : '') +
       '<div id="cf-corpo">' + camposFormulario(p, limpar) + '</div>' +
       '<div id="cf-resultado"></div>';
@@ -192,7 +194,7 @@
   VIEWS.integracoes = function () {
     const todos = P.CATALOGO;
     const conectadas = todos.filter((p) => P.statusIntegracao(p) === 'conectada').length;
-    const comChave = todos.filter((p) => P.statusIntegracao(p) !== 'nao-configurada').length;
+    const comChave = todos.filter((p) => p.campos.some((f) => f.secreto) && P.statusIntegracao(p) !== 'nao-configurada').length;
     const iaProntas = P.provedoresConfigurados().length;
     const iaGratis = todos.filter((p) => p.ia && p.gratuito).length;
     const grupos = [...new Set(todos.map((p) => p.grupo))];
@@ -202,7 +204,7 @@
       '<div class="module-grid">' + todos.filter((p) => p.grupo === g).map(cardIntegracao).join('') + '</div>',
       { sub: g.indexOf('IA') === 0 ? 'Provedores de LLM usados pelos agentes RAG' : 'Integrações do ecossistema' })).join('');
 
-    const chaves = todos.filter((p) => P.statusIntegracao(p) !== 'nao-configurada').map((p) => {
+    const chaves = todos.filter((p) => p.campos.some((f) => f.secreto) && P.statusIntegracao(p) !== 'nao-configurada').map((p) => {
       const r = P.obterIntegracao(p.id) || {};
       const c = r.campos || {};
       const segredo = p.campos.find((f) => f.secreto && c[f.k]) || p.campos[0];

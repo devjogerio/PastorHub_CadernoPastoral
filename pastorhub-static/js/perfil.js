@@ -18,6 +18,8 @@
   function carregar() {
     try {
       const s = JSON.parse(localStorage.getItem(KEY));
+      /* a senha NUNCA fica persistida: qualquer valor antigo é descartado */
+      if (s) delete s.senha;
       return s ? Object.assign({}, PADRAO, s) : Object.assign({}, PADRAO, { criadoEm: new Date().toISOString() });
     } catch (e) {
       return Object.assign({}, PADRAO, { criadoEm: new Date().toISOString() });
@@ -103,22 +105,28 @@
         '<div class="field"><label>Senha atual</label><input id="pw-atual" type="password" placeholder="••••••••"></div>' +
         '<div class="field"><label>Nova senha</label><input id="pw-nova" type="password" placeholder="Mínimo 8 caracteres"></div>' +
         '<div class="field"><label>Confirmar nova senha</label><input id="pw-conf" type="password" placeholder="Repita a nova senha"></div>' +
-        '<div class="info-box lime"><div>🔒</div><div>A senha é armazenada de forma criptografada no dispositivo e nunca é enviada para terceiros.</div></div>',
+        '<div class="info-box lime"><div>🔒</div><div>Com autenticação real (Supabase), a senha é alterada só no servidor e nunca fica neste dispositivo. No modo demonstração não existe senha real.</div></div>',
       footer:
         '<button class="btn outline" data-action="close-sheet" type="button">Cancelar</button>' +
         '<button class="btn primary" data-action="salvar-senha" type="button">' + icon('check', 'icon-sm') + 'Alterar senha</button>',
     });
   };
 
-  Actions['salvar-senha'] = function () {
+  Actions['salvar-senha'] = async function () {
     const nova = document.getElementById('pw-nova').value;
     const conf = document.getElementById('pw-conf').value;
     if (nova.length < 8) { toast('A nova senha precisa ter ao menos 8 caracteres', 'error'); return; }
     if (nova !== conf) { toast('As senhas não conferem', 'error'); return; }
-    Usuario.dados.senha = nova;
-    Usuario.salvar();
-    closeSheet();
-    toast('Senha alterada com sucesso!', 'success');
+    /* a senha NUNCA é salva localmente: só o servidor (Supabase Auth) a altera */
+    if (window.PastorAuth && PastorAuth.configurado()) {
+      const c = await PastorAuth.carregarCliente();
+      const r = await c.auth.updateUser({ password: nova });
+      if (r.error) { toast(r.error.message || 'Erro ao alterar a senha', 'error'); return; }
+      closeSheet();
+      toast('Senha alterada com sucesso!', 'success');
+      return;
+    }
+    toast('Disponível apenas com autenticação real configurada (modo demonstração não tem senha).', 'error');
   };
 
   /* ---------- Modal: foto de perfil ---------- */

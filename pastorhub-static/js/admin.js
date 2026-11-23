@@ -173,6 +173,39 @@
   /* seções restritas a quem não é administrador */
   const SECOES_ADMIN = ['investimento', 'planos', 'usuarios', 'integracoes', 'mercado', 'sistema', 'configuracoes', 'roadmap', 'documentos'];
   const sessao = { conta: null, perfil: null };
+
+  /* true quando há Supabase configurado (js/config.js): auth real; senão, modo demo */
+  function authReal() {
+    return !!(window.PastorAuth && PastorAuth.configurado());
+  }
+
+  /* Monta a "conta" do painel a partir da sessão real do Supabase (user_metadata) */
+  function contaDaSessao(session) {
+    const u = session && session.user;
+    if (!u) return null;
+    const meta = u.user_metadata || {};
+    return {
+      email: u.email,
+      nome: meta.nome || meta.full_name || (u.email ? u.email.split('@')[0] : 'Usuário'),
+      papel: meta.papel || 'usuario',
+      origem: 'supabase',
+      desde: (u.created_at || '').slice(0, 10),
+    };
+  }
+
+  /* Login real no painel: exige sessão Supabase com papel 'admin' nos metadados */
+  async function loginRealPainel(email, senha) {
+    const r = await PastorAuth.entrar(email, senha);
+    if (!r.ok) { toast(r.erro, 'err'); return; }
+    const conta = contaDaSessao(r.session);
+    if (!conta || conta.papel !== 'admin') {
+      await PastorAuth.sair();
+      toast('Esta conta não tem permissão de administrador.', 'err');
+      return;
+    }
+    realizarLogin(conta);
+  }
+
   const ehAdmin = () => !sessao.conta || sessao.conta.papel === 'admin';
   function secoesPermitidas() {
     if (ehAdmin()) return SECTIONS;
@@ -2087,7 +2120,8 @@
     render();
   };
 
-  function sairDoPainel() {
+  async function sairDoPainel() {
+    if (authReal()) await PastorAuth.sair();
     sessao.conta = null;
     sessao.perfil = null;
     state.section = 'overview';
@@ -2444,12 +2478,17 @@
 
   $('#login-form').addEventListener('submit', (e) => {
     e.preventDefault();
-    /* login demo: não há senhas reais no painel estático — só o e-mail identifica a conta */
     const email = $('#adm-email').value.trim().toLowerCase().replace(/\s+/g, '');
     if (!email) {
       toast('Informe o e-mail.', 'err');
       return;
     }
+    /* com Supabase configurado, autentica de verdade e exige papel admin */
+    if (authReal()) {
+      loginRealPainel(email, $('#adm-senha').value);
+      return;
+    }
+    /* login demo: não há senhas reais no painel estático — só o e-mail identifica a conta */
     const conta = CONTAS.find((c) => c.email === email);
     if (!conta) {
       toast('E-mail não encontrado (modo demo).', 'err');
@@ -2463,10 +2502,14 @@
     realizarLogin(conta);
   });
 
-  /* login social (demonstração do fluxo Google) */
+  /* login social: com Supabase configurado é OAuth real; sem config, fluxo demo */
   const btnGoogle = document.getElementById('btn-google');
   if (btnGoogle) {
     btnGoogle.addEventListener('click', () => {
+      if (authReal()) {
+        PastorAuth.entrarGoogle().then((r) => { if (!r.ok) toast(r.erro, 'err'); });
+        return;
+      }
       const conta = CONTAS.find((c) => c.origem === 'google');
       if (!conta) return;
       btnGoogle.disabled = true;
@@ -2489,6 +2532,27 @@
       realizarLogin(conta);
     });
   });
+
+  /* Com auth real: esconde o login rápido demo e restaura sessão existente (exige admin) */
+  function restaurarSessaoReal() {
+    if (!authReal()) return;
+    const quick = document.querySelector('.login-quick');
+    if (quick) quick.hidden = true;
+    PastorAuth.onAuthStateChange((_e, session) => {
+      if (!session) sairDoPainel();
+    });
+    PastorAuth.sessaoAtual().then((session) => {
+      const conta = contaDaSessao(session);
+      if (!conta) return;
+      if (conta.papel !== 'admin') {
+        PastorAuth.sair();
+        toast('Esta conta não tem permissão de administrador.', 'err');
+        return;
+      }
+      realizarLogin(conta);
+    });
+  }
+  restaurarSessaoReal();
 
   $('#refresh-btn').addEventListener('click', () => { render(); toast('Dados atualizados', 'ok'); });
   $('#menu-btn').addEventListener('click', () => {

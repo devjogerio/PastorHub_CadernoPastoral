@@ -1,10 +1,13 @@
-/* Modo demonstração: sinaliza que o app é uma vitrine pública, sem autenticação real. */
+/* Modo demonstração: sinaliza que o app é uma vitrine pública, sem autenticação real.
+   Em modo offline (localStorage pastorhub_modo_offline='1') o aviso é persistente. */
 (function () {
   window.PASTORHUB_DEMO = true;
 
   var CHAVE = 'pastorhub_demo_banner_off';
+  var offline = false;
+  try { offline = localStorage.getItem('pastorhub_modo_offline') === '1'; } catch (e) { /* storage indisponível */ }
   try {
-    if (sessionStorage.getItem(CHAVE) === '1') return;
+    if (!offline && sessionStorage.getItem(CHAVE) === '1') return;
   } catch (e) { /* storage indisponível: segue exibindo o aviso */ }
 
   function montar() {
@@ -23,9 +26,11 @@
     banner.setAttribute('role', 'status');
     banner.innerHTML =
       '<span class="ph-demo-tag">DEMO</span>' +
-      '<span class="ph-demo-text"><strong>Modo demonstração.</strong> ' +
-      'Dados fictícios e acesso aberto — não insira informações reais ou sensíveis.</span>' +
-      '<button type="button" aria-label="Ocultar aviso de demonstração">Entendi</button>';
+      '<span class="ph-demo-text"><strong>' + (offline ? 'Modo offline.' : 'Modo demonstração.') + '</strong> ' +
+      (offline
+        ? 'Seus dados ficam apenas neste dispositivo, sem sincronização.'
+        : 'Dados fictícios e acesso aberto — não insira informações reais ou sensíveis.') + '</span>' +
+      (offline ? '' : '<button type="button" aria-label="Ocultar aviso de demonstração">Entendi</button>');
 
     document.body.appendChild(banner);
     document.body.classList.add('ph-demo-on');
@@ -36,12 +41,15 @@
     ajustarAltura();
     window.addEventListener('resize', ajustarAltura);
 
-    banner.querySelector('button').addEventListener('click', function () {
-      try { sessionStorage.setItem(CHAVE, '1'); } catch (e) { /* ignora */ }
-      banner.remove();
-      document.body.classList.remove('ph-demo-on');
-      document.documentElement.style.removeProperty('--ph-demo-h');
-    });
+    var botao = banner.querySelector('button');
+    if (botao) {
+      botao.addEventListener('click', function () {
+        try { sessionStorage.setItem(CHAVE, '1'); } catch (e) { /* ignora */ }
+        banner.remove();
+        document.body.classList.remove('ph-demo-on');
+        document.documentElement.style.removeProperty('--ph-demo-h');
+      });
+    }
   }
 
   if (document.body) montar();

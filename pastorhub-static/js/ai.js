@@ -68,10 +68,9 @@
         { k: 'chave', rotulo: 'Senha específica de app', ph: 'xxxx-xxxx-xxxx-xxxx', secreto: true },
       ] },
     { id: 'whatsapp', nome: 'WhatsApp Business API (Meta)', grupo: 'Comunicação', icone: 'message', cor: '#25d366',
-      desc: 'Lembretes e confirmações de presença por WhatsApp',
-      console: 'https://developers.facebook.com/apps/', teste: 'whatsapp',
+      desc: 'Lembretes e confirmações por WhatsApp — o token fica só no servidor (Edge Function ai-proxy)',
+      console: 'https://developers.facebook.com/apps/', teste: 'whatsapp', servidor: true,
       campos: [
-        { k: 'chave', rotulo: 'Token de acesso permanente', ph: 'EAAG…', secreto: true },
         { k: 'phoneId', rotulo: 'Phone Number ID', ph: '1234567890' },
       ] },
     { id: 'meet', nome: 'Google Meet (API)', grupo: 'Comunicação', icone: 'video', cor: '#00897b',
@@ -83,26 +82,26 @@
       ] },
 
     /* ---- IA gratuitas (Llama e outros) ---- */
-    { id: 'groq', nome: 'Groq · Llama 3', grupo: 'IA · gratuita', icone: 'zap', cor: '#f55036', ia: true, tipo: 'openai',
+    { id: 'groq', nome: 'Groq · Llama 3', grupo: 'IA · gratuita', icone: 'zap', cor: '#f55036', ia: true, servidor: true, tipo: 'openai',
       gratuito: true, desc: 'Llama 3 em inferência rápida, com plano gratuito',
       base: 'https://api.groq.com/openai/v1', modeloPadrao: 'llama-3.1-8b-instant',
       modelos: ['llama-3.1-8b-instant', 'llama-3.3-70b-versatile', 'gemma2-9b-it'],
       console: 'https://console.groq.com/keys', teste: 'openai' },
-    { id: 'openrouter', nome: 'OpenRouter · Llama (:free)', grupo: 'IA · gratuita', icone: 'zap', cor: '#6366f1', ia: true, tipo: 'openai',
+    { id: 'openrouter', nome: 'OpenRouter · Llama (:free)', grupo: 'IA · gratuita', icone: 'zap', cor: '#6366f1', ia: true, servidor: true, tipo: 'openai',
       gratuito: true, desc: 'Agregador com modelos Llama e outros marcados como :free',
       base: 'https://openrouter.ai/api/v1', modeloPadrao: 'meta-llama/llama-3.3-70b-instruct:free',
       modelos: ['meta-llama/llama-3.3-70b-instruct:free', 'google/gemma-2-9b-it:free', 'mistralai/mistral-7b-instruct:free'],
       console: 'https://openrouter.ai/keys', teste: 'openai' },
-    { id: 'gemini', nome: 'Google Gemini', grupo: 'IA · gratuita', icone: 'sparkles', cor: '#4285f4', ia: true, tipo: 'gemini',
+    { id: 'gemini', nome: 'Google Gemini', grupo: 'IA · gratuita', icone: 'sparkles', cor: '#4285f4', ia: true, servidor: true, tipo: 'gemini',
       gratuito: true, desc: 'Gemini com cota gratuita no AI Studio',
       modeloPadrao: 'gemini-2.0-flash', modelos: ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'],
       console: 'https://aistudio.google.com/app/apikey', teste: 'gemini' },
-    { id: 'mistral', nome: 'Mistral AI', grupo: 'IA · gratuita', icone: 'sparkles', cor: '#fa520f', ia: true, tipo: 'openai',
+    { id: 'mistral', nome: 'Mistral AI', grupo: 'IA · gratuita', icone: 'sparkles', cor: '#fa520f', ia: true, servidor: true, tipo: 'openai',
       gratuito: true, desc: 'Modelos Mistral com plano gratuito (Experiment)',
       base: 'https://api.mistral.ai/v1', modeloPadrao: 'mistral-small-latest',
       modelos: ['mistral-small-latest', 'open-mistral-nemo', 'mistral-large-latest'],
       console: 'https://console.mistral.ai/api-keys', teste: 'openai' },
-    { id: 'huggingface', nome: 'Hugging Face · Inference', grupo: 'IA · gratuita', icone: 'sparkles', cor: '#ffbd45', ia: true, tipo: 'openai',
+    { id: 'huggingface', nome: 'Hugging Face · Inference', grupo: 'IA · gratuita', icone: 'sparkles', cor: '#ffbd45', ia: true, servidor: true, tipo: 'openai',
       gratuito: true, desc: 'Llama e outros modelos abertos via router da Hugging Face',
       base: 'https://router.huggingface.co/v1', modeloPadrao: 'meta-llama/Llama-3.1-8B-Instruct',
       modelos: ['meta-llama/Llama-3.1-8B-Instruct', 'mistralai/Mistral-7B-Instruct-v0.3'],
@@ -118,25 +117,28 @@
       ] },
 
     /* ---- IA pagas ---- */
-    { id: 'openai', nome: 'OpenAI · GPT', grupo: 'IA · paga', icone: 'sparkles', cor: '#10a37f', ia: true, tipo: 'openai',
+    { id: 'openai', nome: 'OpenAI · GPT', grupo: 'IA · paga', icone: 'sparkles', cor: '#10a37f', ia: true, servidor: true, tipo: 'openai',
       gratuito: false, desc: 'GPT-4o e família, com cobrança por token',
       base: 'https://api.openai.com/v1', modeloPadrao: 'gpt-4o-mini', modelos: ['gpt-4o-mini', 'gpt-4o'],
       console: 'https://platform.openai.com/api-keys', teste: 'openai' },
-    { id: 'anthropic', nome: 'Anthropic · Claude', grupo: 'IA · paga', icone: 'sparkles', cor: '#d97757', ia: true, tipo: 'anthropic',
+    { id: 'anthropic', nome: 'Anthropic · Claude', grupo: 'IA · paga', icone: 'sparkles', cor: '#d97757', ia: true, servidor: true, tipo: 'anthropic',
       gratuito: false, desc: 'Claude para análise de textos longos e raciocínio',
       modeloPadrao: 'claude-3-5-haiku-latest', modelos: ['claude-3-5-haiku-latest', 'claude-3-5-sonnet-latest'],
       console: 'https://console.anthropic.com/settings/keys', teste: 'anthropic' },
-    { id: 'together', nome: 'Together AI · Llama', grupo: 'IA · paga', icone: 'zap', cor: '#0f6fff', ia: true, tipo: 'openai',
+    { id: 'together', nome: 'Together AI · Llama', grupo: 'IA · paga', icone: 'zap', cor: '#0f6fff', ia: true, servidor: true, tipo: 'openai',
       gratuito: false, desc: 'Llama 3 70B e outros modelos abertos hospedados',
       base: 'https://api.together.xyz/v1', modeloPadrao: 'meta-llama/Llama-3.3-70B-Instruct-Turbo',
       modelos: ['meta-llama/Llama-3.3-70B-Instruct-Turbo', 'meta-llama/Llama-3.1-8B-Instruct-Turbo'],
       console: 'https://api.together.ai/settings/api-keys', teste: 'openai' },
   ];
 
-  // campos padrão dos provedores de IA em nuvem
+  // campos padrão dos provedores de IA: nuvem vai pelo proxy (só o modelo fica no cliente);
+  // provedores locais (Ollama) mantêm url/chave opcional
   CATALOGO.forEach((p) => {
     if (!p.ia) return;
-    if (!p.campos) {
+    if (p.servidor) {
+      p.campos = [];
+    } else if (!p.campos) {
       p.campos = [{ k: 'chave', rotulo: 'Chave de API', ph: 'cole a chave do provedor', secreto: true }];
     }
     p.campos.push({ k: 'modelo', rotulo: 'Modelo', ph: p.modeloPadrao, lista: p.modelos || [], opcional: true });
@@ -164,6 +166,9 @@
   function integracaoPronta(p) {
     const r = obterIntegracao(p.id);
     if (!r || !r.ativo || !r.campos) return false;
+    /* nuvem (IA + WhatsApp) funciona via Edge Function ai-proxy: basta o Supabase configurado —
+       nenhuma chave fica no navegador */
+    if (p.servidor) return !!(window.PastorAuth && PastorAuth.configurado());
     if (p.ia && p.local) return true; // Ollama funciona com a URL padrão
     return p.campos.filter((c) => !c.opcional).every((c) => temValor(r.campos, c.k));
   }
@@ -206,6 +211,22 @@
     return valido ? { ok: true, msg: ok } : { ok: false, msg: erro };
   }
 
+  /* Chama a Edge Function ai-proxy: as chaves dos provedores ficam só no servidor */
+  async function chamarProxy(corpo) {
+    if (!window.PastorAuth || !PastorAuth.configurado()) {
+      return { ok: false, msg: 'Configure o Supabase em js/config.js para usar o proxy de IA no servidor.' };
+    }
+    try {
+      const r = await PastorAuth.invocarFuncao('ai-proxy', corpo);
+      if (r.error) return { ok: false, msg: r.error.message || String(r.error) };
+      const d = r.data || {};
+      if (d.ok === false) return { ok: false, msg: d.error || 'Falha no proxy de IA.' };
+      return { ok: true, msg: d.msg || d.texto || 'OK', data: d };
+    } catch (e) {
+      return { ok: false, msg: e.message || 'Falha ao chamar o proxy de IA.' };
+    }
+  }
+
   /* ---------- Teste de conexão (real quando o navegador permite) ---------- */
   async function testarIntegracao(p, campos) {
     const c = Object.assign({}, (obterIntegracao(p.id) || {}).campos || {}, campos || {});
@@ -220,23 +241,10 @@
         if (!/^https:\/\/.+\.supabase\.co\/?$/.test(c.url || '')) return { ok: false, msg: 'Project URL deve ser https://<projeto>.supabase.co' };
         return requisicao(c.url.replace(/\/$/, '') + '/rest/v1/', { apikey: c.chave, Authorization: 'Bearer ' + c.chave });
       }
-      if (t === 'whatsapp') {
-        if (!c.phoneId || !c.chave) return { ok: false, msg: 'Informe o token e o Phone Number ID' };
-        return requisicao('https://graph.facebook.com/v19.0/' + encodeURIComponent(c.phoneId) + '?fields=display_phone_number&access_token=' + encodeURIComponent(c.chave));
-      }
-      if (t === 'huggingface') return requisicao('https://huggingface.co/api/whoami-v2', { Authorization: 'Bearer ' + c.chave });
-      if (t === 'gemini') return requisicao('https://generativelanguage.googleapis.com/v1beta/models?key=' + encodeURIComponent(c.chave || ''));
-      if (t === 'anthropic') {
-        return requisicao('https://api.anthropic.com/v1/models', {
-          'x-api-key': c.chave || '', 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true',
-        });
-      }
+      /* WhatsApp e IA em nuvem são testados no servidor (ai-proxy) — nenhum token sai do navegador */
+      if (t === 'whatsapp') return chamarProxy({ acao: 'whatsapp-test', phoneId: c.phoneId });
+      if (p.servidor && p.ia) return chamarProxy({ acao: 'testar', provedor: p.id });
       if (t === 'ollama') return requisicao((c.url || 'http://localhost:11434').replace(/\/$/, '') + '/api/tags');
-      if (t === 'openai') {
-        const base = p.baseFn ? p.baseFn(c) : p.base;
-        const headers = c.chave ? { Authorization: 'Bearer ' + c.chave } : {};
-        return requisicao(base + '/models', headers);
-      }
       return { ok: false, msg: 'Teste não disponível para esta integração.' };
     } catch (e) {
       return { ok: false, msg: e.message || 'Falha inesperada no teste.' };
@@ -255,36 +263,17 @@
     const mensagens = opcoes.mensagens || [];
     const temperature = opcoes.temperatura != null ? opcoes.temperatura : 0.3;
 
-    if (p.tipo === 'gemini') {
-      const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + encodeURIComponent(modelo) + ':generateContent?key=' + encodeURIComponent(c.chave || '');
-      const resp = await comTimeout(url, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: sistema }] },
-          contents: mensagens.map((m) => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
-          generationConfig: { temperature, maxOutputTokens: 1024 },
-        }),
-      }, 60000);
-      const json = await lerRespostaLLM(resp);
-      const parts = (json.candidates && json.candidates[0] && json.candidates[0].content && json.candidates[0].content.parts) || [];
-      return parts.map((x) => x.text || '').join('').trim();
+    /* provedores em nuvem vão pela Edge Function ai-proxy — a chave nunca sai do servidor */
+    if (p.servidor) {
+      const r = await chamarProxy({
+        acao: 'chat', provedor: p.id, modelo: modelo, sistema: sistema,
+        mensagens: mensagens, temperatura: temperature,
+      });
+      if (!r.ok) throw new Error(r.msg);
+      return (r.data && r.data.texto) || '';
     }
 
-    if (p.tipo === 'anthropic') {
-      const resp = await comTimeout('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json', 'x-api-key': c.chave || '', 'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true',
-        },
-        body: JSON.stringify({ model: modelo, max_tokens: 1024, temperature, system: sistema,
-          messages: mensagens.map((m) => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: m.content })) }),
-      }, 60000);
-      const json = await lerRespostaLLM(resp);
-      return (json.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('').trim();
-    }
-
-    // OpenAI-compatível (Groq, OpenRouter, Mistral, Hugging Face, Together, OpenAI, Ollama)
+    // OpenAI-compatível local (Ollama): continua direto do navegador para o servidor local
     const base = p.baseFn ? p.baseFn(c) : p.base;
     const headers = { 'Content-Type': 'application/json' };
     if (c.chave) headers.Authorization = 'Bearer ' + c.chave;
