@@ -265,7 +265,7 @@
 
     switch (viewId) {
       case 'home':
-        view.innerHTML = renderHome();
+        view.innerHTML = window.UsuarioHome.render();
         break;
       case 'chat':
         view.innerHTML = renderChat(state.chatId);
@@ -292,82 +292,11 @@
         view.innerHTML = window.UsuarioPerfil.render();
         break;
       default:
-        view.innerHTML = renderHome();
+        view.innerHTML = window.UsuarioHome.render();
     }
     attachEvents(view);
-  }
-
-  function renderHome() {
-    const stats = [
-      { icon: 'users', label: 'Usuários', value: 28, color: '#1d4ed8' },
-      { icon: 'users', label: 'Atividades', value: 156, color: '#15803d' },
-      { icon: 'message', label: 'Mensagens', value: 12, color: '#db2777' },
-      { icon: 'heart', label: 'Compatibilidade', value: 94, color: '#f59e0b' },
-    ];
-    const quickLinks = [
-      { icon: 'video', title: 'Ver Sermões', id: 'sermoes', color: '#15803d', desc: 'Curso de preparação ao predico' },
-      { icon: 'book-open', title: 'Biblioteca Digital', id: 'biblioteca', color: '#7c3aed', desc: 'Livros teológicos clássicos' },
-      { icon: 'message', title: 'Conversas com Pastor', id: 'chat', color: '#1d4ed8', desc: 'Mensagem pronta e responderá' },
-      { icon: 'calendar', title: 'Visitar MIN', id: 'agenda', color: '#db2777', desc: 'Agende conversas e visitas' },
-      { icon: 'notification', title: 'Notificações', id: 'notificacoes', color: '#f59e0b', desc: 'Alertas recentes e pendentes' },
-    ];
-
-    return `
-      <div class="user-home">
-        <div class="user-hero">
-          <h1>Olá, ${escapeHtml(User.iniciais())}!</h1>
-          <p>Bem-vindo à sua versão Usuário</p>
-        </div>
-        <div class="user-stats">
-          ${stats.map(s => `
-            <div class="user-stat-card">
-              <span class="icon" style="color: ${s.color};">${icon(s.icon, 'icon-lg')}</span>
-              <b>${s.value}</b>
-              <small>${s.label}</small>
-            </div>
-          `).join('')}
-        </div>
-        <div class="user-section">
-          <div class="user-section-head">
-            <div><b>Explore</b><small>Uma caminhada do serviço com os pastor</small></div>
-            <button class="btn-small">Ver todos</button>
-          </div>
-          <div class="user-grid">
-            ${quickLinks.map(l => `
-              <a class="user-card" href="#" data-nav-id="${l.id}">
-                <div class="user-card-icon ${l.id}">${icon(l.icon, 'icon-lg')}</div>
-                <div class="user-card-body">
-                  <b>${escapeHtml(l.title)}</b>
-                  <small>${escapeHtml(l.desc)}</small>
-                </div>
-                <span class="user-card-right">${icon('chevron-right', 'icon-sm')}</span>
-              </a>
-            `).join('')}
-          </div>
-        </div>
-        <div class="user-section">
-          <div class="user-section-head"><div><b>Conexões</b><small>De vídeos e relatórios</small></div></div>
-          <div class="user-grid">
-            ${renderConections()}
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  function renderConections() {
-    return [
-      { icon: 'calendar', title: 'Agenda Community', desc: 'Próximas visitation e eventos', id: 'agenda', color: '#f59e0b' },
-      { icon: 'message', title: 'Mensagens Recentes', desc: 'Conversas', id: 'chat', color: '#1d4ed8' },
-      { icon: 'star', title: 'Favoritos', desc: 'Sermões salvo', id: 'sermoes', color: '#f59e0b' },
-      { icon: 'users', title: 'Membros', desc: 'Compatibilidade', id: 'home', color: '#15803d' },
-    ].map(c => `
-      <a class="user-card" href="#" data-nav-id="${c.id}">
-        <div class="user-card-icon">${icon(c.icon, 'icon-lg')}</div>
-        <div class="user-card-body"><b>${c.title}</b><small>${c.desc}</small></div>
-        <span class="user-card-right">${icon('chevron-right', 'icon-sm')}</span>
-      </a>
-    `).join('');
+    // Navegação inferior: criada uma vez e sincronizada com a view atual
+    if (window.UsuarioHome) window.UsuarioHome.montarNav(viewId);
   }
 
   function renderChatList() {
@@ -719,6 +648,37 @@
         return;
       }
 
+      // Navegação inferior da nova home
+      const hnav = e.target.closest('[data-hnav]');
+      if (hnav) {
+        navigateTo(hnav.dataset.hnav);
+        return;
+      }
+
+      // Blocos da home (cartões, evento, mensagem e ações)
+      const homeIr = e.target.closest('[data-home-ir]');
+      if (homeIr) {
+        navigateTo(homeIr.dataset.homeIr);
+        return;
+      }
+
+      // Home: oração do dia (banner)
+      if (e.target.closest('[data-action="home-oracao"]')) {
+        window.UsuarioHome.abrirOracao();
+        return;
+      }
+      if (e.target.closest('[data-action="home-amen"]')) {
+        window.closeSheet();
+        toast('Amém! Vamos orar juntos.');
+        return;
+      }
+
+      // Home: compartilhar/copiar o versículo do dia
+      if (e.target.closest('[data-action="home-versiculo"]')) {
+        window.UsuarioHome.compartilharVersiculo().then((msg) => { if (msg) toast(msg); });
+        return;
+      }
+
       // Meu perfil (menu lateral, drawer e cartão do desktop)
       const perfil = e.target.closest('[data-action="meu-perfil"]');
       if (perfil) {
@@ -961,9 +921,10 @@
       }
     });
 
-    // Busca da Biblioteca Digital
+    // Busca da Biblioteca Digital e filtro ao vivo da nova home
     document.addEventListener('input', (e) => {
       if (e.target && e.target.id === 'bib-search-input') filterBibList();
+      if (e.target && e.target.id === 'home-search') window.UsuarioHome.filtrar(e.target.value);
     });
 
     // Navegação via sidebar/drawer é tratada pelo listener global acima.

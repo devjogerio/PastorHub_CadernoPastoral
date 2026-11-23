@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-shell="mobile">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https: ws: wss:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'">
@@ -8,6 +8,7 @@
   <title>PastorHub – Versão Usuário</title>
   <link rel="stylesheet" href="css/usuario.css?v=3">
   <link rel="stylesheet" href="css/usuario-perfil.css?v=1">
+  <link rel="stylesheet" href="css/usuario-home.css?v=1">
 </head>
 <body>
 
@@ -155,14 +156,15 @@
   <!-- Toast -->
   <div id="toast-root"></div>
 
-  <script>window.APP_SHELL = 'mobile';</script>
-  <script src="js/icons.js?v=2"></script>
+  <script src="js/app-shell.js?v=1"></script>
+  <script src="js/icons.js?v=3"></script>
   <script src="js/ui.js?v=2"></script>
   <script src="js/config.js"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/biblioteca.js?v=2"></script>
   <script src="js/usuario-perfil.js?v=1"></script>
-  <script src="js/usuario.js?v=5"></script>
+  <script src="js/usuario-home.js?v=1"></script>
+  <script src="js/usuario.js?v=6"></script>
   <script src="js/demo.js"></script>
 </body>
 </html>
