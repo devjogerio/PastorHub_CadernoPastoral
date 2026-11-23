@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#002645">
   <title>PastorHub – Versão Usuário Tablet</title>
   <link rel="stylesheet" href="css/usuario.css?v=3">
+  <link rel="stylesheet" href="css/usuario-perfil.css?v=1">
 </head>
 <body>
 
@@ -61,7 +62,7 @@
           </div>
           <button class="btn lime block" type="submit">Criar Conta</button>
         </form>
-        <p class="auth-foot">PastorHub • Versão Usuário • Tablet</p>
+        <p class="auth-foot" data-auth-foot>PastorHub • Versão Usuário</p>
       </div>
     </div>
   </div>
@@ -134,8 +135,8 @@
     <div id="sheet" hidden>
       <div class="sheet-backdrop" data-action="close-sheet"></div>
       <div class="sheet-panel">
-        <div class="sheet-head"><span class="sheet-title"></span><button class="btn-icon" data-action="close-sheet"><svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
-        <p class="sheet-desc"></p>
+        <div class="sheet-head"><span class="sheet-title" id="sheet-title"></span><button class="btn-icon" data-action="close-sheet"><svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+        <p class="sheet-desc" id="sheet-desc"></p>
         <div id="sheet-body"></div>
         <div id="sheet-footer" hidden></div>
       </div>
@@ -146,7 +147,11 @@
   <script>window.APP_SHELL = 'tablet';</script>
   <script src="js/icons.js?v=2"></script>
   <script src="js/ui.js?v=2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
   <script src="js/biblioteca.js?v=2"></script>
-  <script src="js/usuario.js?v=4"></script>
+  <script src="js/usuario-perfil.js?v=1"></script>
+  <script src="js/usuario.js?v=5"></script>
+  <script src="js/demo.js"></script>
 </body>
 </html>

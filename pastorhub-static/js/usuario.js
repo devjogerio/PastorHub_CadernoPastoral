@@ -98,62 +98,86 @@
   };
 
   // ---------- Auth ----------
-  function authInit() {
-    // A tela de carregamento deve sair em qualquer situação
-    hideSplash();
+  // true quando há Supabase configurado (js/config.js): auth real; senão, modo demonstração
+  function authReal() {
+    return !!(window.PastorAuth && PastorAuth.configurado());
+  }
 
-    // Verify elements exist before checking
-    const appEl = $('#app');
-    const authEl = $('#auth');
+  // Rodapé honesto da tela de auth: não promete privacidade no modo demo
+  function atualizarAuthFoot() {
+    const real = authReal();
+    $$('[data-auth-foot]').forEach((el) => {
+      el.textContent = real
+        ? 'PastorHub • Versão Usuário • Autenticação real via Supabase'
+        : 'PastorHub • Versão Usuário • Modo demonstração — nada é enviado';
+    });
+  }
 
-    if (!appEl || !authEl) {
-      // Elements not loaded yet
-      return;
-    }
+  // Entra no app aplicando a sessão real do Supabase ao gate local
+  async function entrarNoAppReal(session) {
+    const u = session && session.user;
+    if (!u) return;
+    localStorage.setItem('usuario_authed', 'true');
+    localStorage.setItem('usuario_email', u.email || '');
+    $('#app').hidden = false;
+    $('#auth').hidden = true;
+    initApp();
+    renderView('home');
+    closeSheet();
+  }
 
-    const isAuthed = localStorage.getItem('usuario_authed') === 'true';
+  // Entra no app no modo demonstração (gate local; nada é enviado a servidor)
+  function entrarNoAppDemo(email) {
+    localStorage.setItem('usuario_authed', 'true');
+    localStorage.setItem('usuario_email', email || '');
+    toast('Modo demonstração: nenhum dado foi enviado (auth não configurada).', 'error');
+    $('#app').hidden = false;
+    $('#auth').hidden = true;
+    initApp();
+    renderView('home');
+    closeSheet();
+  }
 
-    if (isAuthed) {
-      authEl.hidden = true;
-      appEl.hidden = false;
-      initApp();
-    } else {
-      appEl.hidden = true;
-      authEl.hidden = false;
-    }
+  // Login real via Supabase Auth
+  async function loginUsuario(email, senha) {
+    const r = await PastorAuth.entrar(email, senha);
+    if (!r.ok) { toast(r.erro, 'error'); return; }
+    if (r.session) { await entrarNoAppReal(r.session); toast('Autenticado com sucesso!'); }
+    else toast('Verifique seu e-mail para confirmar o cadastro.');
+  }
 
+  // Cadastro real via Supabase Auth
+  async function signupUsuario(email, senha, nome) {
+    const r = await PastorAuth.cadastrar(email, senha, { nome: nome });
+    if (!r.ok) { toast(r.erro, 'error'); return; }
+    if (r.session) { await entrarNoAppReal(r.session); toast('Conta criada! Bem-vindo!'); }
+    else toast('Conta criada! Confirme seu e-mail para entrar.');
+  }
+
+  // Registra os handlers dos formulários de login/cadastro/Google/abas
+  function registrarAuthHandlers() {
     $('#auth-login').addEventListener('submit', (e) => {
       e.preventDefault();
-      localStorage.setItem('usuario_authed', 'true');
-      localStorage.setItem('usuario_email', $('#login-email').value);
-      toast('Autenticado com sucesso!');
-      $('#app').hidden = false;
-      $('#auth').hidden = true;
-      initApp();
-      renderView('home');
-      closeSheet();
+      const email = $('#login-email').value.trim();
+      if (authReal()) { loginUsuario(email, $('#login-senha').value); return; }
+      entrarNoAppDemo(email);
     });
 
     $('#auth-signup').addEventListener('submit', (e) => {
       e.preventDefault();
-      localStorage.setItem('usuario_authed', 'true');
-      localStorage.setItem('usuario_email', $('#cad-email').value);
-      toast('Conta criada! Bem-vindo!');
-      $('#app').hidden = false;
-      $('#auth').hidden = true;
-      initApp();
-      renderView('home');
+      const email = $('#cad-email').value.trim();
+      if (authReal()) { signupUsuario(email, $('#cad-senha').value, $('#cad-nome').value.trim()); return; }
+      entrarNoAppDemo(email);
     });
 
     const googleBtn = $('[data-action="auth-google"]');
     if (googleBtn) {
       googleBtn.addEventListener('click', () => {
-        localStorage.setItem('usuario_authed', 'true');
-        toast('Autenticado com Google!');
-        $('#app').hidden = false;
-        $('#auth').hidden = true;
-        initApp();
-        renderView('home');
+        if (authReal()) {
+          PastorAuth.entrarGoogle().then((r) => { if (!r.ok) toast(r.erro, 'error'); });
+          return;
+        }
+        toast('Login com Google indisponível: configure o Supabase em js/config.js.', 'error');
       });
     }
 
@@ -169,6 +193,39 @@
         if (signupForm) signupForm.hidden = !isSignup;
       });
     });
+  }
+
+  async function authInit() {
+    // A tela de carregamento deve sair em qualquer situação
+    hideSplash();
+    const appEl = $('#app');
+    const authEl = $('#auth');
+    if (!appEl || !authEl) return;
+    atualizarAuthFoot();
+    registrarAuthHandlers();
+
+    // Com auth real, a sessão do Supabase decide o gate
+    if (authReal()) {
+      PastorAuth.onAuthStateChange((_e, session) => {
+        if (session) entrarNoAppReal(session);
+        else { appEl.hidden = true; authEl.hidden = false; }
+      });
+      const session = await PastorAuth.sessaoAtual();
+      if (session) { await entrarNoAppReal(session); return; }
+      appEl.hidden = true;
+      authEl.hidden = false;
+      return;
+    }
+
+    // Sem auth configurada, mantém o gate local (modo demonstração)
+    if (localStorage.getItem('usuario_authed') === 'true') {
+      authEl.hidden = true;
+      appEl.hidden = false;
+      initApp();
+    } else {
+      appEl.hidden = true;
+      authEl.hidden = false;
+    }
   }
 
   // ---------- Inicialização do App ----------
@@ -230,6 +287,9 @@
         break;
       case 'notificacoes':
         view.innerHTML = renderNotificacoes();
+        break;
+      case 'perfil':
+        view.innerHTML = window.UsuarioPerfil.render();
         break;
       default:
         view.innerHTML = renderHome();
@@ -653,14 +713,35 @@
       if (sair) {
         localStorage.removeItem('usuario_authed');
         localStorage.removeItem('usuario_email');
+        try { localStorage.removeItem('pastorhub_modo_offline'); } catch (err) { /* ignora */ }
+        if (authReal()) { PastorAuth.sair().finally(() => location.reload()); return; }
         location.reload();
         return;
       }
 
-      // Meu perfil
+      // Meu perfil (menu lateral, drawer e cartão do desktop)
       const perfil = e.target.closest('[data-action="meu-perfil"]');
       if (perfil) {
-        toast('Perfil aberto');
+        closeDrawer();
+        navigateTo('perfil');
+        return;
+      }
+
+      // Perfil: editar, salvar e compartilhar
+      if (e.target.closest('[data-action="perfil-editar"]')) {
+        window.UsuarioPerfil.abrirEdicao();
+        return;
+      }
+      if (e.target.closest('[data-action="perfil-salvar"]')) {
+        const r = window.UsuarioPerfil.salvarFormulario();
+        if (r.erro) { toast(r.erro, 'error'); return; }
+        window.closeSheet();
+        renderView('perfil');
+        toast('Perfil atualizado!');
+        return;
+      }
+      if (e.target.closest('[data-action="perfil-compartilhar"]')) {
+        window.UsuarioPerfil.compartilhar().then((msg) => { if (msg) toast(msg); });
         return;
       }
 
