@@ -333,6 +333,10 @@
         view = document.querySelector('#view') || view;
         view.innerHTML = window.UsuarioPerfil.render();
         break;
+      case 'acervo':
+        view.innerHTML = window.BibliotecaComprar.render();
+        window.BibliotecaComprar.montar();
+        break;
       default:
         state.view = 'home';
         view.innerHTML = window.UsuarioHome.render();
@@ -1153,8 +1157,7 @@
 
       // Biblioteca Digital e Leitor por Capítulos
       if (e.target.closest('[data-action="bib-comprar-alugar"]')) {
-        toast('Abrindo página de compra e aluguel do acervo…');
-        window.open('docs/biblioteca-comprar-alugar.html', '_blank');
+        navigateTo('acervo');
         return;
       }
       const bibItem = e.target.closest('.bib-item');

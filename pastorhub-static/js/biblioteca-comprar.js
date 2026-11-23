@@ -84,7 +84,7 @@
     if (!chips) return;
     const todos = [{ id: 'todos', nome: 'Todos' }].concat(categorias());
     chips.innerHTML = todos.map((c) =>
-      '<button class="bib-chip' + (c.id === estado.categoria ? ' active' : '') + '" type="button" data-acq-cat="' + esc(c.id) + '" aria-pressed="' + (c.id === estado.categoria) + '">' + esc(c.nome) + '</button>'
+      '<button class="acq-chip' + (c.id === estado.categoria ? ' active' : '') + '" type="button" data-acq-cat="' + esc(c.id) + '" aria-pressed="' + (c.id === estado.categoria) + '">' + esc(c.nome) + '</button>'
     ).join('');
   }
 
@@ -273,11 +273,13 @@
       data: new Date().toISOString(),
     };
     if (window.BIBLIOTECA && window.BIBLIOTECA.solicitar) {
-      window.BIBLIOTECA.solicitar(livroId, tipo, { protocolo: protocolo, pagamento: dados.pagamento, email: dados.email, fonte: 'docs/biblioteca-comprar-alugar.html' });
+      window.BIBLIOTECA.solicitar(livroId, tipo, { protocolo: protocolo, pagamento: dados.pagamento, email: dados.email, fonte: fonteSolicitacao() });
     }
     salvarPedido(pedido);
     return pedido;
   }
+
+  function fonteSolicitacao() { return 'app-usuario'; }
 
   function mostrarSucesso(pedido) {
     const corpo = $('#acq-modal-corpo');
@@ -365,12 +367,25 @@
       if (e.key === 'Tab') prenderFoco(e, m);
     });
 
-    const busca = $('#acq-busca');
-    if (busca) {
-      busca.addEventListener('input', () => {
-        estado.termo = busca.value;
-        renderCatalogo();
-      });
+  }
+
+  /* Modal e toasts são criados sob demanda: a tela do app não os tem no HTML. */
+  function garantirOverlay() {
+    if (!$('#acq-modal')) {
+      const modal = document.createElement('div');
+      modal.className = 'acq-modal';
+      modal.id = 'acq-modal';
+      modal.hidden = true;
+      modal.innerHTML =
+        '<div class="acq-modal-backdrop" data-acq-fechar></div>' +
+        '<div class="acq-modal-card" id="acq-modal-card" role="dialog" aria-modal="true" tabindex="-1"></div>';
+      document.body.appendChild(modal);
+    }
+    if (!$('#acq-toasts')) {
+      const toasts = document.createElement('div');
+      toasts.id = 'acq-toasts';
+      toasts.setAttribute('aria-live', 'polite');
+      document.body.appendChild(toasts);
     }
   }
 
@@ -385,17 +400,52 @@
     else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primeiro.focus(); }
   }
 
+  /* Markup da tela "Comprar e alugar" dentro do app do usuário. */
+  function render() {
+    return '<section class="acq-app" aria-labelledby="acq-secao-titulo">' +
+      '<div class="acq-app-head">' +
+        '<button class="btn-small bib-back" type="button" data-action="bib-voltar">← Voltar para Biblioteca</button>' +
+        '<h2 id="acq-secao-titulo">Comprar e alugar</h2>' +
+        '<p>Escolha uma obra, veja a amostra e registre sua solicitação de compra ou aluguel.</p>' +
+      '</div>' +
+      '<div class="acq-toolbar">' +
+        '<div class="acq-busca">' +
+          '<input type="search" id="acq-busca" placeholder="Buscar por título, autor ou tema…" autocomplete="off" aria-label="Buscar no acervo para compra e aluguel">' +
+        '</div>' +
+        '<div class="acq-chips" id="acq-filtros" role="group" aria-label="Filtrar por categoria"></div>' +
+        '<p class="acq-contador" id="acq-contador" role="status"></p>' +
+      '</div>' +
+      '<div class="acq-grid" id="acq-grid"></div>' +
+      '<p class="acq-vazio" id="acq-vazio" hidden>Nenhuma obra encontrada para essa busca. Tente outro termo ou categoria.</p>' +
+    '</section>';
+  }
+
+  /* Liga a tela recém-renderizada: reinicia filtros e busca a cada entrada. */
+  function montar() {
+    garantirOverlay();
+    estado.categoria = 'todos';
+    estado.termo = '';
+    renderFiltros();
+    renderCatalogo();
+    const busca = $('#acq-busca');
+    if (busca) {
+      busca.addEventListener('input', () => {
+        estado.termo = busca.value;
+        renderCatalogo();
+      });
+    }
+  }
+
   function iniciar() {
+    registrarEventos();
     if (!window.BIBLIOTECA) {
       const vazio = $('#acq-vazio');
       if (vazio) { vazio.hidden = false; vazio.textContent = 'Não foi possível carregar o acervo.'; }
       return;
     }
-    renderFiltros();
-    renderCatalogo();
-    registrarEventos();
+    if ($('#acq-grid')) montar();
   }
 
-  window.BibliotecaComprar = { livrosFiltrados, validarPedido, abrirModal, fecharModal, lerPedidos };
+  window.BibliotecaComprar = { render, montar, livrosFiltrados, validarPedido, abrirModal, fecharModal, lerPedidos };
   iniciar();
 })();

@@ -147,6 +147,27 @@
 .acq-ok p { color: var(--muted); font-size: .9rem; max-width: 460px; }
 .acq-protocolo { font-family: ui-monospace, Consolas, monospace; font-size: 1rem; color: var(--navy); background: var(--soft); border: 1px dashed var(--blue); border-radius: 9px; padding: 8px 14px; }
 
+/* ---------- Tela "Comprar e alugar" no app do usuário ---------- */
+.acq-app { display: grid; gap: 14px; padding: 16px 14px 24px; color: var(--ink); }
+.acq-app-head { display: grid; gap: 4px; }
+.acq-app-head h2 { font-size: 1.2rem; color: var(--navy); margin-top: 4px; }
+.acq-app-head p { font-size: .84rem; color: var(--muted); }
+.acq-busca input {
+  width: 100%; min-height: 44px; border: 1.5px solid var(--line); border-radius: 11px;
+  padding: 10px 14px; font-family: inherit; font-size: .92rem; color: var(--ink); background: #fff;
+}
+.acq-busca input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(149, 193, 33, .22); }
+.acq-chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.acq-chip {
+  flex: 0 0 auto; min-height: 40px; border: 1.5px solid var(--line); background: #fff; color: var(--muted);
+  border-radius: 999px; padding: 8px 14px; font-family: inherit; font-size: .8rem; font-weight: 600; cursor: pointer;
+  transition: border-color .16s, color .16s, background .16s;
+}
+.acq-chip:hover { border-color: var(--blue); color: var(--navy); }
+.acq-chip.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+.acq-chip:focus-visible, .acq-busca input:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; }
+.acq-contador { font-size: .8rem; color: var(--muted); }
+
 /* ---------- Notificações (toasts) ---------- */
 #acq-toasts { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 1000; display: grid; gap: 8px; justify-items: center; pointer-events: none; width: min(420px, calc(100% - 28px)); }
 .acq-toast {
