@@ -26,6 +26,8 @@ import {
 } from '../../components/ui/tabs';
 import { formatarPreco, lerPlanos, salvarPix, salvarPlanos, type Plano } from '../../lib/planos';
 import { toast } from 'sonner@2.0.3';
+import { AdminBusca } from './AdminBusca';
+import { montarIndiceAdmin } from './busca';
 
 /* ============================================================
    Painel administrativo — dados portados do app estático
@@ -523,6 +525,10 @@ function PlanosPage() {
 
 export function AdminPage() {
   const [tab, setTab] = useState('painel');
+  const indiceBusca = useMemo(
+    () => montarIndiceAdmin({ usuarios: USUARIOS, contas: CONTAS, logs: LOGS, planos: lerPlanos() }),
+    [],
+  );
 
   const tabs = [
     { key: 'painel', rotulo: 'Painel' },
@@ -546,6 +552,8 @@ export function AdminPage() {
           <Settings className="hidden h-8 w-8 text-accent sm:block" />
         </div>
       </header>
+
+      <AdminBusca itens={indiceBusca} />
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="grid w-full grid-cols-3">

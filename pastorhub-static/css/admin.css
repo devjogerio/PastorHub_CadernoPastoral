@@ -117,7 +117,24 @@ code { background: var(--soft); border: 1px solid var(--line); border-radius: 5p
 .search-pop .sp-item span { color: var(--muted); font-size: .78rem; }
 .search-pop .sp-icon { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; background: var(--soft); color: var(--muted); flex-shrink: 0; }
 .search-pop .sp-icon svg { width: 13px; height: 13px; }
-.search-pop .sp-empty { padding: 14px; font-size: .84rem; color: var(--muted); text-align: center; }
+.search-pop .sp-empty { padding: 14px; font-size: .84rem; color: var(--muted); text-align: center; line-height: 1.5; }
+.search-pop .sp-filtros { display: flex; flex-direction: column; gap: 8px; padding: 6px 6px 8px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+.search-pop .sp-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.search-pop .sp-chip { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); font-size: .74rem; color: var(--muted); background: #fff; }
+.search-pop .sp-chip.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+.search-pop .sp-filtro { display: flex; align-items: center; gap: 8px; font-size: .76rem; color: var(--muted); }
+.search-pop .sp-filtro select { flex: 1; padding: 5px 8px; border: 1px solid var(--line); border-radius: 8px; font-size: .8rem; background: #fff; color: var(--ink); }
+.search-pop .sp-count { font-size: .72rem; color: var(--muted); padding: 4px 10px; }
+.search-pop .sp-status { font-size: .7rem; color: var(--navy); background: var(--soft); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+.search-pop .sp-loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; font-size: .84rem; color: var(--muted); }
+.search-pop .sp-erro, .search-pop .sp-aviso { padding: 10px 12px; font-size: .82rem; border-radius: 8px; margin: 4px; }
+.search-pop .sp-erro { color: var(--red); background: rgba(212, 24, 61, .06); text-align: center; }
+.search-pop .sp-aviso { color: #92400e; background: rgba(245, 158, 11, .12); }
+.search-pop .sp-retry { display: block; margin: 8px auto 0; padding: 5px 12px; border-radius: 8px; border: 1px solid var(--red); color: var(--red); background: #fff; font-size: .78rem; }
+.search-pop .sp-pager { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 6px 4px; border-top: 1px solid var(--line); margin-top: 4px; font-size: .76rem; color: var(--muted); }
+.search-pop .sp-pager button { padding: 5px 10px; border-radius: 8px; border: 1px solid var(--line); background: #fff; color: var(--navy); font-size: .78rem; }
+.search-pop .sp-pager button:disabled { opacity: .45; cursor: default; }
+.search-pop .sp-item:focus-visible, .search-pop .sp-chip:focus-visible, .search-pop .sp-pager button:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
 
 .admin-content { padding: 24px 26px 60px; max-width: 1500px; }
 
@@ -397,6 +414,10 @@ body.theme-dark .admin-top h1 { color: #e7eff9; }
 body.theme-dark .admin-top .crumb { color: #8ba0b8; }
 body.theme-dark .admin-search input { border-color: #1e2f45; }
 body.theme-dark .search-pop .sp-item:hover { background: #16243a; }
+body.theme-dark .search-pop .sp-chip, body.theme-dark .search-pop .sp-pager button, body.theme-dark .search-pop .sp-filtro select { background: #0c1724; border-color: #1e2f45; color: #d9e4f0; }
+body.theme-dark .search-pop .sp-chip.active { background: #3261AB; border-color: #3261AB; color: #fff; }
+body.theme-dark .search-pop .sp-filtros, body.theme-dark .search-pop .sp-pager { border-color: #1e2f45; }
+body.theme-dark .search-pop .sp-status { background: #16243a; color: #e7eff9; }
 body.theme-dark .search-pop .sp-item b { color: #e7eff9; }
 body.theme-dark .search-pop .sp-icon { background: #16243a; }
 body.theme-dark .bar-track { background: #16243a; }
@@ -676,8 +697,10 @@ body.painel-ativo .mobile-nav { display: none; }
   .kpi-value { font-size: 1.3rem; }
   body.painel-ativo .mobile-nav { display: grid; }
   .admin-content { padding: 12px 10px 96px; }
-  .admin-search { display: none; }
-  .admin-top { gap: 10px; }
+  .admin-top { flex-wrap: wrap; gap: 10px; }
+  .admin-search { order: 20; flex-basis: 100%; width: 100%; margin-left: 0; }
+  .admin-search .search-pop { width: 100%; max-height: min(70vh, 480px); }
+  .admin-search input { font-size: 1rem; }
   .admin-top h1 { font-size: 1.05rem; }
   .toolbar { flex-wrap: wrap; gap: 8px; }
   .toolbar .segmented { order: 10; width: 100%; overflow-x: auto; }
