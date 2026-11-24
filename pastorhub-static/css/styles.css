@@ -1273,9 +1273,14 @@ body.theme-dark .app-info h3 { color: #e8f1fb; }
 }
 .shell-tablet .nav-item {
   flex-direction: row; gap: 0.45rem;
+  min-width: 0;
   font-size: 0.82rem;
   padding: 0 0.7rem;
   border-radius: var(--radius);
+}
+.shell-tablet .nav-item span {
+  min-width: 0; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
 }
 .shell-tablet .nav-item.active { background: rgba(149, 193, 33, 0.16); }
 .shell-tablet #view { padding-bottom: 2rem; }
@@ -1487,6 +1492,13 @@ body.theme-dark .app-info h3 { color: #e8f1fb; }
   .shell-tablet .nav-item .icon { width: 18px; height: 18px; }
 }
 
+/* Tablet aberto em celular: ícone + rótulo lado a lado não cabe; o
+   aria-label do botão mantém o nome acessível. */
+@media (max-width: 480px) {
+  .shell-tablet .nav-item span { display: none; }
+  .shell-tablet .nav-item .icon { width: 22px; height: 22px; }
+}
+
 /* ---------- Animações Tablet e Desktop ---------- */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
@@ -1518,8 +1530,8 @@ body.theme-dark .app-info h3 { color: #e8f1fb; }
   .quick-grid { grid-template-columns: repeat(4, 1fr); }
   .grid-3 { grid-template-columns: 1fr 1fr; }
   .col-side { width: 320px; }
-  .shell-desktop #topbar { padding: 0 2.5rem; }
-  .shell-desktop #view { padding: 1.5rem; }
+  .shell-desktop #topbar { padding: 0 2.5rem 0 calc(252px + 2.5rem); }
+  .shell-desktop #view { padding: 1.5rem 2.5rem 3rem calc(252px + 2.5rem); }
   .shell-desktop .quick-grid { gap: .75rem; }
 }
 

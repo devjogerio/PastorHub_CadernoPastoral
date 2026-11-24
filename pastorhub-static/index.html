@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-shell="mobile">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https: ws: wss:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta http-equiv="refresh" content="0; url=site.html" />
   <meta name="theme-color" content="#002645">
   <title>PastorHub — A Agenda do Pastor Brasileiro</title>
+  <script src="js/home-redirect.js?v=1"></script>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -204,7 +204,7 @@
   <!-- ===== Toasts ===== -->
   <div id="toast-root" aria-live="polite"></div>
 
-  <script>window.APP_SHELL = 'mobile';</script>
+  <script src="js/app-shell.js?v=2"></script>
   <script src="js/icons.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/data.js"></script>

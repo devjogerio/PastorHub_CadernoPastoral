@@ -46,11 +46,17 @@ python -m http.server 8080
 
 Todos os documentos abrem em nova aba e são **prontos para imprimir em PDF** pelo próprio navegador (botão na barra superior).
 
-As três versões do app compartilham o mesmo núcleo (`js/`, `css/styles.css`); o que muda é o shell declarado antes dos scripts:
+As três versões do app compartilham o mesmo núcleo (`js/`, `css/styles.css`); o que muda é o shell declarado no atributo `data-shell` do `<html>` e lido por `js/app-shell.js` antes dos demais scripts:
 
 ```html
-<script>window.APP_SHELL = 'desktop';</script>  <!-- mobile | tablet | desktop -->
+<html lang="pt-BR" data-shell="desktop">  <!-- mobile | tablet | desktop -->
 ```
+
+A CSP do projeto bloqueia scripts inline, por isso o shell **não** pode ser definido em `<script>` no HTML (a declaração seria ignorada e todas as versões cairiam no layout mobile). Sem `data-shell`, o `app-shell.js` infere o shell pela largura da viewport, nos mesmos cortes das media queries de `css/styles.css`: `>= 1024px` desktop, `>= 768px` tablet, abaixo disso mobile.
+
+A raiz publicada (`/`) abre o site institucional: `js/home-redirect.js` redireciona para `site.html` somente quando o caminho termina em `/`. Abrir `index.html` diretamente carrega a versão mobile do app.
+
+O atalho `pastor.html` (usado pelos botões "Abrir o app") escolhe a versão pela largura da tela via `js/pastor-redirect.js`: `>= 1024px` desktop, `>= 768px` tablet, abaixo disso mobile.
 
 ## 🧑 Usuário logado (perfil completo)
 
