@@ -28,12 +28,12 @@
       <span class="kicker">Documento técnico · Registro de implementação</span>
       <h1>Registro Técnico de Implementação</h1>
       <p class="sub">Tudo o que foi construído no PastorHub até agora — inventário completo, arquitetura, qualidade e próximos passos</p>
-      <p class="tagline">3 versões do app · site institucional · painel admin com 18 seções · IA/RAG/OCR · modelo de negócio com faturamento recorrente · 7 documentos</p>
+      <p class="tagline">3 versões do app · site institucional · painel admin com 15 seções · IA/RAG/OCR · modelo de negócio com faturamento recorrente · 7 documentos</p>
       <div class="cover-meta">
         <div><div class="m-label">Versão do registro</div><div class="m-value">1.0 — 17 de novembro de 2026</div></div>
         <div><div class="m-label">Stack</div><div class="m-value">HTML + CSS + JavaScript puro (sem build)</div></div>
         <div><div class="m-label">Persistência</div><div class="m-value">localStorage (27 chaves)</div></div>
-        <div><div class="m-label">Estado</div><div class="m-value">Funcional · 0 erros de console em 18 seções + 3 apps</div></div>
+        <div><div class="m-label">Estado</div><div class="m-value">Funcional · 0 erros de console em 15 seções + 3 apps</div></div>
       </div>
     </header>
 
@@ -46,14 +46,14 @@
       <div class="grid-3">
         <div class="mini-card"><h4>📱 App · 3 versões</h4><p><b>index.html</b> (mobile), <b>tablet.html</b> e <b>desktop.html</b> — mesmo núcleo (<code>window.APP_SHELL</code>), layouts distintos.</p></div>
         <div class="mini-card"><h4>🌐 Site institucional</h4><p><b>site.html</b> com 15 seções geradas a partir dos dados da proposta (investidor.js).</p></div>
-        <div class="mini-card"><h4>🛠 Painel administrativo</h4><p><b>admin.html</b> com 18 seções — usuários, planos, finanças, RAG, versículos, logs — e a área <b>Minha conta</b> (perfil, configurações e sair).</p></div>
+        <div class="mini-card"><h4>🛠 Painel administrativo</h4><p><b>admin.html</b> com 15 seções — usuários, planos, finanças, RAG, versículos, configurações — e a área <b>Minha conta</b> (perfil, configurações e sair).</p></div>
         <div class="mini-card"><h4>🤖 IA · RAG · OCR</h4><p>17 integrações, LLMs gratuitos e pagos, OCR em português, busca BM25 e agentes com fontes.</p></div>
         <div class="mini-card"><h4>💳 Modelo de negócio</h4><p>Planos com valores da proposta, faturamento recorrente, 6 gateways, Pix com QR e bloqueio por pendência.</p></div>
         <div class="mini-card"><h4>📚 8 documentos</h4><p>Proposta (18 pág.), deck, ficha técnica, manual, roadmap, ecossistema de IA, Biblioteca Digital e este registro.</p></div>
       </div>
       <div class="callout lime" style="margin-top:20px">
         <strong>Estado atual</strong>
-        Projeto funcional de ponta a ponta, validado por regressão em 18 seções do painel e nas 3 versões do app
+        Projeto funcional de ponta a ponta, validado por regressão em 15 seções do painel e nas 3 versões do app
         (0 erros de console, 0 overflow) e por testes funcionais de CRUD, exportações, IA e cobrança.
       </div>
     </section>
@@ -69,7 +69,7 @@
           <tr><td><b>tablet.html</b></td><td>App versão tablet — navegação no topo, grade de conteúdo</td></tr>
           <tr><td><b>desktop.html</b></td><td>App versão desktop — sidebar fixa, painel de detalhes</td></tr>
           <tr><td><b>site.html</b></td><td>Site institucional (15 seções) + rodapé com links dos documentos</td></tr>
-          <tr><td><b>admin.html</b></td><td>Painel administrativo (18 seções + Minha conta + 3 atalhos de plataforma)</td></tr>
+          <tr><td><b>admin.html</b></td><td>Painel administrativo (15 seções + Minha conta)</td></tr>
           <tr><td><b>docs/*.html</b></td><td>proposta-investimento · apresentacao · ficha-tecnica · manual-usuario · roadmap · ecossistema-ia · <b>biblioteca</b> · <b>biblioteca-comprar-alugar</b> · <b>registro-tecnico (este)</b></td></tr>
         </tbody>
       </table>
@@ -123,7 +123,7 @@
 
     <!-- ================= 4 ================= -->
     <section class="page">
-      <h2 class="doc-h"><span class="n">4</span> Painel administrativo — 18 seções</h2>
+      <h2 class="doc-h"><span class="n">4</span> Painel administrativo — 15 seções</h2>
       <table class="doc-table">
         <thead><tr><th style="width:34%">Seção</th><th>Conteúdo</th></tr></thead>
         <tbody>
@@ -140,17 +140,13 @@
           <tr><td><b>Integrações</b></td><td>17 serviços com chaves, teste de conexão, pausar/ativar, rotacionar e console</td></tr>
           <tr><td><b>Base de conhecimento (RAG)</b></td><td>Coleções, upload .md/.txt/.pdf/imagens com <b>OCR</b>, progresso por página, trechos, agentes</td></tr>
           <tr><td><b>Versículos diários</b></td><td>Liga/desliga, horário, canais, banco (28 padrão), prévia, histórico, "Enviar agora"</td></tr>
-          <tr><td><b>Mercado &amp; Concorrência</b></td><td>Posicionamento e comparativo</td></tr>
-          <tr><td><b>Roadmap</b></td><td>Cronograma por versão e marcos de investimento</td></tr>
-          <tr><td><b>Sistema &amp; Logs</b></td><td>Logs de atividade e saúde do sistema</td></tr>
           <tr><td><b>Configurações</b></td><td>Preferências gerais do painel</td></tr>
-          <tr><td><b>Documentos</b></td><td>7 documentos para apresentação (abrem em nova aba, imprimem em PDF)</td></tr>
           <tr><td><b>Minha conta</b></td><td>Meu perfil, configurações do perfil (dados, foto 320×320, notificações) e sair do painel com confirmação — dados persistidos por conta</td></tr>
         </tbody>
       </table>
       <p class="doc-p"><b>Recursos transversais:</b> busca global no painel · exportação CSV e PDF · CRUD geral com modais ·
         tema claro/escuro · <b>uso em celular e tablet</b> (gaveta com backdrop, barra inferior de acesso rápido, tabelas com
-        rolagem, modais em tela cheia, alvos de toque) · atalhos para Site institucional, App mobile e App desktop.</p>
+        rolagem, modais em tela cheia, alvos de toque).</p>
     </section>
 
     <!-- ================= 5 ================= -->
@@ -244,7 +240,7 @@
           <tr><td>Preços antigos em assinaturas já criadas</td><td>Migração automática para os valores documentados</td></tr>
         </tbody>
       </table>
-      <p class="doc-p"><b>Validação executada:</b> 18 seções do painel renderizam sem exceções e 0 erros de console ·
+      <p class="doc-p"><b>Validação executada:</b> 15 seções do painel renderizam sem exceções e 0 erros de console ·
         3 versões do app carregam sem erros e sem overflow · fluxos testados de ponta a ponta: CRUD de planos, configuração de
         gateway, Pix + QR desenhado, bloquear → regularizar, motor de recorrência (fatura aberta → pendente → regularização),
         exportação CSV, envio de versículo e tela de bloqueio no app.</p>
@@ -317,7 +313,7 @@
           <tr><td><b>20</b></td><td><b>WhatsApp Cloud API real</b></td><td>Trocar o simulador pela API oficial do WhatsApp Business, com webhook assinado (HMAC).</td><td>Grande</td></tr>
           <tr><td><b>21</b></td><td><b>Google Calendar / Outlook</b></td><td>Sincronização da Agenda com calendários externos (importar/exportar eventos).</td><td>Médio</td></tr>
           <tr><td><b>22</b></td><td><b>Doações e campanhas</b></td><td>Campanhas da igreja com Pix dinâmico e meta arrecadada — nova fonte de receita além das assinaturas.</td><td>Médio</td></tr>
-          <tr><td><b>23</b></td><td><b>Testes automatizados + lint</b></td><td>Suíte Playwright (regressão das 18 seções e 3 apps) e lint de código para evolução segura.</td><td>Médio</td></tr>
+          <tr><td><b>23</b></td><td><b>Testes automatizados + lint</b></td><td>Suíte Playwright (regressão das 15 seções e 3 apps) e lint de código para evolução segura.</td><td>Médio</td></tr>
         </tbody>
       </table>
 

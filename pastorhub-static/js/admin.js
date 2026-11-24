@@ -171,7 +171,7 @@
     { email: 'pastorhub.oficial@gmail.com', senha: null, nome: 'PastorHub Oficial', papel: 'admin', origem: 'google', desde: '2025-09-21' },
   ];
   /* seções restritas a quem não é administrador */
-  const SECOES_ADMIN = ['investimento', 'planos', 'usuarios', 'integracoes', 'mercado', 'sistema', 'configuracoes', 'roadmap', 'documentos'];
+  const SECOES_ADMIN = ['investimento', 'planos', 'usuarios', 'integracoes', 'configuracoes'];
   const sessao = { conta: null, perfil: null };
 
   /* true quando há Supabase configurado (js/config.js): auth real; senão, modo demo */
@@ -209,7 +209,7 @@
   const ehAdmin = () => !sessao.conta || sessao.conta.papel === 'admin';
   function secoesPermitidas() {
     if (ehAdmin()) return SECTIONS;
-    return SECTIONS.filter((s) => s.group || s.href || s.action || SECOES_ADMIN.indexOf(s.id) === -1);
+    return SECTIONS.filter((s) => s.group || s.action || SECOES_ADMIN.indexOf(s.id) === -1);
   }
 
   /* ================= PERFIL DO USUÁRIO LOGADO ================= */
@@ -341,15 +341,7 @@
     { id: 'integracoes', label: 'Integrações', icon: 'zap' },
     { id: 'rag', label: 'Base de conhecimento (RAG)', icon: 'database' },
     { id: 'versiculos', label: 'Versículos diários', icon: 'book' },
-    { id: 'mercado', label: 'Mercado & Concorrência', icon: 'globe' },
-    { id: 'roadmap', label: 'Roadmap', icon: 'history' },
-    { id: 'sistema', label: 'Sistema & Logs', icon: 'server' },
     { id: 'configuracoes', label: 'Configurações', icon: 'settings' },
-    { group: 'Plataforma' },
-    { id: 'documentos', label: 'Documentos', icon: 'file-text' },
-    { id: 'site', label: 'Site institucional', icon: 'globe', href: 'site.html' },
-    { id: 'app-mobile', label: 'App mobile', icon: 'phone', href: 'index.html' },
-    { id: 'app-desktop', label: 'App desktop', icon: 'monitor', href: 'desktop.html' },
     { group: 'Minha conta' },
     { id: 'perfil', label: 'Meu perfil', icon: 'user' },
     { id: 'perfil-config', label: 'Configurações do perfil', icon: 'settings' },
@@ -371,11 +363,7 @@
     integracoes: 'Integrações e chaves de API',
     rag: 'Base de conhecimento e agentes (RAG)',
     versiculos: 'Versículos diários',
-    mercado: 'Mercado e concorrência',
-    roadmap: 'Roadmap do produto',
-    sistema: 'Saúde do sistema',
     configuracoes: 'Configurações da plataforma',
-    documentos: 'Documentos para apresentação',
     perfil: 'Meu perfil',
     'perfil-config': 'Configurações do perfil',
   };
@@ -1286,52 +1274,6 @@
           '</div>').join('') + '</div>');
   };
 
-  /* ---------- Sistema & Logs ---------- */
-  VIEWS.sistema = function () {
-    const fns = DB.edgeFunctions.map((f) =>
-      '<tr><td><b style="color:var(--navy)">' + esc(f.nome) + '</b><div style="font-size:.76rem;color:var(--muted)">' + esc(f.desc) + '</div></td>' +
-      '<td>' + statusTag(f.status) + '</td><td>' + esc(f.latencia) + '</td>' +
-      '<td style="text-align:center">' + f.exec.toLocaleString('pt-BR') + '</td>' +
-      '<td><div class="row-actions"><button class="icon-btn" data-action="toast" data-msg="Função reiniciada">' + ic('refresh-cw') + '</button>' +
-      '<button class="icon-btn" data-action="toast" data-msg="Logs da função abertos">' + ic('file-text') + '</button></div></td></tr>').join('');
-
-    const logs = DB.logs.map((l) =>
-      '<tr><td style="white-space:nowrap;font-size:.8rem;color:var(--muted)">' + esc(l.hora) + '</td>' +
-      '<td>' + esc(l.usuario) + '</td><td>' + esc(l.acao) + '</td>' +
-      '<td style="font-size:.82rem">' + esc(l.alvo) + '</td>' +
-      '<td>' + (l.tipo === 'erro' ? '<span class="tag tag-red">erro</span>' : l.tipo === 'aviso' ? '<span class="tag tag-amber">aviso</span>' : '<span class="tag tag-green">ok</span>') + '</td></tr>').join('');
-
-    return '<div class="kpi-grid">' +
-      kpi('Uptime', '99,98%', 'últimos 30 dias', 'activity', 'b-lime') +
-      kpi('Latência média', '82ms', 'API REST', 'clock', 'b-navy') +
-      kpi('Erros (24h)', 14, '0,03% das requisições', 'alert-circle', 'b-amber') +
-      kpi('Armazenamento', '68 GB', 'de 100 GB', 'database', 'b-blue') +
-      '</div>' +
-
-      '<div class="grid-2-even">' +
-        panel('Edge Functions', '<div class="table-wrap"><table class="data"><thead><tr>' +
-          '<th>Função</th><th>Status</th><th>Latência</th><th style="text-align:center">Execuções</th><th></th>' +
-          '</tr></thead><tbody>' + fns + '</tbody></table></div>', { flush: true }) +
-        panel('Limites de uso', barList(DB.limites.map((l) => ({ label: l.label, v: l.usado, suffix: '%' })), '#3261AB') +
-          '<div style="font-size:.78rem;color:var(--muted);margin-top:12px">Armazenamento total: <b>68 GB de 100 GB</b> · 312 mil arquivos de mídia</div>',
-          { sub: 'Consumo do plano institucional' }) +
-      '</div>' +
-
-      panel('Banco de dados e segurança', [
-        { n: 'Tabelas', v: 'sermoes · atendimentos · agenda · notificacoes · profiles' },
-        { n: 'Row Level Security', v: 'Ativo em todas as tabelas públicas' },
-        { n: 'Políticas', v: '24 políticas (select, insert, update, delete por auth.uid())' },
-        { n: 'Backups', v: 'Automáticos diários · retenção de 30 dias' },
-        { n: 'Última migração', v: '12 nov 2026 · add_local_pregado_column' },
-      ].map((r) =>
-        '<div class="setting-row"><div><b>' + esc(r.n) + '</b><span>' + esc(r.v) + '</span></div>' +
-        '<span class="tag tag-green">OK</span></div>').join(''), { sub: 'Estado do Supabase e do schema' }) +
-
-      panel('Auditoria e logs', '<div class="table-wrap"><table class="data"><thead><tr>' +
-        '<th>Quando</th><th>Usuário</th><th>Ação</th><th>Alvo</th><th>Nível</th>' +
-        '</tr></thead><tbody>' + logs + '</tbody></table></div>', { flush: true, sub: 'Últimas ações administrativas do sistema' });
-  };
-
   /* ---------- Investimento & Financeiro ---------- */
   const INV = window.INVESTIDOR;
   const MRR_MESES = [
@@ -1711,109 +1653,6 @@
         '</tbody></table></div>', { flush: true, sub: 'Templates exigem aprovação prévia da Meta Business' });
   };
 
-  /* ---------- Mercado & Concorrência ---------- */
-  VIEWS.mercado = function () {
-    const m = INV.mercado;
-    return '<div class="kpi-grid">' +
-      kpi('TAM', 'R$ 75 mi+', 'mercado anual ampliado', 'globe', 'b-navy') +
-      kpi('SAM', 'R$ 15–20 mi', 'mercado servível', 'map-pin', 'b-blue') +
-      kpi('SOM (3 anos)', 'R$ 1,7 mi', '7.000 assinaturas', 'chart', 'b-lime') +
-      kpi('Pastores no Brasil', '150–200 mil', 'universo de usuários', 'users', 'b-amber') +
-      '</div>' +
-
-      '<div class="grid-2">' +
-        panel('Tamanho do mercado', m.dados.map((d) =>
-          '<div class="setting-row"><div><b>' + esc(d.n) + '</b><span>' + esc(d.d) + '</span></div></div>').join(''),
-          { sub: 'Estimativas construídas a partir de dados públicos (IBGE/Censo e estudos setoriais)' }) +
-        panel('TAM · SAM · SOM', [m.tam, m.sam, m.som].map((x, i) =>
-          '<div style="border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px">' +
-            '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">' +
-              '<b style="color:var(--navy)">' + esc(x.rotulo) + '</b>' +
-              '<span class="tag ' + ['tag-blue', 'tag-lime', 'tag-purple'][i] + '">' + esc(x.valor) + '</span></div>' +
-            '<div style="font-size:.82rem;color:var(--muted);margin-top:6px">' + esc(x.def) + '</div></div>').join(''),
-          { sub: 'Recorte de mercado endereçável' }) +
-      '</div>' +
-
-      '<div class="grid-2-even">' +
-        panel('Concorrência', '<div class="table-wrap"><table class="data"><thead><tr><th>Alternativa</th><th>Lacuna que o PastorHub preenche</th></tr></thead><tbody>' +
-          INV.concorrencia.map((c) => '<tr><td><b style="color:var(--navy)">' + esc(c.alt) + '</b></td><td>' + esc(c.lacuna) + '</td></tr>').join('') +
-          '</tbody></table></div>', { flush: true }) +
-        panel('Cinco diferenciais defensáveis', '<ol style="padding-left:1.1rem;display:flex;flex-direction:column;gap:9px;font-size:.87rem">' +
-          INV.diferenciais.map((d) => '<li>' + esc(d) + '</li>').join('') + '</ol>' +
-          '<div class="info-box lime" style="margin-top:12px"><div>🛡️</div><div><strong>Moat defensável</strong> ' + esc(INV.moat) + '</div></div>',
-          { sub: 'Por que a posição é defensável' }) +
-      '</div>' +
-
-      panel('Estratégia de Go-to-Market', '<div class="grid-2" style="margin:0">' +
-        INV.gtm.map((g, i) =>
-          '<div style="border:1px solid var(--line);border-radius:12px;padding:14px">' +
-            '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">' +
-              '<span class="kpi-icon ' + ['b-navy', 'b-blue', 'b-lime', 'b-purple', 'b-amber'][i] + '">' + ic('zap') + '</span>' +
-              '<b style="color:var(--navy)">' + esc(g.nome) + '</b></div>' +
-            '<div style="font-size:.85rem;color:var(--muted)">' + esc(g.desc) + '</div></div>').join('') +
-        '</div>', { sub: 'Distribuição onde o pastor já está' });
-  };
-
-  /* ---------- Roadmap ---------- */
-  VIEWS.roadmap = function () {
-    const itens = INV.roadmap.map((r) => {
-      const cor = r.status === 'done' ? 'b-lime' : r.status === 'wip' ? 'b-amber' : 'b-blue';
-      const ico = r.status === 'done' ? 'check-circle' : r.status === 'wip' ? 'refresh-cw' : 'clock';
-      return '<div style="display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)">' +
-        '<span class="kpi-icon ' + cor + '" style="flex-shrink:0">' + ic(ico) + '</span>' +
-        '<div style="flex:1">' +
-          '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">' +
-            '<b style="color:var(--navy)">' + esc(r.versao) + '</b>' +
-            '<span class="tag ' + (r.status === 'done' ? 'tag-green' : r.status === 'wip' ? 'tag-amber' : 'tag-blue') + '">' + esc(r.prazo) + '</span></div>' +
-          '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:9px">' +
-            r.entregas.map((e) => '<span class="tag tag-gray">' + esc(e) + '</span>').join('') + '</div>' +
-        '</div></div>';
-    }).join('');
-
-    return '<div class="kpi-grid">' +
-      kpi('v1.0', 'Concluído', 'MVP funcional', 'check-circle', 'b-lime') +
-      kpi('v1.5', '3–6 meses', 'Tranche 1 · R$ 15.000', 'refresh-cw', 'b-amber') +
-      kpi('v2.0', '6–12 meses', 'Tranche 2 · R$ 35.000', 'clock', 'b-blue') +
-      '</div>' +
-      panel('Cronograma de entregas', itens, { sub: 'Tranche 1 destrava os gargalos técnicos; Tranche 2 financia o motor de vendas' }) +
-      panel('Marcos de investimento', [
-        { n: 'IA em produção contínua', v: 'Tranche 1 · semanas 1–12' },
-        { n: 'Migração FastAPI + Vue 3', v: 'Tranche 1 · semanas 4–20' },
-        { n: 'Lançamento público e validação de CAC', v: 'Tranche 1 · semanas 8–16' },
-        { n: 'Meet AI (transcrição + sentimento)', v: 'Tranche 2 · meses 1–6' },
-        { n: 'Bot de agenda via WhatsApp', v: 'Tranche 2 · meses 3–9' },
-        { n: '1.000 assentos pagantes', v: 'Tranche 2 · mês 10' },
-      ].map((m) => '<div class="setting-row"><div><b>' + esc(m.n) + '</b></div><span class="tag tag-blue">' + esc(m.v) + '</span></div>').join(''),
-        { sub: 'Critérios mensuráveis de desbloqueio de tranche' });
-  };
-
-  /* ---------- Documentos ---------- */
-  VIEWS.documentos = function () {
-    const cards = INV.documentos.map((d) =>
-      '<a class="module-card" href="' + d.link + '" style="text-decoration:none;color:inherit">' +
-        '<div class="m-top"><span class="m-icon" style="background:rgba(149,193,33,.15);color:#5c7a12">' + ic(d.icone) + '</span>' +
-          '<div><b>' + esc(d.nome) + '</b><span>' + esc(d.tipo) + '</span></div></div>' +
-        '<p style="font-size:.84rem;color:var(--muted);line-height:1.5">' + esc(d.desc) + '</p>' +
-        '<div class="m-foot"><span>' + esc(d.tamanho) + '</span><b style="color:var(--lime-dark)">Abrir →</b></div>' +
-      '</a>').join('');
-
-    return '<div class="kpi-grid">' +
-      kpi('Documentos', INV.documentos.length, 'prontos para apresentação', 'file-text', 'b-navy') +
-      kpi('Páginas', 18, 'proposta de investimento', 'book-open', 'b-blue') +
-      kpi('Slides', 12, 'deck de apresentação', 'monitor', 'b-lime') +
-      kpi('Idioma', 'PT-BR', '100% em português', 'globe', 'b-amber') +
-      '</div>' +
-      panel('Documentos para apresentação', '<div class="module-grid">' + cards + '</div>',
-        { sub: 'Todos os documentos abrem em nova aba e podem ser impressos em PDF pelo navegador' }) +
-      panel('Contato para investidor', [
-        { n: 'Responsável', v: INV.produto.contato },
-        { n: 'Próximo passo', v: 'Reunião de apresentação e demonstração ao vivo — Semana 1' },
-        { n: 'Acesso à base', v: 'Repositórios Frontend/Backend e plano de migração — Semana 2' },
-        { n: 'Instrumento', v: 'Mútuo Conversível ou SAFE · R$ 50.000' },
-      ].map((c) => '<div class="setting-row"><div><b>' + esc(c.n) + '</b><span>' + esc(c.v) + '</span></div></div>').join(''),
-        { sub: 'Contato e agenda da rodada semente' });
-  };
-
   /* ---------- Configurações ---------- */
   const CFG_KEY = 'pastorhub_config_admin';
 
@@ -2147,10 +1986,6 @@
   function renderNav() {
     const html = secoesPermitidas().map((s) => {
       if (s.group) return '<div class="nav-label">' + esc(s.group) + '</div>';
-      if (s.href) {
-        return '<button data-href="' + s.href + '" type="button">' +
-          ic(s.icon) + '<span>' + esc(s.label) + '</span></button>';
-      }
       if (s.action) {
         return '<button class="nav-danger" data-action="' + esc(s.action) + '" type="button">' +
           ic(s.icon) + '<span>' + esc(s.label) + '</span></button>';
@@ -2173,7 +2008,8 @@
 
   function render() {
     persistirEstado();
-    if (!ehAdmin() && SECOES_ADMIN.indexOf(state.section) !== -1) state.section = 'overview';
+    // Seção removida do menu ou sem permissão volta para a visão geral.
+    if (!secoesPermitidas().some((s) => s.id === state.section)) state.section = 'overview';
     renderNav();
     const view = VIEWS[state.section] || VIEWS.overview;
     $('#page-title').textContent = TITLES[state.section] || 'Painel';
@@ -2462,7 +2298,6 @@
     sessao.conta = conta;
     sessao.perfil = perfilDe(conta);
     aplicarSessao(conta);
-    if (!ehAdmin() && SECOES_ADMIN.indexOf(state.section) !== -1) state.section = 'overview';
     $('#admin-login').hidden = true;
     $('#admin-app').hidden = false;
     document.body.classList.add('painel-ativo');
@@ -2587,12 +2422,6 @@
     localStorage.setItem(TEMA_ADMIN, novo);
     aplicarTemaAdmin(novo);
     toast(novo === 'escuro' ? 'Tema escuro ativado no painel' : 'Tema claro ativado no painel', 'ok');
-  });
-
-  /* ---------- Links do grupo Plataforma ---------- */
-  document.addEventListener('click', (e) => {
-    const link = e.target.closest('[data-href]');
-    if (link) window.location.href = link.dataset.href;
   });
 
   /* ---------- Busca global ao vivo ---------- */

@@ -35,7 +35,7 @@ python -m http.server 8080
 | `tablet.html` | **Tablet** | Navegação horizontal no topo, grade em 2 colunas |
 | `desktop.html` | **Desktop** | Menu lateral fixo, painel lateral com agenda/alertas/status |
 | `site.html` | **Site institucional** | Site público completo de investimento (15 seções) |
-| `admin.html` | **Admin** | Painel de gestão com **18 seções** |
+| `admin.html` | **Admin** | Painel de gestão com **15 seções** |
 | `docs/proposta-investimento.html` | **Documento** | Proposta de Investimento v2.0 — 17 páginas, 16 tabelas |
 | `docs/apresentacao.html` | **Documento** | Deck de apresentação — 13 slides 16:9 |
 | `docs/ficha-tecnica.html` | **Documento** | Ficha técnica e arquitetura (5 páginas) |
@@ -109,7 +109,7 @@ Implementado funcionalmente no app (mobile, tablet e desktop):
 - Lista de lembretes com status **Enviado / Confirmado / Falho**, resposta recebida e ação de reenvio/cobrar
 - Métricas de envio, entrega, confirmação e falhas
 
-## 🛠️ Painel administrativo (17 seções)
+## 🛠️ Painel administrativo (15 seções)
 
 | Seção | O que gerencia |
 |---|---|
@@ -132,7 +132,7 @@ Implementado funcionalmente no app (mobile, tablet e desktop):
 | **Configurações** | Identidade, segurança, 12 feature flags, backup |
 | **Documentos** | Todos os documentos de apresentação com links diretos |
 
-Formas de acesso do painel (`admin.html`): **Continuar com Google** (demonstração do fluxo social), **e-mail e senha**, ou os botões de acesso rápido — `admin@pastorhub.app` / `admin1234` (administrador) ou `ana.b.rocha@email.com` / `ana1234` (usuário comum, sem acesso a financeiro, planos, roadmap, documentos e configurações). As credenciais não ficam exibidas na tela de login.
+Formas de acesso do painel (`admin.html`): **Continuar com Google** (demonstração do fluxo social), **e-mail e senha**, ou os botões de acesso rápido — `admin@pastorhub.app` / `admin1234` (administrador) ou `ana.b.rocha@email.com` / `ana1234` (usuário comum, sem acesso a financeiro, planos e configurações). As credenciais não ficam exibidas na tela de login.
 
 ### 📱 Painel no celular e no tablet
 
@@ -226,7 +226,7 @@ pastorhub-static/
     ├── conselho.js     # NOVO · Meet AI + WhatsApp
     ├── app.js          # shells, navegação, drawer, busca global, auth
     ├── site.js         # renderização do site a partir dos dados da proposta
-    ├── admin.js        # painel: 17 seções, tabelas, modais, gráficos SVG, nav mobile
+    ├── admin.js        # painel: 15 seções, tabelas, modais, gráficos SVG, nav mobile
     ├── ai.js           # núcleo: provedores de LLM, OCR, RAG/BM25, agentes
     ├── pagamentos.js   # NOVO · estado de cobrança no app: bloqueio, Pix/QR, gateways
     ├── admin-ai.js     # integrações (chaves de API) + Base de conhecimento
@@ -268,7 +268,7 @@ pastorhub-static/
 - WhatsApp com templates, lembretes, confirmação e status
 - Busca global e buscas locais
 - Layouts responsivos reais: bottom nav (mobile), top nav (tablet), sidebar (desktop)
-- Painel admin com 17 seções, gráficos SVG próprios, modais, filtros, feature flags e auditoria
+- Painel admin com 15 seções, gráficos SVG próprios, modais, filtros, feature flags e auditoria
 - Gestão de negócio no painel: planos Premium/Igreja, assinaturas, faturas e assentos
 - Versículos diários automáticos configuráveis no painel, com card no app e canal WhatsApp
 
