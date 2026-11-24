@@ -5,7 +5,6 @@ import {
   BookOpen,
   CalendarDays,
   CreditCard,
-  FileText,
   Globe2,
   Home,
   LayoutDashboard,
@@ -42,15 +41,14 @@ export const DESTINOS: Destino[] = [
   { id: 'agenda', rotulo: 'Agenda', icone: CalendarDays, grupo: 'app' },
   { id: 'atendimentos', rotulo: 'Atendimentos', icone: Users, grupo: 'app' },
   { id: 'sermoes', rotulo: 'Sermões', icone: BookOpen, grupo: 'app' },
-  { id: 'biblioteca', rotulo: 'Biblioteca', icone: Library, grupo: 'estudo' },
   { id: 'chat', rotulo: 'Chat', icone: MessageCircle, grupo: 'estudo' },
   { id: 'versiculos', rotulo: 'Versículos', icone: BookMarked, grupo: 'estudo' },
   { id: 'notificacoes', rotulo: 'Notificações', icone: Bell, grupo: 'estudo' },
   { id: 'perfil', rotulo: 'Perfil', icone: User, grupo: 'conta' },
   { id: 'planos', rotulo: 'Planos', icone: CreditCard, grupo: 'conta' },
   { id: 'admin', rotulo: 'Painel admin', icone: LayoutDashboard, grupo: 'gestao' },
+  { id: 'biblioteca', rotulo: 'Biblioteca Digital', icone: Library, grupo: 'gestao' },
   { id: 'site', rotulo: 'Site', icone: Globe2, grupo: 'gestao' },
-  { id: 'docs', rotulo: 'Documentos', icone: FileText, grupo: 'gestao' },
 ];
 
 const GRUPOS: Array<{ id: Destino['grupo']; rotulo: string }> = [
