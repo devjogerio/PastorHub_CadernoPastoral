@@ -220,7 +220,12 @@ export function SitePage() {
 
           <div className="header-cta">
             <Link to="admin" className="btn ghost">Painel admin</Link>
-            <Link to="inicio" className="btn primary">Abrir o app</Link>
+            <a
+              href="https://devjogerio.github.io/PastorHub_CadernoPastoral/pastor.html"
+              className="btn primary"
+            >
+              Abrir o app
+            </a>
           </div>
 
           <button className="menu-toggle" aria-label="Abrir menu">
