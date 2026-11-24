@@ -1,34 +1,45 @@
 /* ============================================================
    Busca do painel administrativo (React): lógica pura e tipada.
    Mesma semântica da busca do painel estático (admin-busca-core.js):
+   - mínimo de 3 caracteres para pesquisar;
    - texto parcial: todas as palavras digitadas devem aparecer no conteúdo;
    - "texto entre aspas": correspondência exata com um dos campos;
-   - mínimo de 2 caracteres para busca parcial.
+   - categorias: conteúdo, funcionalidade e ação.
    ============================================================ */
 
+export type TipoBusca = 'conteudo' | 'funcionalidade' | 'acao';
+
 export interface ItemBusca {
+  tipo: TipoBusca;
   grupo: string;
   titulo: string;
   sub: string;
   status: string;
   campos: string[];
+  executar?: () => void;
 }
 
 export interface FiltrosBusca {
   termo: string;
+  tipo: string;
   grupo: string;
   status: string;
 }
 
-export interface Paginacao<T> {
-  itens: T[];
-  pagina: number;
-  totalPaginas: number;
-  total: number;
+export interface GrupoTipo {
+  id: TipoBusca;
+  rotulo: string;
+  itens: ItemBusca[];
 }
 
-export const MIN_CARACTERES_PARCIAL = 2;
+export const MIN_CARACTERES = 3;
 export const TODOS = 'todos';
+
+export const TIPOS: { id: TipoBusca; rotulo: string }[] = [
+  { id: 'conteudo', rotulo: 'Conteúdo' },
+  { id: 'funcionalidade', rotulo: 'Funcionalidade' },
+  { id: 'acao', rotulo: 'Ação' },
+];
 
 export function normalizarTexto(texto: string): string {
   return texto
@@ -46,12 +57,8 @@ export function interpretarTermo(bruto: string): { texto: string; modo: 'parcial
   return { texto: normalizarTexto(t), modo: 'parcial' };
 }
 
-function termoValido(termo: { texto: string; modo: 'parcial' | 'exato' }): boolean {
-  return termo.modo === 'exato' ? termo.texto.length >= 1 : termo.texto.length >= MIN_CARACTERES_PARCIAL;
-}
-
 export function termoEhPesquisavel(bruto: string): boolean {
-  return termoValido(interpretarTermo(bruto));
+  return interpretarTermo(bruto).texto.length >= MIN_CARACTERES;
 }
 
 function correspondeItem(item: ItemBusca, termo: { texto: string; modo: 'parcial' | 'exato' }): boolean {
@@ -64,24 +71,22 @@ function correspondeItem(item: ItemBusca, termo: { texto: string; modo: 'parcial
 
 export function buscarItens(itens: ItemBusca[], filtros: FiltrosBusca): ItemBusca[] {
   const termo = interpretarTermo(filtros.termo);
-  if (!termoValido(termo)) return [];
+  if (termo.texto.length < MIN_CARACTERES) return [];
   return itens.filter((item) => {
+    if (filtros.tipo !== TODOS && item.tipo !== filtros.tipo) return false;
     if (filtros.grupo !== TODOS && item.grupo !== filtros.grupo) return false;
     if (filtros.status !== TODOS && item.status !== filtros.status) return false;
     return correspondeItem(item, termo);
   });
 }
 
-export function paginarItens<T>(lista: T[], pagina: number, tamanho: number): Paginacao<T> {
-  const totalPaginas = Math.max(1, Math.ceil(lista.length / tamanho));
-  const atual = Math.min(Math.max(1, pagina), totalPaginas);
-  const inicio = (atual - 1) * tamanho;
-  return {
-    itens: lista.slice(inicio, inicio + tamanho),
-    pagina: atual,
-    totalPaginas,
-    total: lista.length,
-  };
+/* Agrupa na ordem fixa de TIPOS e descarta categorias vazias. */
+export function agruparPorTipo(lista: ItemBusca[]): GrupoTipo[] {
+  return TIPOS.map((t) => ({
+    id: t.id,
+    rotulo: t.rotulo,
+    itens: lista.filter((item) => item.tipo === t.id),
+  })).filter((g) => g.itens.length > 0);
 }
 
 export interface FontesAdmin {
@@ -89,24 +94,51 @@ export interface FontesAdmin {
   contas: { nome: string; email: string; papel: string; origem?: string }[];
   logs: { usuario: string; acao: string; alvo: string; tipo: string; hora: string }[];
   planos: { nome: string; desc: string }[];
+  navegar: (aba: string) => void;
+}
+
+/* Funcionalidades e ações apontam para as abas reais do painel React. */
+function funcionalidadesEAcoes(navegar: (aba: string) => void): ItemBusca[] {
+  return [
+    {
+      tipo: 'funcionalidade', grupo: 'Funcionalidades', titulo: 'Painel', sub: 'Visão geral de cobrança e operação',
+      status: '', campos: ['Painel', 'visao geral dashboard indicadores kpi'], executar: () => navegar('painel'),
+    },
+    {
+      tipo: 'funcionalidade', grupo: 'Funcionalidades', titulo: 'Financeiro', sub: 'Cobrança, Pix e recorrência',
+      status: '', campos: ['Financeiro', 'cobranca receita pix recorrencia'], executar: () => navegar('financeiro'),
+    },
+    {
+      tipo: 'funcionalidade', grupo: 'Funcionalidades', titulo: 'Planos', sub: 'Planos e limites da assinatura',
+      status: '', campos: ['Planos', 'assinatura preco limites faturamento'], executar: () => navegar('planos'),
+    },
+    {
+      tipo: 'acao', grupo: 'Ações', titulo: 'Configurar chave Pix', sub: 'Abre o Financeiro para salvar a chave',
+      status: '', campos: ['configurar chave pix salvar'], executar: () => navegar('financeiro'),
+    },
+    {
+      tipo: 'acao', grupo: 'Ações', titulo: 'Editar planos', sub: 'Abre a edição de nome e limites dos planos',
+      status: '', campos: ['editar planos nome limites'], executar: () => navegar('planos'),
+    },
+  ];
 }
 
 export function montarIndiceAdmin(fontes: FontesAdmin): ItemBusca[] {
   const usuarios = fontes.usuarios.map((u): ItemBusca => ({
-    grupo: 'Usuários', titulo: u.nome, sub: `${u.email} · ${u.igreja}`, status: u.status,
+    tipo: 'conteudo', grupo: 'Usuários', titulo: u.nome, sub: `${u.email} · ${u.igreja}`, status: u.status,
     campos: [u.nome, u.email, u.igreja, u.cidade, u.plano],
   }));
   const contas = fontes.contas.map((c): ItemBusca => ({
-    grupo: 'Contas', titulo: c.nome, sub: `${c.email} · ${c.papel}`, status: c.papel,
+    tipo: 'conteudo', grupo: 'Contas', titulo: c.nome, sub: `${c.email} · ${c.papel}`, status: c.papel,
     campos: [c.nome, c.email, c.papel, c.origem ?? ''],
   }));
   const logs = fontes.logs.map((l): ItemBusca => ({
-    grupo: 'Registros', titulo: l.acao, sub: `${l.usuario} · ${l.alvo} · ${l.hora}`, status: l.tipo,
+    tipo: 'conteudo', grupo: 'Registros', titulo: l.acao, sub: `${l.usuario} · ${l.alvo} · ${l.hora}`, status: l.tipo,
     campos: [l.acao, l.usuario, l.alvo],
   }));
   const planos = fontes.planos.map((p): ItemBusca => ({
-    grupo: 'Planos', titulo: p.nome, sub: p.desc, status: '',
+    tipo: 'conteudo', grupo: 'Planos', titulo: p.nome, sub: p.desc, status: '',
     campos: [p.nome, p.desc],
   }));
-  return [...usuarios, ...contas, ...logs, ...planos];
+  return [...usuarios, ...contas, ...logs, ...planos, ...funcionalidadesEAcoes(fontes.navegar)];
 }

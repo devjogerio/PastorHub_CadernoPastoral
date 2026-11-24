@@ -526,7 +526,7 @@ function PlanosPage() {
 export function AdminPage() {
   const [tab, setTab] = useState('painel');
   const indiceBusca = useMemo(
-    () => montarIndiceAdmin({ usuarios: USUARIOS, contas: CONTAS, logs: LOGS, planos: lerPlanos() }),
+    () => montarIndiceAdmin({ usuarios: USUARIOS, contas: CONTAS, logs: LOGS, planos: lerPlanos(), navegar: setTab }),
     [],
   );
 

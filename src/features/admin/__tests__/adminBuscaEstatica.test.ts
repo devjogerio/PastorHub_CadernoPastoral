@@ -2,8 +2,9 @@
 /* ============================================================
    Busca do painel administrativo estático (pastorhub-static).
    Carrega os arquivos reais js/admin-busca-core.js e js/admin-busca.js
-   com um AdminAPI simulado, para validar precisão, debounce, estados
-   (carregando, vazio, erro, falhas parciais) e permissões por perfil.
+   com um AdminAPI simulado. Cobre o mínimo de 3 caracteres, categorias
+   (conteúdo, funcionalidade, ação), ações executáveis, teclado, filtros,
+   estados (carregando, vazio, erro, falha parcial) e permissões.
    ============================================================ */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -13,14 +14,20 @@ const pasta = join(process.cwd(), 'pastorhub-static', 'js');
 const lerScript = (nome: string) => readFileSync(join(pasta, nome), 'utf8');
 
 type Nucleo = {
+  MIN_CARACTERES: number;
   normalizar: (t: string) => string;
-  interpretarTermo: (t: string) => { texto: string; modo: 'parcial' | 'exato' };
-  filtrar: (itens: unknown[], o: { termo: string; grupo?: string; status?: string }) => unknown[];
-  paginar: (l: unknown[], p: number, t: number) => { itens: unknown[]; pagina: number; totalPaginas: number; total: number };
+  termoPesquisavel: (t: string) => boolean;
+  filtrar: (itens: unknown[], o: { termo: string; tipo?: string; grupo?: string; status?: string }) => unknown[];
+  agrupar: (itens: unknown[]) => { id: string; itens: unknown[] }[];
 };
+
+const nucleo = (): Nucleo => (window as unknown as { AdminBuscaCore: Nucleo }).AdminBuscaCore;
 
 function montarPagina() {
   document.body.innerHTML =
+    '<button id="refresh-btn" type="button">Atualizar</button>' +
+    '<button id="theme-btn" type="button">Tema</button>' +
+    '<button data-action="export-users" type="button">Exportar</button>' +
     '<div class="admin-search"><input id="global-search" type="text" autocomplete="off">' +
     '<div class="search-pop" id="search-pop" hidden></div></div>';
   return {
@@ -30,25 +37,33 @@ function montarPagina() {
 }
 
 function criarApi(sobrescrita: Record<string, unknown> = {}) {
-  const usuarios = [
-    { nome: 'Marcos Vieira', email: 'marcos@evangelhoquadrado.com', igreja: 'Igreja do Evangelho Quadrado', cidade: 'Uberlândia', plano: 'Premium', status: 'Ativo' },
-    { nome: 'Ana Beatriz Rocha', email: 'ana.b.rocha@email.com', igreja: 'Comunidade Betel', cidade: 'Campinas', plano: 'Igreja', status: 'Ativo' },
-    { nome: 'Samuel Aguiar', email: 'samuel@aguiar.app', igreja: 'Igreja Batista Central', cidade: 'Salvador', plano: 'Premium', status: 'Suspenso' },
-  ];
   const api = {
     state: {
       section: 'overview',
-      users: usuarios,
+      users: [
+        { nome: 'Marcos Vieira', email: 'marcos@evangelhoquadrado.com', igreja: 'Igreja do Evangelho Quadrado', cidade: 'Uberlândia', plano: 'Premium', status: 'Ativo' },
+        { nome: 'Ana Beatriz Rocha', email: 'ana.b.rocha@email.com', igreja: 'Comunidade Betel', cidade: 'Campinas', plano: 'Igreja', status: 'Ativo' },
+        { nome: 'Samuel Aguiar', email: 'samuel@aguiar.app', igreja: 'Igreja Batista Central', cidade: 'Salvador', plano: 'Premium', status: 'Suspenso' },
+      ],
       content: [{ titulo: 'A Fé Que Transforma Montanhas', autor: 'Marcos Vieira', tema: 'Fé', tipo: 'Expositivo', status: 'Publicado' }],
       eventos: [], atendimentos: [], palestras: [], videos: [], templates: [], integrations: [],
       userQuery: '', contentQuery: '',
     },
+    SECTIONS: [
+      { id: 'overview', label: 'Visão geral', icon: 'chart' },
+      { id: 'usuarios', label: 'Usuários', icon: 'users' },
+      { id: 'conteudo', label: 'Conteúdo (Sermões)', icon: 'book-open' },
+      { id: 'configuracoes', label: 'Configurações', icon: 'settings' },
+      { group: 'Minha conta' },
+      { id: 'sair', label: 'Sair do painel', icon: 'log-out', action: 'sair' },
+    ],
+    Actions: { sair: vi.fn() },
     render: vi.fn(),
     toast: vi.fn(),
     esc: (s: unknown) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' } as Record<string, string>)[c]),
     SESSOES_MEET: [],
     carregarConfig: () => ({ nome: 'PastorHub', email: 'contato@pastorhub.app' }),
-    secoesPermitidas: () => [{ id: 'overview' }, { id: 'usuarios' }, { id: 'conteudo' }, { id: 'configuracoes' }],
+    secoesPermitidas: () => [{ id: 'overview' }, { id: 'usuarios' }, { id: 'conteudo' }, { id: 'configuracoes' }, { id: 'sair' }],
     ...sobrescrita,
   };
   return api;
@@ -61,52 +76,52 @@ function carregarBusca(api: Record<string, unknown>) {
   new Function(lerScript('admin-busca.js'))();
 }
 
-const nucleo = (): Nucleo => (window as unknown as { AdminBuscaCore: Nucleo }).AdminBuscaCore;
+function digitar(input: HTMLInputElement, texto: string) {
+  input.value = texto;
+  input.dispatchEvent(new Event('input'));
+}
+
+function tecla(input: HTMLInputElement, key: string) {
+  input.dispatchEvent(new KeyboardEvent('keydown', { key }));
+}
 
 describe('núcleo de busca (admin-busca-core.js)', () => {
-  beforeEach(() => {
-    carregarBusca(criarApi());
+  beforeEach(() => carregarBusca(criarApi()));
+
+  it('exige ao menos 3 caracteres (aspas não contam)', () => {
+    expect(nucleo().MIN_CARACTERES).toBe(3);
+    expect(nucleo().termoPesquisavel('ab')).toBe(false);
+    expect(nucleo().termoPesquisavel('abc')).toBe(true);
+    expect(nucleo().termoPesquisavel('"ab"')).toBe(false);
+    expect(nucleo().termoPesquisavel('"abc"')).toBe(true);
   });
 
-  it('ignora acentos e maiúsculas na normalização', () => {
-    expect(nucleo().normalizar('  Ação   JOVENS  ')).toBe('acao jovens');
+  it('normaliza acentos e maiúsculas', () => {
+    expect(nucleo().normalizar('  Ação   JOVENS ')).toBe('acao jovens');
   });
 
-  it('busca parcial aceita trecho de palavra e ordem livre', () => {
-    const itens = [{ grupo: 'g', status: '', campos: ['Marcos Vieira'], texto: 'marcos vieira' }];
+  it('parcial encontra trechos em ordem livre; exata exige o campo inteiro', () => {
+    const itens = [{ tipo: 'conteudo', grupo: 'g', status: '', campos: ['Marcos Vieira'], texto: 'marcos vieira' }];
     expect(nucleo().filtrar(itens, { termo: 'vie mar' })).toHaveLength(1);
-    expect(nucleo().filtrar(itens, { termo: 'joao' })).toHaveLength(0);
-  });
-
-  it('busca exata exige o campo inteiro entre aspas', () => {
-    const itens = [{ grupo: 'g', status: '', campos: ['Marcos Vieira'], texto: 'marcos vieira' }];
     expect(nucleo().filtrar(itens, { termo: '"Marcos"' })).toHaveLength(0);
     expect(nucleo().filtrar(itens, { termo: '"marcos vieira"' })).toHaveLength(1);
   });
 
-  it('exige ao menos 2 caracteres na busca parcial', () => {
-    const itens = [{ grupo: 'g', status: '', campos: ['Ana'], texto: 'ana' }];
-    expect(nucleo().filtrar(itens, { termo: 'a' })).toHaveLength(0);
-  });
-
-  it('aplica filtros de grupo e status em conjunto com o texto', () => {
+  it('filtra por tipo, módulo e status em conjunto com o texto', () => {
     const itens = [
-      { grupo: 'Usuários', status: 'Ativo', campos: ['Ana'], texto: 'ana' },
-      { grupo: 'Usuários', status: 'Suspenso', campos: ['Ana Lima'], texto: 'ana lima' },
-      { grupo: 'Conteúdo', status: 'Ativo', campos: ['Ana Sermão'], texto: 'ana sermao' },
+      { tipo: 'conteudo', grupo: 'Usuários', status: 'Ativo', campos: ['Ana'], texto: 'ana' },
+      { tipo: 'acao', grupo: 'Ações', status: '', campos: ['Ana ação'], texto: 'ana acao' },
     ];
+    expect(nucleo().filtrar(itens, { termo: 'ana', tipo: 'acao' })).toHaveLength(1);
     expect(nucleo().filtrar(itens, { termo: 'ana', grupo: 'Usuários', status: 'Ativo' })).toHaveLength(1);
-    expect(nucleo().filtrar(itens, { termo: 'ana', grupo: 'todos', status: 'todos' })).toHaveLength(3);
   });
 
-  it('pagina e limita a página ao intervalo válido', () => {
-    const lista = Array.from({ length: 8 }, (_, i) => i);
-    const p1 = nucleo().paginar(lista, 1, 6);
-    expect(p1.itens).toHaveLength(6);
-    expect(p1.totalPaginas).toBe(2);
-    expect(nucleo().paginar(lista, 2, 6).itens).toEqual([6, 7]);
-    expect(nucleo().paginar(lista, 99, 6).pagina).toBe(2);
-    expect(nucleo().paginar([], 1, 6).totalPaginas).toBe(1);
+  it('agrupa por tipo na ordem fixa e omite categorias vazias', () => {
+    const itens = [
+      { tipo: 'acao', titulo: 'a' },
+      { tipo: 'conteudo', titulo: 'c' },
+    ];
+    expect(nucleo().agrupar(itens).map((g) => g.id)).toEqual(['conteudo', 'acao']);
   });
 });
 
@@ -119,11 +134,19 @@ describe('interface da busca (admin-busca.js)', () => {
     vi.useRealTimers();
   });
 
-  it('aguarda o debounce antes de mostrar resultados e exibe carregamento', () => {
+  it('não pesquisa com 2 caracteres e mostra a orientação', () => {
     const { input, pop } = montarPagina();
     carregarBusca(criarApi());
-    input.value = 'marcos';
-    input.dispatchEvent(new Event('input'));
+    digitar(input, 'ma');
+    vi.advanceTimersByTime(500);
+    expect(pop.textContent).toContain('Digite pelo menos 3 caracteres');
+    expect(pop.querySelector('[data-idx]')).toBeNull();
+  });
+
+  it('com 3 caracteres, mostra carregamento e depois os resultados', () => {
+    const { input, pop } = montarPagina();
+    carregarBusca(criarApi());
+    digitar(input, 'mar');
     expect(pop.textContent).toContain('Pesquisando');
     vi.advanceTimersByTime(100);
     expect(pop.textContent).toContain('Pesquisando');
@@ -132,99 +155,145 @@ describe('interface da busca (admin-busca.js)', () => {
     expect(pop.textContent).toContain('marcos@evangelhoquadrado.com');
   });
 
+  it('separa os resultados em conteúdo, funcionalidade e ação', () => {
+    const api = criarApi();
+    api.state.users[0].nome = 'Usuario Marcos';
+    const { input, pop } = montarPagina();
+    carregarBusca(api);
+    digitar(input, 'usuario');
+    vi.advanceTimersByTime(300);
+    expect(pop.textContent).toContain('Conteúdo ·');
+    expect(pop.textContent).toContain('Funcionalidade ·');
+    expect(pop.textContent).toContain('Ação ·');
+    expect(pop.textContent).toContain('Exportar usuários (CSV)');
+  });
+
+  it('encontra funcionalidades pelos sinônimos do módulo', () => {
+    const { input, pop } = montarPagina();
+    carregarBusca(criarApi());
+    digitar(input, 'sermao');
+    vi.advanceTimersByTime(300);
+    expect(pop.textContent).toContain('Conteúdo (Sermões)');
+    expect(pop.textContent).toContain('Funcionalidade ·');
+  });
+
+  it('Enter executa o primeiro resultado e limpa a busca', () => {
+    const api = criarApi();
+    const { input } = montarPagina();
+    carregarBusca(api);
+    digitar(input, 'marcos');
+    vi.advanceTimersByTime(300);
+    tecla(input, 'Enter');
+    expect(api.state.section).toBe('usuarios');
+    expect(api.state.userQuery).toBe('Marcos Vieira');
+    expect(api.render).toHaveBeenCalled();
+    expect(input.value).toBe('');
+  });
+
+  it('setas movem o item ativo e Enter executa o escolhido', () => {
+    const api = criarApi();
+    const { input } = montarPagina();
+    carregarBusca(api);
+    digitar(input, 'marcos');
+    vi.advanceTimersByTime(300);
+    tecla(input, 'Enter');
+    expect(api.state.userQuery).toBe('Marcos Vieira');
+    digitar(input, 'marcos');
+    vi.advanceTimersByTime(300);
+    tecla(input, 'ArrowDown');
+    tecla(input, 'Enter');
+    expect(api.state.section).toBe('conteudo');
+    expect(api.state.contentQuery).toBe('A Fé Que Transforma Montanhas');
+  });
+
+  it('ação de atualizar aciona o botão real do painel', () => {
+    const { input } = montarPagina();
+    const botao = document.getElementById('refresh-btn') as HTMLButtonElement;
+    const clique = vi.fn();
+    botao.addEventListener('click', clique);
+    carregarBusca(criarApi());
+    digitar(input, 'atualizar');
+    vi.advanceTimersByTime(300);
+    tecla(input, 'Enter');
+    expect(clique).toHaveBeenCalledTimes(1);
+  });
+
+  it('ação de exportar aciona o botão da própria seção', () => {
+    const { input } = montarPagina();
+    const clique = vi.fn();
+    (document.querySelector('[data-action="export-users"]') as HTMLButtonElement).addEventListener('click', clique);
+    carregarBusca(criarApi());
+    digitar(input, 'exportar usuarios');
+    vi.advanceTimersByTime(300);
+    tecla(input, 'Enter');
+    expect(clique).toHaveBeenCalledTimes(1);
+  });
+
+  it('ação de sair chama Actions.sair', () => {
+    const api = criarApi();
+    const { input } = montarPagina();
+    carregarBusca(api);
+    digitar(input, 'sair do painel');
+    vi.advanceTimersByTime(300);
+    tecla(input, 'Enter');
+    expect(api.Actions.sair).toHaveBeenCalledTimes(1);
+  });
+
+  it('filtro de categoria mostra só o tipo escolhido', () => {
+    const { input, pop } = montarPagina();
+    carregarBusca(criarApi());
+    digitar(input, 'usuarios');
+    vi.advanceTimersByTime(300);
+    (pop.querySelector('[data-tipo="acao"]') as HTMLButtonElement).click();
+    expect(pop.textContent).toContain('Ação ·');
+    expect(pop.textContent).not.toContain('Funcionalidade ·');
+  });
+
   it('mostra mensagem clara quando não há resultados', () => {
     const { input, pop } = montarPagina();
     carregarBusca(criarApi());
-    input.value = 'zzzzz';
-    input.dispatchEvent(new Event('input'));
+    digitar(input, 'zzzzzz');
     vi.advanceTimersByTime(300);
-    expect(pop.textContent).toContain('Nenhum resultado para “zzzzz”');
-  });
-
-  it('mostra dica quando o termo tem menos de 2 caracteres', () => {
-    const { input, pop } = montarPagina();
-    carregarBusca(criarApi());
-    input.value = 'a';
-    input.dispatchEvent(new Event('input'));
-    vi.advanceTimersByTime(300);
-    expect(pop.textContent).toContain('Digite pelo menos 2 caracteres');
+    expect(pop.textContent).toContain('Nenhum resultado para “zzzzzz”');
   });
 
   it('mostra erro com opção de tentar novamente quando a busca falha', () => {
     const { input, pop } = montarPagina();
     carregarBusca(criarApi({ secoesPermitidas: () => { throw new Error('falha'); } }));
-    input.value = 'marcos';
-    input.dispatchEvent(new Event('input'));
+    digitar(input, 'marcos');
     vi.advanceTimersByTime(300);
     expect(pop.textContent).toContain('Não foi possível pesquisar agora');
     expect(pop.querySelector('[data-retry]')).not.toBeNull();
   });
 
-  it('informa módulos que falharam sem esconder os demais resultados', () => {
+  it('informa o módulo que falhou sem esconder os demais resultados', () => {
     const api = criarApi();
     Object.defineProperty(api.state, 'content', { get() { throw new Error('quebrou'); } });
-    api.secoesPermitidas = () => [{ id: 'usuarios' }, { id: 'conteudo' }];
     const { input, pop } = montarPagina();
     carregarBusca(api);
-    input.value = 'marcos';
-    input.dispatchEvent(new Event('input'));
+    digitar(input, 'marcos');
     vi.advanceTimersByTime(300);
     expect(pop.textContent).toContain('Não foi possível pesquisar em: Conteúdo');
     expect(pop.textContent).toContain('Marcos Vieira');
   });
 
-  it('respeita as seções permitidas ao perfil (usuário comum não vê Usuários)', () => {
+  it('respeita as permissões: usuário comum não recebe usuários nem ações restritas', () => {
     const { input, pop } = montarPagina();
     carregarBusca(criarApi({ secoesPermitidas: () => [{ id: 'overview' }, { id: 'conteudo' }] }));
-    input.value = 'marcos';
-    input.dispatchEvent(new Event('input'));
+    digitar(input, 'marcos');
     vi.advanceTimersByTime(300);
     expect(pop.textContent).not.toContain('marcos@evangelhoquadrado.com');
-    expect(pop.textContent).toContain('A Fé Que Transforma Montanhas');
-  });
-
-  it('pagina os resultados e navega para o item escolhido', () => {
-    const api = criarApi();
-    api.state.users = Array.from({ length: 8 }, (_, i) => ({
-      nome: `Pastor Teste ${i + 1}`, email: `p${i}@teste.app`, igreja: '', cidade: '', plano: '', status: 'Ativo',
-    }));
-    const { input, pop } = montarPagina();
-    carregarBusca(api);
-    input.value = 'pastor teste';
-    input.dispatchEvent(new Event('input'));
+    digitar(input, 'exportar usuarios');
     vi.advanceTimersByTime(300);
-    expect(pop.querySelectorAll('[data-idx]')).toHaveLength(6);
-    expect(pop.textContent).toContain('Página 1 de 2');
-    (pop.querySelector('[data-pagina="2"]') as HTMLButtonElement).click();
-    expect(pop.querySelectorAll('[data-idx]')).toHaveLength(2);
-    (pop.querySelector('[data-idx="6"]') as HTMLButtonElement).click();
-    expect(api.state.section).toBe('usuarios');
-    expect(api.state.userQuery).toBe('Pastor Teste 7');
-    expect(api.render).toHaveBeenCalled();
-    expect(input.value).toBe('');
+    expect(pop.textContent).toContain('Nenhum resultado');
   });
 
-  it('filtra por módulo pelos chips', () => {
-    const api = criarApi();
-    api.state.content = [{ titulo: 'Marcos e a fé', autor: 'Ana', tema: 'Fé', tipo: 'Expositivo', status: 'Publicado' }];
-    const { input, pop } = montarPagina();
-    carregarBusca(api);
-    input.value = 'marcos';
-    input.dispatchEvent(new Event('input'));
-    vi.advanceTimersByTime(300);
-    expect(pop.textContent).toContain('2 resultados');
-    (pop.querySelector('[data-grupo="Conteúdo"]') as HTMLButtonElement).click();
-    expect(pop.textContent).toContain('1 resultado');
-    expect(pop.textContent).not.toContain('Marcos Vieira');
-  });
-
-  it('limpa a busca com Escape e fecha ao clicar fora', () => {
+  it('Escape limpa a busca e fecha a lista', () => {
     const { input, pop } = montarPagina();
     carregarBusca(criarApi());
-    input.value = 'marcos';
-    input.dispatchEvent(new Event('input'));
+    digitar(input, 'marcos');
     vi.advanceTimersByTime(300);
-    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    tecla(input, 'Escape');
     expect(input.value).toBe('');
     expect(pop.hidden).toBe(true);
   });

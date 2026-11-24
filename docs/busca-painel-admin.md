@@ -1,76 +1,91 @@
 # Busca do painel administrativo
 
-Documentação da busca global do painel administrativo, implementada nos dois projetos:
-o painel estático (`pastorhub-static/admin.html`) e o painel React (`src/features/admin/AdminPage.tsx`).
+Documentação da busca global do painel administrativo, implementada nos dois alvos ativos:
 
-## Casos de uso
+- painel estático: `pastorhub-static/admin.html` (GitHub Pages);
+- painel React: `src/features/admin/AdminPage.tsx` (PWA/APK).
 
-| Caso | Exemplo | Resultado esperado |
-| --- | --- | --- |
-| Localizar um usuário pelo começo do nome | `marc` | Marcos Vieira |
-| Encontrar por igreja, cidade ou plano | `igreja` | Usuários cuja igreja, cidade ou plano contém "igreja" |
-| Busca exata de um campo | `"Igreja"` | Apenas campos cujo valor inteiro é "Igreja" |
-| Palavras em qualquer ordem | `vieira marcos` | Marcos Vieira |
-| Filtrar por módulo | chip "Usuários" | Só resultados do módulo escolhido |
-| Filtrar por status | `Suspenso` | Só registros com esse status |
-| Navegar em muitos resultados | "Próxima ›" | Páginas de 6 (estático) ou 5 (React) itens |
-| Termo curto | `a` | Mensagem pedindo pelo menos 2 caracteres |
-| Sem correspondência | `zzzz` | Mensagem "Nenhum resultado para …" |
+Os dois seguem a mesma semântica: mínimo de 3 caracteres, categorias por tipo (conteúdo, funcionalidade e ação), lista completa sem paginação, filtros e navegação por teclado.
+
+## Requisitos atendidos
+
+| Requisito | Comportamento |
+| --- | --- |
+| Conteúdos cadastrados | Usuários, sermões, agenda/atendimentos, recursos, sessões de conselho, modelos de WhatsApp, integrações, planos e configurações (estático); usuários, contas, registros e planos (React). |
+| Funcionalidades disponíveis | Módulos do menu do painel, respeitando o perfil do usuário (estático) e as abas Painel, Financeiro e Planos (React). |
+| Ações executáveis | Atualizar, alternar tema, criar/exportar registros e sair (estático); configurar chave Pix e editar planos, abrindo a aba correspondente (React). |
+| Mínimo de 3 caracteres | Abaixo disso não há consulta nem resultados; apenas a orientação na interface. Aspas não entram na contagem. |
+| Lista categorizada | Grupos "Conteúdo", "Funcionalidade" e "Ação", com contador por grupo e total de resultados. Todos os itens correspondentes são exibidos, sem paginação. |
 
 ## Regras de correspondência
 
-- **Normalização:** maiúsculas, minúsculas e acentos são ignorados (`Ação` = `acao`).
-- **Parcial (padrão):** cada palavra digitada precisa aparecer em algum campo do registro. A ordem não importa.
-- **Exata:** o termo entre aspas precisa ser igual a um dos campos inteiros.
-- **Mínimo:** busca parcial exige 2 caracteres; a exata aceita 1.
-- **Filtros:** módulo e status combinam com o texto (lógica E).
+- **Normalização:** acentos e caixa são ignorados (`Ação` = `acao`). Espaços repetidos são colapsados.
+- **Parcial (padrão):** todas as palavras digitadas precisam aparecer em algum campo do item, em qualquer ordem.
+- **Exata:** com o termo entre aspas, um dos campos precisa ser exatamente igual ao termo. Ex.: `"Marcos Vieira"`.
+- **Mínimo:** 3 caracteres após normalização. `"ab"` não pesquisa; `"abc"` pesquisa.
+- **Filtros:** categoria, módulo e status combinam com o texto (lógica E). As opções dos filtros vêm do índice completo, então não desaparecem ao filtrar.
+- **Permissões (estático):** itens de seções não permitidas ao perfil não entram no índice, inclusive ações.
 
-As regras estão em `pastorhub-static/js/admin-busca-core.js` (estático) e em `src/features/admin/busca.ts` (React). As duas implementações seguem a mesma semântica e são cobertas por testes próprios.
+As regras estão em `pastorhub-static/js/admin-busca-core.js` (estático) e em `src/features/admin/busca.ts` (React), cobertas por testes próprios.
 
-## Estados da interface
+## Interface e interação
 
-- **Carregando:** indicador "Pesquisando…" enquanto o debounce aguarda (250 ms).
-- **Vazio:** mensagem com o termo pesquisado e a sugestão de remover filtros.
-- **Erro:** mensagem "Não foi possível pesquisar agora" com opção de tentar novamente (estático). No estático, se só um módulo falhar, os demais resultados continuam aparecendo e o aviso indica qual módulo falhou.
-- **Dica:** termo com menos de 2 caracteres mostra como usar aspas.
+- Campo com `role="combobox"` e placeholder indicando o mínimo de 3 letras.
+- Debounce de 250 ms: o indicador "Pesquisando…" aparece durante a espera.
+- Resultados agrupados por tipo, com ícone, título, módulo, descrição e status quando houver.
+- Filtros por categoria (chips "Tudo / Conteúdo / Funcionalidade / Ação"), módulo e status.
+- Teclado: `↓`/`↑` movem o item ativo, `Enter` executa o item selecionado e `Esc` limpa a busca.
+- **Estados:** orientação para termo curto, carregamento, vazio ("Nenhum resultado para …"), erro com "Tentar novamente" e aviso de falha parcial por módulo (estático).
+- A execução de um resultado limpa o campo e fecha a lista.
 
 ## Implementação estática (`pastorhub-static`)
 
-- `js/admin-busca-core.js`: lógica pura (normalização, correspondência, filtros, paginação). Sem DOM.
-- `js/admin-busca.js`: interface sobre o campo `#global-search`. Indexa os módulos a partir de `window.AdminAPI`, respeita as seções permitidas ao perfil (`secoesPermitidas`) e navega ao clicar no resultado.
-- Fontes indexadas: usuários, conteúdo, agenda e atendimentos, recursos (palestras e vídeos), Conselho (Meet AI), WhatsApp (modelos), integrações, planos (`localStorage` `pastorhub_admin_planos`) e configurações.
-- Responsivo: em até 640px a busca vira uma linha inteira abaixo do cabeçalho (antes ficava oculta).
-- Tema escuro: estilos próprios em `css/admin.css`.
+- `js/admin-busca-core.js`: lógica pura (normalização, interpretação do termo, filtros, agrupamento). Sem DOM.
+- `js/admin-busca.js`: interface sobre `#global-search`; indexa `window.AdminAPI` e `window.AdminBuscaCore`.
+- `AdminAPI.SECTIONS` é exposto em `admin.js` para indexar as funcionalidades.
+- Fontes de conteúdo: usuários, conteúdo, agenda e atendimentos, recursos (palestras e vídeos), Conselho (Meet AI), WhatsApp, integrações, planos (`localStorage pastorhub_admin_planos`) e configurações.
+- Ações: `Atualizar painel` (`#refresh-btn`), `Alternar tema` (`#theme-btn`), `Novo usuário`, `Exportar usuários`, `Novo sermão`, `Exportar conteúdo` e `Sair do painel`. Elas abrem a seção necessária e acionam o controle real da tela.
+- `admin.html` carrega `admin.js?v=4`, `admin-busca-core.js?v=2` e `admin-busca.js?v=2` (versionamento para renovar cache).
+- `css/admin.css`: estilos das categorias, filtros, item ativo, tema escuro e responsividade (campo em uma linha própria até 640px).
 
 ## Implementação React (`src/`)
 
-- `src/features/admin/busca.ts`: tipos, normalização, correspondência, filtros, paginação e `montarIndiceAdmin`.
-- `src/features/admin/AdminBusca.tsx`: componente com campo de busca, seletores de módulo e status, estados e paginação.
-- `src/hooks/useDebouncedValue.ts`: hook de debounce reutilizável.
-- `AdminPage.tsx` monta o índice (usuários, contas, registros e planos) e renderiza o componente acima das abas.
+- `src/features/admin/busca.ts`: tipos, normalização, correspondência, filtros, agrupamento e `montarIndiceAdmin`.
+- `src/features/admin/AdminBusca.tsx`: campo, categorias, filtros, estados, teclado e lista completa.
+- `src/hooks/useDebouncedValue.ts`: debounce reutilizável (250 ms).
+- `AdminPage.tsx` fornece `navegar: setTab`, de modo que funcionalidades e ações trocam de aba de verdade.
+- Fontes de conteúdo: usuários, contas, registros de auditoria e planos.
+
+## Desempenho
+
+A busca é local: o índice é montado em memória e percorrido a cada consulta, com debounce para evitar trabalho a cada tecla. Com os volumes atuais da demonstração, o processamento é imediato; a medição no navegador incluiu principalmente os 350 ms de espera do debounce (resultados entre ~356 e ~366 ms após a digitação, ou seja, ~6–16 ms de processamento). Um teste com 40 itens confirma que nenhum resultado é omitido por paginação.
+
+Para volumes reais, a evolução natural é manter o índice atualizado incrementalmente em vez de reconstruí-lo por consulta.
+
+## Validação
+
+Comandos executados com sucesso:
+
+- `npm.cmd run check:static` — 37 arquivos JavaScript válidos;
+- `npm.cmd run typecheck` — sem erros;
+- `npm.cmd test` — 16 arquivos, 89 testes aprovados;
+- `npm.cmd run build` — build de produção concluído.
+
+Testes automatizados da busca: `adminBuscaEstatica.test.ts` (20 casos), `busca.test.ts` (9) e `AdminBusca.test.tsx` (8). Cobrem mínimo de caracteres, categorias, ações, teclado, filtros, estados de carregamento/vazio/erro, falha parcial, permissões e ausência de paginação.
+
+Validação manual no navegador, com login de administrador no painel estático e no build de produção do React, em 390, 768 e 1280 px:
+
+- Estático: `mar` → 11 resultados; `igreja` → 9; `"Igreja"` → 5 exatos; `usuario` → 3 (1 funcionalidade e 2 ações); `exportar usuarios` → 1 ação; `zzzz` → mensagem de vazio. A ação "Novo usuário" abriu o formulário e limpou o campo.
+- React: `ab` → nenhum resultado; `ana` → 3; `pix` → 2 (funcionalidade e ação); `plano` → 3 categorias; `zzzz` → mensagem de vazio. `↓` + `Enter` em `pix` navegou para Financeiro.
+- Mesmos resultados nas três larguras, campo visível e dentro da viewport, sem overflow horizontal e zero erros de console.
 
 ## Limitações conhecidas
 
-- Os dados do painel são de demonstração. Não há consulta ao banco nem busca no servidor.
-- No React, os resultados são informativos: clicar em um item não navega para outra aba.
-- O React não tem módulos de conteúdo, agenda ou configurações; a busca cobre o que a tela tem hoje.
-- O estático não indexa Notificações nem a Base de conhecimento (RAG), que não têm lista em memória.
-- A busca reconstrói o índice a cada consulta. Para o volume de demonstração isso é imediato; com dados reais seria preciso indexar uma vez e atualizar sob demanda.
+- Os dados do painel são de demonstração: não há consulta a banco nem busca no servidor.
+- No React, o índice cobre apenas o que a tela possui hoje (usuários, contas, registros e planos).
+- No estático, Notificações e Base de conhecimento aparecem como funcionalidades, mas não têm itens de conteúdo indexados por não manterem lista em memória.
+- A busca do app do usuário (sermões e biblioteca) é outra funcionalidade e não foi alterada.
 
 ## Compatibilidade de navegadores
 
-Usa `String.prototype.normalize`, `Array.from`, `Object.assign` e `Set`, suportados em Chrome, Edge, Firefox e Safari atuais (e Android/iOS recentes). Navegadores antigos sem `normalize` (como Internet Explorer) não são suportados, assim como o restante do painel.
-
-## Testes
-
-- `src/features/admin/__tests__/adminBuscaEstatica.test.ts`: carrega os arquivos reais do estático em jsdom. Cobre precisão, debounce, estados (carregando, vazio, erro, falha parcial), permissões por perfil, paginação e navegação.
-- `src/features/admin/__tests__/busca.test.ts`: lógica pura do React (correspondência, filtros, paginação e índice).
-- `src/features/admin/__tests__/AdminBusca.test.tsx`: componente React com debounce, carregamento, vazio, paginação e filtro de status.
-
-Validação manual no navegador (iframes em 390, 768 e 1280 px), com o painel estático logado como administrador:
-
-- Mesmo resultado nas três larguras; campo visível em todas; sem overflow horizontal.
-- Termo `igreja`: 9 resultados, todos conferidos contra os dados.
-- Termo `"Igreja"`: 5 resultados exatos (3 planos e 2 locais).
-- Filtro por módulo "Usuários": 3 resultados.
-- Zero erros de console.
+Usa `String.prototype.normalize`, `Array.from`, `Object.assign` e `Set`, disponíveis em Chrome, Edge, Firefox e Safari atuais (e Android/iOS recentes). Internet Explorer não é suportado, assim como o restante do painel.

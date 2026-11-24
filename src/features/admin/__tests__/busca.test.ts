@@ -1,17 +1,30 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
+  MIN_CARACTERES,
+  TIPOS,
+  TODOS,
+  agruparPorTipo,
   buscarItens,
   interpretarTermo,
   montarIndiceAdmin,
-  paginarItens,
   termoEhPesquisavel,
+  type FiltrosBusca,
   type ItemBusca,
 } from '../busca';
 
+const filtros = (termo: string, extras: Partial<FiltrosBusca> = {}): FiltrosBusca => ({
+  termo,
+  tipo: TODOS,
+  grupo: TODOS,
+  status: TODOS,
+  ...extras,
+});
+
 const itens: ItemBusca[] = [
-  { grupo: 'Usuários', titulo: 'Marcos Vieira', sub: 'marcos@x.com', status: 'Ativo', campos: ['Marcos Vieira', 'marcos@x.com', 'Igreja do Evangelho Quadrado'] },
-  { grupo: 'Usuários', titulo: 'Samuel Aguiar', sub: 'samuel@x.com', status: 'Suspenso', campos: ['Samuel Aguiar', 'samuel@x.com', 'Igreja Batista Central'] },
-  { grupo: 'Registros', titulo: 'Conta suspensa', sub: 'samuel@x.com · Violação', status: 'erro', campos: ['Conta suspensa', 'samuel@x.com', 'Violação de uso'] },
+  { tipo: 'conteudo', grupo: 'Usuários', titulo: 'Marcos Vieira', sub: 'marcos@x.com', status: 'Ativo', campos: ['Marcos Vieira', 'marcos@x.com', 'Igreja do Evangelho Quadrado'] },
+  { tipo: 'conteudo', grupo: 'Usuários', titulo: 'Samuel Aguiar', sub: 'samuel@x.com', status: 'Suspenso', campos: ['Samuel Aguiar', 'samuel@x.com', 'Igreja Batista Central'] },
+  { tipo: 'acao', grupo: 'Ações', titulo: 'Conta suspensa', sub: 'samuel@x.com · Violação', status: 'erro', campos: ['Conta suspensa', 'samuel@x.com', 'Violação de uso'] },
+  { tipo: 'funcionalidade', grupo: 'Funcionalidades', titulo: 'Financeiro', sub: 'Cobrança', status: '', campos: ['Financeiro', 'cobranca pix'] },
 ];
 
 describe('busca do painel (React)', () => {
@@ -20,49 +33,74 @@ describe('busca do painel (React)', () => {
   });
 
   it('busca parcial encontra trecho de palavra em qualquer campo', () => {
-    expect(buscarItens(itens, { termo: 'evangelho', grupo: 'todos', status: 'todos' }).map((i) => i.titulo)).toEqual(['Marcos Vieira']);
+    expect(buscarItens(itens, filtros('evangelho')).map((i) => i.titulo)).toEqual(['Marcos Vieira']);
   });
 
-  it('busca parcial exige todas as palavras digitadas', () => {
-    expect(buscarItens(itens, { termo: 'samuel batista', grupo: 'todos', status: 'todos' })).toHaveLength(1);
-    expect(buscarItens(itens, { termo: 'marcos batista', grupo: 'todos', status: 'todos' })).toHaveLength(0);
+  it('busca parcial exige todas as palavras digitadas, em ordem livre', () => {
+    expect(buscarItens(itens, filtros('samuel batista'))).toHaveLength(1);
+    expect(buscarItens(itens, filtros('batista samuel'))).toHaveLength(1);
+    expect(buscarItens(itens, filtros('marcos batista'))).toHaveLength(0);
   });
 
   it('busca exata só casa campo inteiro entre aspas', () => {
-    expect(buscarItens(itens, { termo: '"Marcos"', grupo: 'todos', status: 'todos' })).toHaveLength(0);
-    expect(buscarItens(itens, { termo: '"marcos vieira"', grupo: 'todos', status: 'todos' })).toHaveLength(1);
+    expect(buscarItens(itens, filtros('"Marcos"'))).toHaveLength(0);
+    expect(buscarItens(itens, filtros('"marcos vieira"'))).toHaveLength(1);
   });
 
-  it('aplica filtros de módulo e status junto com o texto', () => {
-    expect(buscarItens(itens, { termo: 'samuel', grupo: 'Registros', status: 'todos' })).toHaveLength(1);
-    expect(buscarItens(itens, { termo: 'samuel', grupo: 'todos', status: 'Suspenso' })).toHaveLength(1);
-    expect(buscarItens(itens, { termo: 'samuel', grupo: 'Usuários', status: 'erro' })).toHaveLength(0);
+  it('aplica filtros de categoria, módulo e status junto com o texto', () => {
+    expect(buscarItens(itens, filtros('samuel', { grupo: 'Ações' }))).toHaveLength(1);
+    expect(buscarItens(itens, filtros('samuel', { status: 'Suspenso' }))).toHaveLength(1);
+    expect(buscarItens(itens, filtros('samuel', { grupo: 'Usuários', status: 'erro' }))).toHaveLength(0);
+    expect(buscarItens(itens, filtros('samuel', { tipo: 'funcionalidade' }))).toHaveLength(0);
   });
 
-  it('não pesquisa termo com menos de 2 caracteres', () => {
+  it('não pesquisa com menos de 3 caracteres (aspas não contam)', () => {
+    expect(MIN_CARACTERES).toBe(3);
     expect(termoEhPesquisavel('a')).toBe(false);
-    expect(termoEhPesquisavel('ab')).toBe(true);
-    expect(termoEhPesquisavel('"a"')).toBe(true);
-    expect(buscarItens(itens, { termo: 'a', grupo: 'todos', status: 'todos' })).toHaveLength(0);
+    expect(termoEhPesquisavel('ab')).toBe(false);
+    expect(termoEhPesquisavel('abc')).toBe(true);
+    expect(termoEhPesquisavel('"ab"')).toBe(false);
+    expect(termoEhPesquisavel('"abc"')).toBe(true);
+    expect(buscarItens(itens, filtros('ab'))).toHaveLength(0);
   });
 
-  it('pagina e limita a página ao intervalo válido', () => {
-    const lista = [1, 2, 3, 4, 5, 6, 7];
-    expect(paginarItens(lista, 1, 5)).toEqual({ itens: [1, 2, 3, 4, 5], pagina: 1, totalPaginas: 2, total: 7 });
-    expect(paginarItens(lista, 2, 5).itens).toEqual([6, 7]);
-    expect(paginarItens(lista, 9, 5).pagina).toBe(2);
-    expect(paginarItens([], 1, 5).totalPaginas).toBe(1);
+  it('agrupa na ordem conteúdo, funcionalidade, ação e omite vazios', () => {
+    expect(TIPOS.map((t) => t.rotulo)).toEqual(['Conteúdo', 'Funcionalidade', 'Ação']);
+    const grupos = agruparPorTipo(buscarItens(itens, filtros('samuel')));
+    expect(grupos.map((g) => g.id)).toEqual(['conteudo', 'acao']);
+    expect(grupos.map((g) => g.itens.length)).toEqual([1, 1]);
   });
 
-  it('monta o índice a partir das fontes do painel, com grupo e status', () => {
+  it('devolve todos os itens correspondentes, sem paginação', () => {
+    const muitos: ItemBusca[] = Array.from({ length: 40 }, (_, i) => ({
+      tipo: 'conteudo', grupo: 'Usuários', titulo: `Pastor ${i + 1}`, sub: '', status: '', campos: ['Pastor'],
+    }));
+    expect(buscarItens(muitos, filtros('pastor'))).toHaveLength(40);
+  });
+
+  it('monta o índice com conteúdos, funcionalidades e ações navegáveis', () => {
+    const navegar = vi.fn();
     const indice = montarIndiceAdmin({
       usuarios: [{ nome: 'Ana', email: 'ana@x.com', igreja: 'Betel', cidade: 'Campinas', plano: 'Igreja', status: 'Ativo' }],
       contas: [{ nome: 'Administrador', email: 'admin@x.com', papel: 'admin' }],
       logs: [{ usuario: 'system', acao: 'Falha', alvo: 'send-notification', tipo: 'erro', hora: 'Hoje' }],
       planos: [{ nome: 'Premium', desc: 'Plano pastoral' }],
+      navegar,
     });
-    expect(indice.map((i) => i.grupo)).toEqual(['Usuários', 'Contas', 'Registros', 'Planos']);
-    expect(buscarItens(indice, { termo: 'betel', grupo: 'todos', status: 'todos' })[0].titulo).toBe('Ana');
-    expect(buscarItens(indice, { termo: 'falha', grupo: 'todos', status: 'erro' })).toHaveLength(1);
+
+    expect(indice.map((i) => i.grupo)).toEqual([
+      'Usuários', 'Contas', 'Registros', 'Planos', 'Funcionalidades', 'Funcionalidades', 'Funcionalidades', 'Ações', 'Ações',
+    ]);
+    expect(buscarItens(indice, filtros('betel'))[0].titulo).toBe('Ana');
+    expect(buscarItens(indice, filtros('falha', { status: 'erro' }))).toHaveLength(1);
+
+    const acao = buscarItens(indice, filtros('pix', { tipo: 'acao' }))[0];
+    expect(acao?.titulo).toBe('Configurar chave Pix');
+    acao.executar?.();
+    expect(navegar).toHaveBeenCalledWith('financeiro');
+
+    const funcionalidade = buscarItens(indice, filtros('planos', { tipo: 'funcionalidade' }))[0];
+    funcionalidade.executar?.();
+    expect(navegar).toHaveBeenCalledWith('planos');
   });
 });

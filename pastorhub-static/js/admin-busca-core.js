@@ -1,10 +1,16 @@
-/* Núcleo puro da busca do painel: normalização, correspondência parcial/exata,
-   filtros e paginação. Sem DOM, para ser testável isoladamente.
+/* Núcleo puro da busca do painel: normalização, mínimo de caracteres,
+   correspondência parcial/exata, filtros por tipo/módulo/status e agrupamento
+   por categoria (conteúdo, funcionalidade, ação). Sem DOM, para ser testável.
    Expõe window.AdminBuscaCore (e module.exports em ambiente Node). */
 (function (raiz) {
   'use strict';
 
-  var MIN_CARACTERES_PARCIAL = 2;
+  var MIN_CARACTERES = 3;
+  var TIPOS = [
+    { id: 'conteudo', rotulo: 'Conteúdo' },
+    { id: 'funcionalidade', rotulo: 'Funcionalidade' },
+    { id: 'acao', rotulo: 'Ação' },
+  ];
 
   function normalizar(texto) {
     return String(texto == null ? '' : texto)
@@ -23,9 +29,9 @@
     return { texto: normalizar(t), modo: 'parcial' };
   }
 
-  function termoValido(termo) {
-    if (termo.modo === 'exato') return termo.texto.length >= 1;
-    return termo.texto.length >= MIN_CARACTERES_PARCIAL;
+  /* Só há busca com pelo menos MIN_CARACTERES no termo (aspas não contam). */
+  function termoPesquisavel(bruto) {
+    return interpretarTermo(bruto).texto.length >= MIN_CARACTERES;
   }
 
   /* Parcial: todas as palavras digitadas aparecem em algum campo (ordem livre).
@@ -41,34 +47,34 @@
 
   function filtrar(itens, opcoes) {
     var termo = interpretarTermo(opcoes.termo);
-    if (!termoValido(termo)) return [];
+    if (termo.texto.length < MIN_CARACTERES) return [];
     return itens.filter(function (item) {
+      if (opcoes.tipo && opcoes.tipo !== 'todos' && item.tipo !== opcoes.tipo) return false;
       if (opcoes.grupo && opcoes.grupo !== 'todos' && item.grupo !== opcoes.grupo) return false;
       if (opcoes.status && opcoes.status !== 'todos' && item.status !== opcoes.status) return false;
       return correspondeItem(item, termo);
     });
   }
 
-  function paginar(lista, pagina, tamanho) {
-    var total = lista.length;
-    var totalPaginas = Math.max(1, Math.ceil(total / tamanho));
-    var atual = Math.min(Math.max(1, pagina || 1), totalPaginas);
-    var inicio = (atual - 1) * tamanho;
-    return {
-      itens: lista.slice(inicio, inicio + tamanho),
-      inicio: inicio,
-      pagina: atual,
-      totalPaginas: totalPaginas,
-      total: total,
-    };
+  /* Agrupa na ordem fixa de TIPOS e descarta categorias vazias. */
+  function agrupar(lista) {
+    return TIPOS.map(function (t) {
+      return {
+        id: t.id,
+        rotulo: t.rotulo,
+        itens: lista.filter(function (item) { return item.tipo === t.id; }),
+      };
+    }).filter(function (g) { return g.itens.length > 0; });
   }
 
   var nucleo = {
+    MIN_CARACTERES: MIN_CARACTERES,
+    TIPOS: TIPOS,
     normalizar: normalizar,
     interpretarTermo: interpretarTermo,
+    termoPesquisavel: termoPesquisavel,
     filtrar: filtrar,
-    paginar: paginar,
-    MIN_CARACTERES_PARCIAL: MIN_CARACTERES_PARCIAL,
+    agrupar: agrupar,
   };
 
   raiz.AdminBuscaCore = nucleo;

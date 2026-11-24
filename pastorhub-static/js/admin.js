@@ -2425,5 +2425,5 @@
   });
 
   /* Internos expostos para os módulos admin-ai.js (Integrações e Base de conhecimento) */
-  window.AdminAPI = { VIEWS, state, render, modal, confirmAction, toast, kpi, panel, esc, initials, statusTag, switchBox, Actions, DB, SESSOES_MEET, secoesPermitidas, carregarConfig };
+  window.AdminAPI = { VIEWS, state, render, modal, confirmAction, toast, kpi, panel, esc, initials, statusTag, switchBox, Actions, DB, SESSOES_MEET, SECTIONS, secoesPermitidas, carregarConfig };
 })();
