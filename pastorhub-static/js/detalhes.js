@@ -129,7 +129,7 @@
             (s.data_pregado ? linha('Pregado em', fmtDateBR(s.data_pregado) + (s.local_pregado ? ' · ' + s.local_pregado : '')) : '') +
           '</div>' +
           '<div class="det-bloco"><h4>Prévia do sermão</h4><div class="sermon-prose">' +
-            (s.conteudo_html || '').split('</p>').slice(0, 3).join('</p>') + '</p></div></div>' +
+            (window.sanitizeHtml ? window.sanitizeHtml((s.conteudo_html || '').split('</p>').slice(0, 3).join('</p>')) : escapeHtml(s.conteudo_html || '')) + '</p></div></div>' +
           acoes([
             { label: 'Editar sermão', icon: 'edit', action: 'editar-sermao', id: s.id },
             { label: 'Exportar PDF', icon: 'download', action: 'exportar-pdf', id: s.id },
@@ -330,7 +330,7 @@
 
   Actions['bib-abrir-pagina'] = function () {
     closeSheet();
-    window.open('docs/biblioteca.html', '_blank');
+    window.open('docs/biblioteca.html', '_blank', 'noopener,noreferrer');
   };
 
   Actions['enviar-lembrete'] = function (el) {

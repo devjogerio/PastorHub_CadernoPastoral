@@ -12,13 +12,29 @@ export async function exportSermon(sermon: Sermon): Promise<void> {
     throw new Error("Não foi possível abrir janela de impressão");
   }
 
+  // Impede que a janela aberta manipule a aplicação de origem (tabnabbing).
+  try {
+    printWindow.opener = null;
+  } catch {
+    /* alguns navegadores bloqueiam a atribuição */
+  }
+
   const html = generatePrintHTML(sermon);
+  printWindow.document.open();
   printWindow.document.write(html);
   printWindow.document.close();
 
-  printWindow.onload = () => {
-    printWindow.print();
+  // A impressão é disparada pelo documento pai; o HTML não carrega script.
+  const imprimir = () => {
+    try {
+      printWindow.focus();
+      printWindow.print();
+    } catch {
+      /* o usuário ainda pode imprimir manualmente */
+    }
   };
+  printWindow.addEventListener("load", imprimir, { once: true });
+  window.setTimeout(imprimir, 350);
 }
 
 /**

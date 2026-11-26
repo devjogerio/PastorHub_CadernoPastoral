@@ -163,14 +163,10 @@
     ],
   };
 
-  /* ================= CONTAS DO PAINEL ================= */
-  const CONTAS = [
-    { email: 'admin@pastorhub.app', nome: 'Administrador', papel: 'admin', desde: '2025-01-15' },
-    { email: 'ana.b.rocha@email.com', nome: 'Ana Beatriz Rocha', papel: 'usuario', desde: '2025-06-03' },
-    /* conta vinculada ao Google (demonstração do login social) */
-    { email: 'pastorhub.oficial@gmail.com', senha: null, nome: 'PastorHub Oficial', papel: 'admin', origem: 'google', desde: '2025-09-21' },
-  ];
-  /* seções restritas a quem não é administrador */
+  /* ================= SESSÃO DO PAINEL =================
+     Não há contas fixas nem senhas no JavaScript. Com Supabase configurado,
+     a sessão vem do Supabase Auth e o papel é lido de public.profiles sob RLS.
+     Sem Supabase, o acesso é explicitamente rotulado como demonstração. */
   const SECOES_ADMIN = ['investimento', 'planos', 'usuarios', 'integracoes', 'configuracoes'];
   const sessao = { conta: null, perfil: null };
 
@@ -179,34 +175,50 @@
     return !!(window.PastorAuth && PastorAuth.configurado());
   }
 
-  /* Monta a "conta" do painel a partir da sessão real do Supabase (user_metadata) */
-  function contaDaSessao(session) {
+  /* Lê o papel do usuário na tabela profiles (fonte confiável, protegida por RLS).
+     Qualquer falha resulta em 'usuario' — nunca concede admin por omissão. */
+  async function papelDoServidor(usuario) {
+    try {
+      const cliente = await PastorAuth.carregarCliente();
+      if (!cliente || !usuario || !usuario.id) return 'usuario';
+      const r = await cliente.from('profiles').select('role').eq('id', usuario.id).maybeSingle();
+      if (r.error || !r.data) return 'usuario';
+      return r.data.role === 'admin' ? 'admin' : 'usuario';
+    } catch (e) {
+      return 'usuario';
+    }
+  }
+
+  /* Monta a "conta" do painel a partir da sessão real do Supabase.
+     O papel NUNCA vem de user_metadata (editável pelo próprio usuário). */
+  async function contaDaSessao(session) {
     const u = session && session.user;
     if (!u) return null;
     const meta = u.user_metadata || {};
     return {
       email: u.email,
       nome: meta.nome || meta.full_name || (u.email ? u.email.split('@')[0] : 'Usuário'),
-      papel: meta.papel || 'usuario',
+      papel: await papelDoServidor(u),
       origem: 'supabase',
       desde: (u.created_at || '').slice(0, 10),
     };
   }
 
-  /* Login real no painel: exige sessão Supabase com papel 'admin' nos metadados */
+  /* Login real no painel: exige sessão Supabase com papel admin em profiles.role */
   async function loginRealPainel(email, senha) {
     const r = await PastorAuth.entrar(email, senha);
     if (!r.ok) { toast(r.erro, 'err'); return; }
-    const conta = contaDaSessao(r.session);
+    const conta = await contaDaSessao(r.session);
     if (!conta || conta.papel !== 'admin') {
       await PastorAuth.sair();
-      toast('Esta conta não tem permissão de administrador.', 'err');
+      toast('Credenciais inválidas ou conta sem permissão de administrador.', 'err');
       return;
     }
     realizarLogin(conta);
   }
 
-  const ehAdmin = () => !sessao.conta || sessao.conta.papel === 'admin';
+  /* Falha fechada: sem sessão ou sem papel admin, nenhuma seção administrativa. */
+  const ehAdmin = () => !!sessao.conta && sessao.conta.papel === 'admin';
   function secoesPermitidas() {
     if (ehAdmin()) return SECTIONS;
     return SECTIONS.filter((s) => s.group || s.action || SECOES_ADMIN.indexOf(s.id) === -1);
@@ -771,11 +783,6 @@
   }
 
   function abrirPDF(titulo, subtitulo, corpoHtml) {
-    const win = window.open('', '_blank');
-    if (!win) {
-      toast('Permita pop-ups deste site para exportar em PDF', 'err');
-      return false;
-    }
     const css = 'body{font-family:"Segoe UI",Arial,sans-serif;color:#1a2433;margin:0;padding:24px;font-size:11pt}' +
       '.head{border-bottom:3px solid #95C121;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px}' +
       '.brand{color:#002645;font-weight:700;font-size:12pt}' +
@@ -789,14 +796,18 @@
       'p{line-height:1.55;margin:4px 0;text-align:justify}' +
       'footer{margin-top:24px;border-top:1px solid #e2e8f0;padding-top:8px;font-size:8.5pt;color:#5b6775;text-align:center}' +
       '@page{size:A4;margin:14mm}';
-    win.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>' + esc(titulo) +
+    const html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>' + esc(titulo) +
       '</title><style>' + css + '</style></head><body>' +
       '<div class="head"><div><div class="brand">PastorHub · Painel administrativo</div><h1>' + esc(titulo) +
       '</h1><div class="sub">' + esc(subtitulo) + '</div></div><div class="sub">Emitido em ' +
-      new Date().toLocaleDateString('pt-BR') + '</div></div>' + corpoHtml +
+      new Date().toLocaleDateString('pt-BR') + '</div></div>' + (window.sanitizeHtml ? window.sanitizeHtml(corpoHtml) : esc(corpoHtml)) +
       '<footer>Documento gerado pelo PastorHub · uso restrito à administração</footer>' +
-      '<script>window.onload=function(){window.print();};<\/script></body></html>');
-    win.document.close();
+      '</body></html>';
+    const win = window.openPrintWindow(html);
+    if (!win) {
+      toast('Permita pop-ups deste site para exportar em PDF', 'err');
+      return false;
+    }
     return true;
   }
 
@@ -1969,7 +1980,13 @@
     document.body.classList.remove('painel-ativo');
     const form = document.getElementById('login-form');
     if (form) form.reset();
-    aplicarSessao(CONTAS[0], Object.assign({}, PERFIL_PADRAO, { nome: CONTAS[0].nome }));
+    const foot = document.querySelector('.aside-foot-info');
+    if (foot) {
+      const b = foot.querySelector('b');
+      const s = foot.querySelector('span');
+      if (b) b.textContent = 'Sessão encerrada';
+      if (s) s.textContent = '—';
+    }
     const av = document.querySelector('.aside-foot .avatar');
     if (av) av.textContent = 'AD';
     toast('Sessão encerrada com segurança', 'ok');
@@ -2313,75 +2330,78 @@
 
   $('#login-form').addEventListener('submit', (e) => {
     e.preventDefault();
+    if (!authReal()) {
+      toast('Modo demonstração: use o botão "Entrar na demonstração".', 'err');
+      return;
+    }
     const email = $('#adm-email').value.trim().toLowerCase().replace(/\s+/g, '');
-    if (!email) {
-      toast('Informe o e-mail.', 'err');
+    const senha = $('#adm-senha').value;
+    if (!email || !senha) {
+      toast('Informe e-mail e senha.', 'err');
       return;
     }
-    /* com Supabase configurado, autentica de verdade e exige papel admin */
-    if (authReal()) {
-      loginRealPainel(email, $('#adm-senha').value);
-      return;
-    }
-    /* login demo: não há senhas reais no painel estático — só o e-mail identifica a conta */
-    const conta = CONTAS.find((c) => c.email === email);
-    if (!conta) {
-      toast('E-mail não encontrado (modo demo).', 'err');
-      return;
-    }
-    if (conta.origem === 'google') {
-      toast('Esta conta entra com Google. Use "Continuar com Google".', 'err');
-      return;
-    }
-    /* qualquer senha (ou nenhuma) é aceita neste modo de demonstração */
-    realizarLogin(conta);
+    loginRealPainel(email, senha);
   });
 
-  /* login social: com Supabase configurado é OAuth real; sem config, fluxo demo */
+  /* login social: só existe com Supabase configurado (OAuth real) */
   const btnGoogle = document.getElementById('btn-google');
   if (btnGoogle) {
     btnGoogle.addEventListener('click', () => {
-      if (authReal()) {
-        PastorAuth.entrarGoogle().then((r) => { if (!r.ok) toast(r.erro, 'err'); });
+      if (!authReal()) {
+        toast('Login com Google indisponível no modo demonstração.', 'err');
         return;
       }
-      const conta = CONTAS.find((c) => c.origem === 'google');
-      if (!conta) return;
-      btnGoogle.disabled = true;
-      btnGoogle.classList.add('loading');
-      /* simula a janela de consentimento do Google */
-      setTimeout(() => {
-        btnGoogle.disabled = false;
-        btnGoogle.classList.remove('loading');
-        realizarLogin(conta, 'google');
-      }, 700);
+      PastorAuth.entrarGoogle().then((r) => { if (!r.ok) toast(r.erro, 'err'); });
     });
   }
 
-  /* preenchimento rápido das contas de demonstração (evita erro de digitação) */
-  document.querySelectorAll('[data-login-rapido]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const conta = CONTAS.find((c) => !c.origem &&
-        (btn.dataset.loginRapido === 'admin' ? c.papel === 'admin' : c.papel !== 'admin'));
-      if (!conta) return;
-      realizarLogin(conta);
+  /* Entrada explícita na demonstração pública: sem e-mail, sem senha e sem
+     qualquer conta privilegiada real. O papel demo é rotulado na interface. */
+  const btnDemo = document.getElementById('btn-demo');
+  if (btnDemo) {
+    btnDemo.addEventListener('click', () => {
+      realizarLogin({
+        email: 'demonstracao@pastorhub.local',
+        nome: 'Visitante da Demonstração',
+        papel: 'admin',
+        origem: 'demo',
+        desde: new Date().toISOString().slice(0, 10),
+      });
     });
-  });
+  }
 
-  /* Com auth real: esconde o login rápido demo e restaura sessão existente (exige admin) */
+  /* Alterna a tela entre autenticação real e demonstração rotulada */
+  function configurarModoAuth() {
+    const real = authReal();
+    const form = document.getElementById('login-form');
+    const google = document.getElementById('btn-google');
+    const demo = document.getElementById('btn-demo');
+    const note = document.querySelector('.login-demo-note');
+    const or = document.querySelector('.login-or');
+    if (form) form.hidden = !real;
+    if (google) google.hidden = !real;
+    if (or) or.hidden = !real;
+    if (demo) demo.hidden = real;
+    if (note) {
+      note.textContent = real
+        ? 'Autenticação real via Supabase. O papel de administrador é lido de profiles.role sob RLS.'
+        : 'Demonstração pública: nenhuma credencial é solicitada ou armazenada. Não insira dados reais.';
+    }
+  }
+  configurarModoAuth();
+
+  /* Com auth real: restaura a sessão existente (exige admin em profiles.role) */
   function restaurarSessaoReal() {
     if (!authReal()) return;
-    const quick = document.querySelector('.login-quick');
-    if (quick) quick.hidden = true;
     PastorAuth.onAuthStateChange((_e, session) => {
       if (!session) sairDoPainel();
     });
-    PastorAuth.sessaoAtual().then((session) => {
-      const conta = contaDaSessao(session);
+    PastorAuth.sessaoAtual().then(async (session) => {
+      const conta = await contaDaSessao(session);
       if (!conta) return;
       if (conta.papel !== 'admin') {
-        PastorAuth.sair();
-        toast('Esta conta não tem permissão de administrador.', 'err');
+        await PastorAuth.sair();
+        toast('Conta sem permissão de administrador.', 'err');
         return;
       }
       realizarLogin(conta);

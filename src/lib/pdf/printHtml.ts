@@ -1,5 +1,6 @@
 // Importa o tipo Sermon centralizado
 import type { Sermon } from '../../types';
+import { escapeHtml, sanitizeHtml } from '../sanitize';
 
 /**
  * Gera uma string contendo HTML completo e estilizado para impressão do sermão
@@ -14,7 +15,7 @@ export function generatePrintHTML(sermon: Sermon): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${sermon.titulo} - PastorHub</title>
+  <title>${escapeHtml(sermon.titulo)} - PastorHub</title>
   <style>
     /* Configuração de página para impressão A4 */
     @page {
@@ -153,50 +154,50 @@ export function generatePrintHTML(sermon: Sermon): string {
   <!-- Cabeçalho visível -->
   <div class="header">
     <div class="logo">PastorHub</div>
-    <h1>${sermon.titulo}</h1>
-    <div class="verse">${sermon.texto_biblico}</div>
+    <h1>${escapeHtml(sermon.titulo)}</h1>
+    <div class="verse">${escapeHtml(sermon.texto_biblico)}</div>
     
     <!-- Metadados em linha -->
     <div class="metadata">
-      <span class="metadata-item"><strong>Tema:</strong> ${sermon.tema}</span>
-      <span class="metadata-item"><strong>Tipo:</strong> ${
+      <span class="metadata-item"><strong>Tema:</strong> ${escapeHtml(sermon.tema)}</span>
+      <span class="metadata-item"><strong>Tipo:</strong> ${escapeHtml(
         sermon.tipo_sermao
-      }</span>
-      <span class="metadata-item"><strong>Público:</strong> ${
+      )}</span>
+      <span class="metadata-item"><strong>Público:</strong> ${escapeHtml(
         sermon.publico_alvo
-      }</span>
+      )}</span>
     </div>
 
     ${
-      sermon.tags.length > 0
+      Array.isArray(sermon.tags) && sermon.tags.length > 0
         ? `
       <div class="tags">
-        Tags: ${sermon.tags.map((tag: string) => `#${tag}`).join(', ')}
+        Tags: ${sermon.tags.map((tag: string) => `#${escapeHtml(tag)}`).join(', ')}
       </div>
     `
         : ''
     }
   </div>
 
-  <!-- Injeção do conteúdo HTML rico do editor -->
+  <!-- Injeção do conteúdo HTML rico do editor (sanitizado antes de imprimir) -->
   <div class="content">
-    ${sermon.conteudo_html}
+    ${sanitizeHtml(sermon.conteudo_html)}
   </div>
 
   <!-- Rodapé com informações de geração -->
   <div class="footer">
     <p>Gerado por PastorHub - Caderno do Pastor</p>
-    <p>Criado em: ${new Date(sermon.data_criacao).toLocaleDateString(
-      'pt-BR'
+    <p>Criado em: ${escapeHtml(
+      new Date(sermon.data_criacao).toLocaleDateString('pt-BR')
     )}</p>
     ${
       sermon.status_pregado
         ? `
       <p style="color: #95C121; font-weight: bold; margin-top: 5px;">
-        ✓ Pregado em ${new Date(sermon.data_pregado!).toLocaleDateString(
-          'pt-BR'
+        ✓ Pregado em ${escapeHtml(
+          sermon.data_pregado ? new Date(sermon.data_pregado).toLocaleDateString('pt-BR') : ''
         )}
-        ${sermon.local_pregado ? ` - ${sermon.local_pregado}` : ''}
+        ${sermon.local_pregado ? ` - ${escapeHtml(sermon.local_pregado)}` : ''}
       </p>
     `
         : ''

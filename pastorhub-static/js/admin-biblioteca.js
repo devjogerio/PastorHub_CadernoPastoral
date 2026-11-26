@@ -234,7 +234,7 @@
   };
 
   Actions['bib-comprar-alugar'] = function () {
-    window.open('docs/biblioteca-comprar-alugar.html', '_blank');
+    window.open('docs/biblioteca-comprar-alugar.html', '_blank', 'noopener,noreferrer');
   };
 
   /* ---------- Delegação: importar por arrastar e soltar (padrão RAG) ---------- */

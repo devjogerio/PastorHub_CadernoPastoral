@@ -170,13 +170,29 @@ export async function togglePregado(
 export async function searchSermoes(query: string): Promise<Sermon[]> {
   if (!isSupabaseConfigured()) throw new Error('Supabase não configurado');
 
-  // A sintaxe .or() permite buscar em múltiplas colunas com condição OU
+  // O texto do usuário entra na sintaxe do PostgREST (.or), onde vírgula,
+  // parênteses e chaves têm significado estrutural. Removemos esses
+  // metacaracteres, os curingas do ilike e limitamos o tamanho da consulta.
+  const termo = String(query || '')
+    .replace(/[%,(){}[\]\\*"']/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 80);
+
+  if (!termo) return [];
+
+  // Em `tags.cs.{...}` o valor é um elemento literal de array; espaços quebram
+  // a sintaxe, então a cláusula de tags só entra quando há um termo único.
+  const filtros = [
+    `titulo.ilike.%${termo}%`,
+    `texto_biblico.ilike.%${termo}%`,
+  ];
+  if (!/\s/.test(termo)) filtros.push(`tags.cs.{${termo}}`);
+
   const { data, error } = await supabase
     .from('sermoes')
     .select('*')
-    .or(
-      `titulo.ilike.%${query}%,texto_biblico.ilike.%${query}%,tags.cs.{${query}}`
-    )
+    .or(filtros.join(','))
     .order('data_criacao', { ascending: false });
 
   if (error) throw error;

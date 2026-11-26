@@ -91,7 +91,7 @@
         '</div>' +
         '<div class="section">' +
           '<div class="section-head"><h3>Relatórios Confidenciais</h3>' +
-            '<button class="btn-underline" data-toast="Relatórios criptografados conforme LGPD" type="button">Privacidade ' + icon('shield', 'icon-sm') + '</button></div>' +
+            '<button class="btn-underline" data-toast="Relatórios ficam apenas neste dispositivo" type="button">Privacidade ' + icon('shield', 'icon-sm') + '</button></div>' +
           relatoriosHTML +
         '</div>';
     },
@@ -268,7 +268,7 @@
         '<li>Atenção à solidão relatada: incluir a família no plano de cuidado</li>' +
         '<li>Registrar a evolução na próxima sessão para comparar a curva emocional</li></ul></div>' +
       '<div class="rep-section"><h4>6. Histórico de cuidado</h4>' +
-        '<p>Este relatório é um documento privado do pastor. Os dados são minimizados, armazenados de forma encriptada e só podem ser portados ou excluídos pelo titular, em conformidade com a LGPD.</p></div>' +
+        '<p>Este relatório é um documento privado do pastor. O conteúdo completo permanece armazenado apenas neste dispositivo, protegido por criptografia local (AES-GCM) e sem envio a terceiros. A confidencialidade também depende do bloqueio de tela e do acesso físico ao aparelho. O titular pode solicitar a exclusão a qualquer momento (LGPD).</p></div>' +
       '<div class="rep-foot">Gerado por PastorHub · Conselho (Meet AI) · ' + escapeHtml(r.data) + ' · uso exclusivo do pastor</div>';
 
     openSheet({
@@ -286,13 +286,11 @@
   Actions['export-relatorio-pdf'] = function (el) {
     const r = getRelatorios().find((x) => x.id === el.dataset.id);
     if (!r) return;
-    const win = window.open('', '_blank');
-    if (!win) { toast('Não foi possível abrir a janela de impressão', 'error'); return; }
     const linhas = r.linhas.map((l) =>
       '<p class="' + (l.speaker === 'Pastor' ? 'pastor' : 'membro') + '"><b>' + escapeHtml(l.speaker) + ':</b> ' + escapeHtml(l.text) + '</p>').join('');
     const picos = r.picos.map((p, i) =>
       '<li><b>' + escapeHtml(p.hits.join(', ')) + '</b> — ' + escapeHtml(p.text) + '</li>').join('');
-    win.document.write(
+    const html =
       '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Relatório · ' + escapeHtml(r.nome) + '</title><style>' +
       '@page{size:A4;margin:2cm}body{font-family:Georgia,serif;font-size:11.5pt;color:#222;line-height:1.6}' +
       '.conf{font-size:8.5pt;letter-spacing:.16em;text-transform:uppercase;color:#d4183d;border:1px solid #d4183d;border-radius:999px;padding:3px 10px;display:inline-block}' +
@@ -303,14 +301,15 @@
       '<span class="conf">Documento confidencial</span>' +
       '<h1>' + escapeHtml(r.nome) + '</h1>' +
       '<p class="meta">' + escapeHtml(r.tipo) + ' · ' + escapeHtml(r.data) + ' · Google Meet (' + escapeHtml(r.meet) + ')</p>' +
-      '<h2>1. Resumo do atendimento</h2><p>Tom emocional geral identificado pela IA: <b>' + escapeHtml(r.analise.nivel.rot.toLowerCase()) + '</b> (<span class="score">' + r.analise.score + '%</span> de confiança).</p>' +
+      '<h2>1. Resumo do atendimento</h2><p>Tom emocional geral identificado pela IA: <b>' + escapeHtml(r.analise.nivel.rot.toLowerCase()) + '</b> (<span class="score">' + Number(r.analise.score) + '%</span> de confiança).</p>' +
       '<h2>2. Transcrição integral</h2>' + linhas +
       '<h2>3. Angústias e picos emocionais</h2><ul>' + (picos || '<li>Nenhum pico relevante.</li>') + '</ul>' +
       '<h2>4. Orientações pastorais sugeridas</h2><ul><li>Manter contato semanal entre os encontros</li><li>Trabalhar o versículo combinado durante a semana</li><li>Incluir a família no plano de cuidado</li><li>Registrar a evolução na próxima sessão</li></ul>' +
-      '<h2>5. Privacidade</h2><p>Documento privado do pastor. Dados minimizados, encriptados e portáveis conforme a LGPD.</p>' +
+      '<h2>5. Privacidade</h2><p>Documento privado do pastor. O conteúdo permanece apenas neste dispositivo, protegido por criptografia local (AES-GCM), sem envio a terceiros.</p>' +
       '<footer>Gerado por PastorHub · Conselho (Meet AI) · uso exclusivo do pastor</footer>' +
-      '<script>window.onload=function(){window.print()};<\/script></body></html>');
-    win.document.close();
+      '</body></html>';
+    const win = window.openPrintWindow(html);
+    if (!win) { toast('Não foi possível abrir a janela de impressão', 'error'); return; }
     toast('Abrindo visualização de PDF...', 'success');
   };
 

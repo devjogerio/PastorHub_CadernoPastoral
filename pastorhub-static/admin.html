@@ -27,18 +27,15 @@
 
       <div class="login-or"><span>ou entre com e-mail</span></div>
 
-      <!-- Login por e-mail -->
+      <!-- Login por e-mail (somente com Supabase configurado) -->
       <form id="login-form" novalidate>
         <div class="field"><label for="adm-email">E-mail</label><input id="adm-email" type="email" inputmode="email" autocomplete="username" spellcheck="false" placeholder="nome@exemplo.com" required></div>
         <div class="field"><label for="adm-senha">Senha</label><input id="adm-senha" type="password" autocomplete="current-password" placeholder="Sua senha" required></div>
         <button class="btn btn-primary" type="submit">Entrar com e-mail</button>
       </form>
 
-      <!-- Acesso rápido (contas de demonstração) -->
-      <div class="login-quick">
-        <button class="btn btn-outline" type="button" data-login-rapido="admin">Entrar como administrador</button>
-        <button class="btn btn-outline" type="button" data-login-rapido="ana">Entrar como Ana (usuário comum)</button>
-      </div>
+      <!-- Entrada explícita na demonstração pública (sem credenciais) -->
+      <button class="btn btn-outline" id="btn-demo" type="button" hidden>Entrar na demonstração</button>
     </div>
   </div>
 
@@ -53,7 +50,7 @@
       <div class="aside-foot">
         <button class="aside-foot-user" type="button" data-section="perfil" title="Ver meu perfil">
           <span class="avatar">AD</span>
-          <span class="aside-foot-info"><b>Administrador</b><span>admin@pastorhub.app</span></span>
+          <span class="aside-foot-info"><b>Não autenticado</b><span>—</span></span>
         </button>
         <a href="site.html" title="Ir para o site">↗</a>
         <button class="aside-foot-out" type="button" data-action="sair" title="Sair do painel" aria-label="Sair do painel">
@@ -95,6 +92,8 @@
   <div id="admin-modal-root"></div>
 
   <script src="js/icons.js"></script>
+  <script src="js/vendor/purify.min.js"></script>
+  <script src="js/security.js"></script>
   <script src="js/investidor.js?v=2"></script>
   <script src="js/imagem.js"></script>
   <script src="js/config.js"></script>

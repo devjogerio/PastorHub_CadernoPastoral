@@ -269,7 +269,7 @@
             '</div>'
           : '') +
         '<div class="item-badges" style="margin-bottom:.6rem">' + (s.tags || []).map((t) => '<span class="badge badge-outline">' + icon('tag', 'icon-sm') + '#' + escapeHtml(t) + '</span>').join('') + '</div>' +
-        '<div class="sermon-prose">' + s.conteudo_html + '</div>' +
+        '<div class="sermon-prose">' + (window.sanitizeHtml ? window.sanitizeHtml(s.conteudo_html) : escapeHtml(s.conteudo_html)) + '</div>' +
         '<div style="display:flex;gap:.5rem;margin-top:1rem">' +
           '<button class="btn outline sm" style="flex:1" data-action="copiar-sermao" data-id="' + s.id + '" type="button">' + icon('copy', 'icon-sm') + 'Copiar Texto</button>' +
           '<button class="btn outline sm" style="flex:1" data-action="compartilhar-sermao" data-id="' + s.id + '" type="button">' + icon('share', 'icon-sm') + 'Compartilhar</button>' +
@@ -340,8 +340,9 @@
       updates.publico_alvo = val('ed-publico') || '';
       updates.tags = (val('ed-tags') || '').split(',').map((t) => t.trim()).filter(Boolean);
       if (conteudo !== null) {
-        updates.conteudo_html = conteudo;
-        updates.conteudo_plain = conteudo.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 500);
+        const seguro = window.sanitizeHtml ? window.sanitizeHtml(conteudo) : conteudo;
+        updates.conteudo_html = seguro;
+        updates.conteudo_plain = seguro.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 500);
       }
     }
     const pregado = document.getElementById('ed-pregado');
@@ -421,13 +422,11 @@
   Actions['exportar-pdf'] = function (el) {
     const s = Storage.getSermoes().find((x) => x.id === el.dataset.id);
     if (!s) return;
-    const win = window.open('', '_blank');
+    const win = window.openPrintWindow(gerarHTMLImpressao(s));
     if (!win) {
       toast('Não foi possível abrir janela de impressão', 'error');
       return;
     }
-    win.document.write(gerarHTMLImpressao(s));
-    win.document.close();
     toast('Abrindo visualização de PDF...', 'success');
   };
 
@@ -456,9 +455,8 @@ footer { margin-top: 2rem; border-top: 1px solid #ddd; padding-top: .8rem; font-
 <div class="meta"><span>Tema: ${escapeHtml(s.tema)}</span><span>Tipo: ${escapeHtml(s.tipo_sermao)}</span><span>Público: ${escapeHtml(s.publico_alvo)}</span></div>
 <div class="tags">Tags: ${(s.tags || []).map((t) => '#' + escapeHtml(t)).join(', ')}</div>
 <hr>
-${s.conteudo_html}
+${window.sanitizeHtml ? window.sanitizeHtml(s.conteudo_html) : escapeHtml(s.conteudo_html)}
 <footer>Gerado por PastorHub - Caderno do Pastor<br>Criado em: ${fmtDateBR(s.data_criacao)}${s.status_pregado ? '<br><span class="pregado">✓ Pregado em ' + fmtDateBR(s.data_pregado) + (s.local_pregado ? ' - ' + escapeHtml(s.local_pregado) : '') + '</span>' : ''}</footer>
-<script>window.onload = function () { window.print(); };<\/script>
 </body></html>`;
   }
 

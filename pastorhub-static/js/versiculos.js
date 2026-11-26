@@ -201,7 +201,7 @@
   Actions['vers-whatsapp'] = function () {
     const v = doDia();
     const txt = '📖 *' + v.ref + '* (' + (v.versao || 'ACF') + ')\n“' + v.texto + '”\n\nEnviado pelo PastorHub';
-    window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
+    window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank', 'noopener,noreferrer');
   };
 
   /* quando o versículo do dia chega (envio automático): atualiza o card e avisa */

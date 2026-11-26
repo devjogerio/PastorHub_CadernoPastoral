@@ -18,6 +18,7 @@ import { Switch } from "./ui/switch";
 import { toast } from "sonner@2.0.3";
 import type { Sermon } from "../types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { sanitizeHtml } from "../lib/sanitize";
 
 interface SermonEditorProps {
   sermon: Sermon;
@@ -34,7 +35,11 @@ export function SermonEditor({ sermon, onSave, onCancel }: SermonEditorProps) {
   };
 
   const handleSave = () => {
-    onSave(editedSermon);
+    // Persiste o HTML já sanitizado: o conteúdo pode vir de importação ou IA.
+    onSave({
+      ...editedSermon,
+      conteudo_html: sanitizeHtml(editedSermon.conteudo_html),
+    });
   };
 
   const handleCopyContent = () => {
@@ -57,7 +62,9 @@ export function SermonEditor({ sermon, onSave, onCancel }: SermonEditorProps) {
     return (
       <div
         className="prose prose-sm dark:prose-invert max-w-none"
-        dangerouslySetInnerHTML={{ __html: editedSermon.conteudo_html }}
+        dangerouslySetInnerHTML={{
+          __html: sanitizeHtml(editedSermon.conteudo_html),
+        }}
       />
     );
   };
