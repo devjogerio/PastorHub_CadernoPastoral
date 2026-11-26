@@ -1,27 +1,16 @@
 
   <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https://*.supabase.co https://api.openai.com ws:; font-src 'self' data: https:;" />
-      <title>Pastoral Care App (Community) (cópia)</title>
-      <script>
-        // GitHub Pages publica a raiz do repositório (sem build do Vite).
-        // Redireciona para o app estático somente quando publicado no github.io,
-        // preservando dev (localhost) e app mobile (Capacitor).
-        if (location.hostname.endsWith('.github.io')) {
-          var base = location.pathname
-            .replace(/\/index\.html$/, '')
-            .replace(/\/$/, '');
-          location.replace(base + '/pastorhub-static/');
-        }
-      </script>
-    </head>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' https://*.supabase.co https://api.openai.com ws: wss:; font-src 'self' data: https:; object-src 'none'; base-uri 'self';" />
+    <title>Pastoral Care App (Community) (cópia)</title>
+    <script type="module" src="/src/home-redirect.ts"></script>
+  </head>
 
-    <body>
-      <div id="root"></div>
-      <script type="module" src="/src/main.tsx"></script>
-    </body>
-  </html>
-  
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
