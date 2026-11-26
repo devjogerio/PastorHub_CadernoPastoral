@@ -74,6 +74,7 @@ vi.mock('../../lib/offlineStorage', () => {
         return () => void 0;
       },
     },
+    EVENTO_OFFLINE_PRONTO: 'pastorhub:offline-ready',
   };
 });
 

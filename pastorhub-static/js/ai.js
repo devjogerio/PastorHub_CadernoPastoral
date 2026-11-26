@@ -146,20 +146,69 @@
 
   function provedor(id) { return CATALOGO.find((p) => p.id === id) || null; }
 
-  /* ---------- Armazenamento das integrações ---------- */
-  function obterIntegracao(id) { return lerJSON(KEY_INTEGRACOES, {})[id] || null; }
+  /* ---------- Armazenamento das integrações ----------
+     Segredos (chaves, tokens, senhas, DSN) NUNCA vão para o localStorage:
+     ficam apenas em memória nesta sessão. Ao recarregar, precisam ser
+     digitados novamente. Para uso contínuo, use a Edge Function ai-proxy. */
+  const _segredosMem = {};
+
+  function ehCampoSecreto(p, k) {
+    if (p && p.campos && p.campos.some((c) => c.k === k && c.secreto)) return true;
+    return /chave|senha|token|secret|dsn|password|apikey/i.test(k);
+  }
+
+  /* Remove segredos que versões antigas gravaram no localStorage. */
+  function limparSegredosPersistidos() {
+    const todas = lerJSON(KEY_INTEGRACOES, {});
+    let mudou = false;
+    Object.keys(todas).forEach((id) => {
+      const p = provedor(id);
+      const campos = todas[id] && todas[id].campos;
+      if (!campos || typeof campos !== 'object') return;
+      Object.keys(campos).forEach((k) => {
+        if (ehCampoSecreto(p, k)) { delete campos[k]; mudou = true; }
+      });
+    });
+    if (mudou) gravarJSON(KEY_INTEGRACOES, todas);
+  }
+
+  function obterIntegracao(id) {
+    const salvo = lerJSON(KEY_INTEGRACOES, {})[id] || null;
+    if (!salvo) return null;
+    const mem = _segredosMem[id];
+    if (!mem) return salvo;
+    return Object.assign({}, salvo, { campos: Object.assign({}, salvo.campos || {}, mem) });
+  }
 
   function salvarIntegracao(id, dados) {
     const todas = lerJSON(KEY_INTEGRACOES, {});
-    todas[id] = Object.assign({}, todas[id] || {}, dados);
+    const p = provedor(id);
+    const entrada = Object.assign({}, todas[id] || {});
+    const novos = Object.assign({}, dados || {});
+    if (novos.campos && typeof novos.campos === 'object') {
+      const persistir = Object.assign({}, entrada.campos || {}, novos.campos);
+      _segredosMem[id] = _segredosMem[id] || {};
+      Object.keys(persistir).forEach((k) => {
+        if (ehCampoSecreto(p, k)) {
+          _segredosMem[id][k] = persistir[k];
+          delete persistir[k];
+        }
+      });
+      novos.campos = persistir;
+    }
+    todas[id] = Object.assign(entrada, novos);
     return gravarJSON(KEY_INTEGRACOES, todas);
   }
 
   function removerIntegracao(id) {
     const todas = lerJSON(KEY_INTEGRACOES, {});
     delete todas[id];
+    delete _segredosMem[id];
     return gravarJSON(KEY_INTEGRACOES, todas);
   }
+
+  /* Migração de segurança: limpa chaves antigas em texto puro. */
+  try { limparSegredosPersistidos(); } catch (e) { /* storage indisponível */ }
 
   function temValor(c, k) { return !!(c && c[k] && String(c[k]).trim()); }
 

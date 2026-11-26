@@ -9,8 +9,8 @@
     nome: 'Pastor Silva',
     email: 'Modo Offline',
     igreja: 'Igreja Batista Central',
-    telefone: '(86) 98903-8050',
-    cargo: 'Pastor，顺便 titular',
+    telefone: '',
+    cargo: 'Pastor titular',
     avatar: '',
     criadoEm: null,
   };
@@ -73,7 +73,7 @@
         '<div class="field"><label>Nome completo</label><input id="pf-nome" value="' + escapeHtml(d.nome) + '"></div>' +
         '<div class="field"><label>E-mail</label><input id="pf-email" type="email" value="' + escapeHtml(d.email) + '"></div>' +
         '<div class="field"><label>Igreja</label><input id="pf-igreja" value="' + escapeHtml(d.igreja) + '"></div>' +
-        '<div class="field"><label>Telefone / WhatsApp</label><input id="pf-tel" value="' + escapeHtml(d.telefone) + '"></div>' +
+        '<div class="field"><label>Telefone / WhatsApp</label><input id="pf-tel" value="' + escapeHtml(d.telefone) + '" placeholder="(DDD) 99999-9999"><span class="hint">Opcional. Usado apenas para lembretes de agenda enviados por você.</span></div>' +
         '<div class="field"><label>Cargo na igreja</label><input id="pf-cargo" value="' + escapeHtml(d.cargo) + '"></div>',
       footer:
         '<button class="btn outline" data-action="close-sheet" type="button">Cancelar</button>' +

@@ -59,14 +59,21 @@
     return r && r.data && r.data.session ? r.data.session : null;
   }
 
-  /* Traduz erros comuns do Supabase Auth para pt-BR */
+  /* Traduz erros do Supabase Auth para mensagens genéricas em pt-BR.
+     Não diferencia "e-mail não cadastrado" de "senha incorreta" (anti-enumeração). */
   function traduzirErroAuth(e) {
     var m = (e && e.message) || '';
-    if (/invalid login credentials/i.test(m)) return 'E-mail ou senha inválidos.';
-    if (/email not confirmed/i.test(m)) return 'Confirme seu e-mail antes de entrar.';
-    if (/user already registered/i.test(m)) return 'Este e-mail já está cadastrado.';
-    if (/password/i.test(m) && /6/i.test(m)) return 'A senha precisa ter no mínimo 6 caracteres.';
-    return m || 'Falha de autenticação.';
+    if (/password/i.test(m) && /(6|8|weak|short)/i.test(m)) return 'A senha não atende aos requisitos mínimos (8 caracteres, com letras e números).';
+    if (/rate|too many/i.test(m)) return 'Muitas tentativas. Aguarde alguns minutos e tente novamente.';
+    if (/network|fetch/i.test(m)) return 'Falha de conexão. Verifique sua internet e tente novamente.';
+    if (/invalid login credentials|email not confirmed|user not found/i.test(m)) return 'E-mail ou senha inválidos.';
+    if (/user already registered/i.test(m)) return 'Não foi possível concluir o cadastro. Se já possui conta, use a opção Entrar.';
+    return 'Não foi possível concluir a operação. Tente novamente.';
+  }
+
+  /* Política de senha do cadastro: mínimo 8, com letras e números (M3) */
+  function senhaForte(senha) {
+    return typeof senha === 'string' && senha.length >= 8 && /[A-Za-z]/.test(senha) && /[0-9]/.test(senha);
   }
 
   /* Login com e-mail+senha. Devolve { ok, erro, session } */
@@ -80,11 +87,25 @@
 
   /* Cadastro com e-mail+senha e metadados (nome, igreja) */
   async function cadastrar(email, senha, metadados) {
+    if (!senhaForte(senha)) return { ok: false, erro: 'A senha deve ter no mínimo 8 caracteres, com letras e números.' };
     var c = await carregarCliente();
     if (!c) return { ok: false, erro: 'Supabase não configurado (modo demonstração).' };
     var r = await c.auth.signUp({ email: email, password: senha, options: { data: metadados || {} } });
     if (r.error) return { ok: false, erro: traduzirErroAuth(r.error) };
     return { ok: true, erro: '', session: r.data.session || null };
+  }
+
+  /* Papel do usuário lido de public.profiles (protegido por RLS).
+     Falha fechada: sem sessão, sem linha ou erro → 'usuario'. */
+  async function papelAtual() {
+    var c = await carregarCliente();
+    if (!c) return 'usuario';
+    var sess = await c.auth.getSession();
+    var u = sess && sess.data && sess.data.session && sess.data.session.user;
+    if (!u) return 'usuario';
+    var r = await c.from('profiles').select('role').eq('id', u.id).maybeSingle();
+    if (r.error || !r.data) return 'usuario';
+    return r.data.role === 'admin' ? 'admin' : 'usuario';
   }
 
   /* Login social real com Google (redireciona para o OAuth) */
@@ -124,5 +145,6 @@
     sair: sair,
     onAuthStateChange: onAuthStateChange,
     invocarFuncao: invocarFuncao,
+    papelAtual: papelAtual,
   };
 })();

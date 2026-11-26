@@ -1,7 +1,7 @@
 /* @vitest-environment jsdom */
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
 import { AdminBusca } from '../AdminBusca';
 import type { ItemBusca } from '../busca';
@@ -11,10 +11,10 @@ import type { ItemBusca } from '../busca';
 
 let container: HTMLElement;
 let root: ReturnType<typeof createRoot>;
-let navegar: ReturnType<typeof vi.fn>;
+let navegar: Mock;
 
 /* Spies criados junto com os itens e reutilizados entre os testes. */
-const executores: ReturnType<typeof vi.fn>[] = [];
+const executores: Mock[] = [];
 const itens: ItemBusca[] = [
   ...Array.from({ length: 7 }, (_, i): ItemBusca => {
     const executar = vi.fn();

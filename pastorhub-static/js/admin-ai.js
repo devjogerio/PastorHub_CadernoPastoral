@@ -133,7 +133,7 @@
     const notaChave = p.servidor
       ? '<div class="info-box blue"><div>🔑</div><div>Este serviço é chamado pelo <b>servidor</b> (Edge Function <code>ai-proxy</code> via <code>supabase secrets</code>). Nenhuma chave fica neste navegador.</div></div>'
       : (p.console
-        ? '<div class="info-box blue"><div>🔑</div><div>Obtenha a chave em <a href="' + p.console + '" target="_blank" rel="noopener">console do provedor</a>. Ela fica guardada apenas neste navegador e é usada pelos agentes e integrações do PastorHub.</div></div>'
+        ? '<div class="info-box blue"><div>🔑</div><div>Obtenha a chave em <a href="' + p.console + '" target="_blank" rel="noopener">console do provedor</a>. Por segurança, ela fica <b>apenas em memória nesta sessão</b> — não é gravada no navegador. Para uso contínuo, configure o segredo no servidor (Edge Function).</div></div>'
         : '');
     const corpo = notaChave +
       (limpar ? '<div class="info-box yellow"><div>♻️</div><div>Rotação: cole a chave nova. Ao salvar, a chave anterior deixa de ser usada pelo PastorHub.</div></div>' : '') +

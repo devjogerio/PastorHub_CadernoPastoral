@@ -239,6 +239,43 @@
     });
   }
 
+  /* Em demonstração não existe senha: esconde o campo e renomeia a ação.
+     Com Supabase configurado, mantém o formulário real e exige senha forte. */
+  function configurarAuthModo() {
+    const real = authReal();
+    ['login-senha', 'cad-senha'].forEach((id) => {
+      const input = document.getElementById(id);
+      const field = input && input.closest('.field');
+      if (field) field.hidden = !real;
+      if (input) input.required = real;
+    });
+    const btnLogin = document.querySelector('#auth-login button[type="submit"]');
+    const btnCad = document.querySelector('#auth-signup button[type="submit"]');
+    if (btnLogin) btnLogin.textContent = real ? 'Entrar' : 'Entrar na demonstração';
+    if (btnCad) btnCad.textContent = real ? 'Criar Conta' : 'Criar perfil de demonstração';
+    const google = document.querySelector('[data-action="auth-google"]');
+    const divider = document.querySelector('#auth-login .divider');
+    if (google) google.hidden = !real;
+    if (divider) divider.hidden = !real;
+    const desc = document.querySelector('.auth-desc');
+    if (desc) {
+      desc.textContent = real
+        ? 'Entre para acessar seus sermões e recursos pastorais'
+        : 'Acesso de demonstração: nenhuma credencial é solicitada ou armazenada';
+    }
+    const hint = document.querySelector('.hint-alert.info');
+    if (hint) {
+      hint.innerHTML = real
+        ? '<strong>Conta protegida:</strong> a autenticação é feita no Supabase; nenhuma senha fica neste navegador.'
+        : '<strong>Modo demonstração:</strong> os dados ficam apenas neste dispositivo e são fictícios. Não insira informações reais.';
+    }
+  }
+
+  /* Mínimo de 8 caracteres com letras e números (M3) */
+  function senhaValida(senha) {
+    return typeof senha === 'string' && senha.length >= 8 && /[A-Za-z]/.test(senha) && /[0-9]/.test(senha);
+  }
+
   /* Aplica a sessão real do Supabase ao perfil local e entra no app */
   async function aplicarSessaoReal(session) {
     const u = session && session.user;
@@ -276,7 +313,12 @@
   $('#auth-login').addEventListener('submit', (e) => {
     e.preventDefault();
     const email = $('#login-email').value.trim();
-    if (authReal()) { loginReal(email, $('#login-senha').value); return; }
+    if (authReal()) {
+      const senha = $('#login-senha').value;
+      if (!senha) { toast('Informe a senha.', 'error'); return; }
+      loginReal(email, senha);
+      return;
+    }
     loginDemo(email);
   });
 
@@ -307,7 +349,15 @@
     const email = $('#cad-email').value.trim();
     const nome = $('#cad-nome').value.trim();
     const igreja = $('#cad-igreja').value.trim();
-    if (authReal()) { signupReal(email, $('#cad-senha').value, nome, igreja); return; }
+    if (authReal()) {
+      const senha = $('#cad-senha').value;
+      if (!senhaValida(senha)) {
+        toast('A senha deve ter no mínimo 8 caracteres, com letras e números.', 'error');
+        return;
+      }
+      signupReal(email, senha, nome, igreja);
+      return;
+    }
     signupDemo(email, nome, igreja);
   });
 
@@ -631,6 +681,7 @@
     updateConnectionUI();
     App.rerender();
     atualizarAuthFoot();
+    configurarAuthModo();
     if (authReal()) {
       PastorAuth.onAuthStateChange((_evento, session) => {
         if (session) aplicarSessaoReal(session);

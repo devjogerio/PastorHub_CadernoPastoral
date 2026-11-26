@@ -8,9 +8,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Alert, AlertDescription } from "./ui/alert";
 import { Loader2, BookOpen, AlertCircle, Mail } from "lucide-react";
 import { toast } from "sonner@2.0.3";
+import {
+  SENHA_MINIMA,
+  mensagemErroAuth,
+  validarSenha,
+} from "../lib/supabase/auth";
 
 interface AuthProps {
   onAuthSuccess?: () => void;
+}
+
+/** Mede a força da senha (0–4) para orientar o usuário, sem bloquear. */
+function forcaDaSenha(senha: string): number {
+  if (!senha) return 0;
+  let pontos = 0;
+  if (senha.length >= SENHA_MINIMA) pontos += 1;
+  if (/[a-z]/.test(senha) && /[A-Z]/.test(senha)) pontos += 1;
+  if (/[0-9]/.test(senha)) pontos += 1;
+  if (/[^A-Za-z0-9]/.test(senha) || senha.length >= 12) pontos += 1;
+  return pontos;
 }
 
 export function Auth({ onAuthSuccess }: AuthProps) {
@@ -36,10 +52,10 @@ export function Auth({ onAuthSuccess }: AuthProps) {
       await SupabaseService.signIn(loginEmail, loginPassword);
       toast.success("Login realizado com sucesso!");
       onAuthSuccess?.();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Erro no login:", err);
-      setError(err.message || "Erro ao fazer login");
-      toast.error("Erro ao fazer login");
+      setError(mensagemErroAuth(err));
+      toast.error("Não foi possível entrar");
     } finally {
       setLoading(false);
     }
@@ -48,6 +64,13 @@ export function Auth({ onAuthSuccess }: AuthProps) {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const problema = validarSenha(signupPassword);
+    if (problema) {
+      setError(problema);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -58,10 +81,10 @@ export function Auth({ onAuthSuccess }: AuthProps) {
 
       toast.success("Cadastro realizado! Verifique seu email para confirmar.");
       setError("Verifique seu email para confirmar o cadastro antes de fazer login.");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Erro no cadastro:", err);
-      setError(err.message || "Erro ao fazer cadastro");
-      toast.error("Erro ao fazer cadastro");
+      setError(mensagemErroAuth(err));
+      toast.error("Não foi possível concluir o cadastro");
     } finally {
       setLoading(false);
     }
@@ -74,10 +97,10 @@ export function Auth({ onAuthSuccess }: AuthProps) {
     try {
       await SupabaseService.signInWithGoogle();
       toast.success("Redirecionando para Google...");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Erro no login com Google:", err);
-      setError(err.message || "Erro ao fazer login com Google");
-      toast.error("Erro ao fazer login com Google");
+      setError(mensagemErroAuth(err));
+      toast.error("Não foi possível entrar com Google");
       setLoading(false);
     }
   };
@@ -240,13 +263,37 @@ export function Auth({ onAuthSuccess }: AuthProps) {
                     <Input
                       id="signup-password"
                       type="password"
-                      placeholder="Mínimo 6 caracteres"
+                      placeholder={`Mínimo ${SENHA_MINIMA} caracteres, com letras e números`}
                       value={signupPassword}
                       onChange={(e) => setSignupPassword(e.target.value)}
                       required
-                      minLength={6}
+                      minLength={SENHA_MINIMA}
+                      autoComplete="new-password"
                       disabled={loading}
                     />
+                    {signupPassword && (
+                      <div className="space-y-1" aria-live="polite">
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4].map((nivel) => (
+                            <span
+                              key={nivel}
+                              className={`h-1 flex-1 rounded-full ${
+                                forcaDaSenha(signupPassword) >= nivel
+                                  ? forcaDaSenha(signupPassword) >= 3
+                                    ? "bg-[#95C121]"
+                                    : "bg-amber-400"
+                                  : "bg-muted"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {forcaDaSenha(signupPassword) >= 3
+                            ? "Senha forte"
+                            : "Use 8+ caracteres, misturando letras, números e símbolos."}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   <Button
@@ -282,12 +329,13 @@ export function Auth({ onAuthSuccess }: AuthProps) {
               </Alert>
             )}
 
-            {/* Modo Offline */}
+            {/* Aviso honesto: offline local não é ambiente seguro */}
             <Alert className="mt-4">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription className="text-xs">
-                <strong>Modo Demo:</strong> Se não tiver conta Supabase configurada, você
-                pode usar o app offline com dados locais.
+                <strong>Sem conexão?</strong> O modo offline guarda os sermões apenas
+                neste dispositivo, protegidos pelo armazenamento do sistema. Evite
+                registrar dados sensíveis de terceiros.
               </AlertDescription>
             </Alert>
           </CardContent>

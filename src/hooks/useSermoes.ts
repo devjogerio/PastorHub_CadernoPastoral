@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { SupabaseService } from '../lib/supabaseService';
-import { OfflineStorage } from '../lib/offlineStorage';
+import { OfflineStorage, EVENTO_OFFLINE_PRONTO } from '../lib/offlineStorage';
 import type { Sermon } from '../types';
 import { toast } from 'sonner@2.0.3';
 
@@ -297,6 +297,17 @@ export function useSermoes(
   useEffect(() => {
     loadSermoesRef.current?.({ reset: true });
   }, []);
+
+  // O cache offline é cifrado: recarrega quando a hidratação termina.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const aoFicarPronto = () => {
+      if (!useSupabase) void loadSermoes({ reset: true });
+    };
+    window.addEventListener(EVENTO_OFFLINE_PRONTO, aoFicarPronto);
+    return () =>
+      window.removeEventListener(EVENTO_OFFLINE_PRONTO, aoFicarPronto);
+  }, [useSupabase, loadSermoes]);
 
   // Sincronizar automaticamente quando voltar online
   useEffect(() => {

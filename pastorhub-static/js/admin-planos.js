@@ -303,19 +303,50 @@
     { id: 'asaas', nome: 'Asaas', sigla: 'AS', cor: '#1a5caa', caps: { pix: true, pixRecorrente: true, cartao: true, boleto: true }, ativo: false, modo: 'sandbox', chavePublica: '', chavePrivada: '', webhook: '' },
     { id: 'banco', nome: 'Banco / Pix direto', sigla: 'PIX', cor: '#002645', caps: { pix: true, pixRecorrente: false, cartao: false, boleto: false }, ativo: false, modo: 'producao', chavePublica: '', chavePrivada: '', webhook: '' },
   ];
+  /* Segredos de gateway e chave Pix ficam apenas em memória (nunca no
+     localStorage): qualquer XSS ou cópia do perfil do navegador não os lê. */
+  const _gwSegredos = { privadas: {}, pixChave: '' };
+
+  function hidratarSegredos() {
+    try {
+      const g = JSON.parse(localStorage.getItem(K_GW));
+      if (Array.isArray(g)) {
+        let mudou = false;
+        g.forEach((x) => {
+          if (x && x.chavePrivada) { _gwSegredos.privadas[x.id] = x.chavePrivada; delete x.chavePrivada; mudou = true; }
+        });
+        if (mudou) localStorage.setItem(K_GW, JSON.stringify(g));
+      }
+    } catch (e) { /* ignora */ }
+    try {
+      const p = JSON.parse(localStorage.getItem(K_PIX));
+      if (p && p.chave) { _gwSegredos.pixChave = p.chave; delete p.chave; localStorage.setItem(K_PIX, JSON.stringify(p)); }
+    } catch (e) { /* ignora */ }
+  }
+  hidratarSegredos();
+
   function lerGateways() {
     let g = null;
     try { g = JSON.parse(localStorage.getItem(K_GW)); } catch (e) {}
-    if (!Array.isArray(g) || !g.length) return JSON.parse(JSON.stringify(GATEWAYS_PADRAO));
+    if (!Array.isArray(g) || !g.length) g = JSON.parse(JSON.stringify(GATEWAYS_PADRAO));
     /* completa campos novos */
     GATEWAYS_PADRAO.forEach((pad) => {
       const existente = g.find((x) => x.id === pad.id);
       if (!existente) g.push(JSON.parse(JSON.stringify(pad)));
       else Object.keys(pad).forEach((k) => { if (existente[k] == null) existente[k] = pad[k]; });
     });
+    /* segredos só existem na memória desta sessão */
+    g.forEach((x) => { x.chavePrivada = _gwSegredos.privadas[x.id] || ''; });
     return g;
   }
-  function salvarGateways(g) { try { localStorage.setItem(K_GW, JSON.stringify(g)); } catch (e) {} }
+  function salvarGateways(g) {
+    const persistir = JSON.parse(JSON.stringify(g || []));
+    persistir.forEach((x) => {
+      if (x && x.chavePrivada) _gwSegredos.privadas[x.id] = x.chavePrivada;
+      if (x) delete x.chavePrivada;
+    });
+    try { localStorage.setItem(K_GW, JSON.stringify(persistir)); } catch (e) {}
+  }
   function gwPronto(g) {
     return g.id === 'banco' ? !!(g.chavePublica) : !!(g.chavePublica && g.chavePrivada);
   }
@@ -331,9 +362,14 @@
   function lerPix() {
     let p = null;
     try { p = JSON.parse(localStorage.getItem(K_PIX)); } catch (e) {}
-    return Object.assign({}, PIX_PADRAO, p || {});
+    return Object.assign({}, PIX_PADRAO, p || {}, { chave: _gwSegredos.pixChave || '' });
   }
-  function salvarPix(p) { try { localStorage.setItem(K_PIX, JSON.stringify(p)); } catch (e) {} }
+  function salvarPix(p) {
+    const persistir = Object.assign({}, p || {});
+    if (persistir.chave) _gwSegredos.pixChave = persistir.chave;
+    delete persistir.chave;
+    try { localStorage.setItem(K_PIX, JSON.stringify(persistir)); } catch (e) {}
+  }
 
   function emv(id, val) { return id + String(val.length).padStart(2, '0') + val; }
   function crc16(str) {
