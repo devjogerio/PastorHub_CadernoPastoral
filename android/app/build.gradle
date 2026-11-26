@@ -10,6 +10,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        /* Segurança (C7): desabilita backup automático e extração de dados */
+        allowBackup false
+        dataExtractionRules file('data_extraction_rules.xml')
+
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
@@ -20,18 +25,22 @@ android {
     signingConfigs {
         release {
             // Configuração de assinatura para release
-            // Tenta carregar arquivo keystore.properties se existir
+            // Requer keystore real: sem keystore.properties o release não é gerado
+            // (não existe fallback com senha conhecida — credencial comprometida = risco).
             def keystorePropertiesFile = rootProject.file("keystore.properties")
             def keystoreProperties = new Properties()
             if (keystorePropertiesFile.exists()) {
                 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
             }
+            if (!keystorePropertiesFile.exists()) {
+                throw new GradleException("keystore.properties não encontrado: gere a chave com 'keytool' e proteja o arquivo.")
+            }
 
-            // Usa propriedades ou valores padrão/ambiente
-            storeFile file(keystoreProperties['storeFile'] ?: "release-key.keystore")
-            storePassword keystoreProperties['storePassword'] ?: "123456"
-            keyAlias keystoreProperties['keyAlias'] ?: "pastoral-app"
-            keyPassword keystoreProperties['keyPassword'] ?: "123456"
+            // Usa propriedades do keystore (obrigatórias)
+            storeFile file(keystoreProperties['storeFile'])
+            storePassword keystoreProperties['storePassword']
+            keyAlias keystoreProperties['keyAlias']
+            keyPassword keystoreProperties['keyPassword']
         }
     }
 
@@ -40,11 +49,12 @@ android {
             minifyEnabled true
             // Usa o arquivo de otimização padrão do Android para R8
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            
-            // Aplica assinatura apenas se o arquivo da chave existir
-            if (file("release-key.keystore").exists()) {
-                signingConfig signingConfigs.release
+
+            // Release exige keystore real: falha o build se a chave não existir.
+            if (!file("release-key.keystore").exists()) {
+                throw new GradleException("Keystore release-key.keystore não encontrado: o build de release não pode ser assinado com fallback.")
             }
+            signingConfig signingConfigs.release
         }
     }
 
