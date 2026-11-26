@@ -17,7 +17,26 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY")!;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+/* CORS restrito (ex.: https://devjogerio.github.io). Nunca "*". */
+function corsHeaders(req: Request) {
+  const permitidas = (Deno.env.get("ALLOWED_ORIGIN") || "").split(",").map((o) => o.trim()).filter(Boolean);
+  const origem = req.headers.get("origin") || "";
+  if (!origem) return { "Access-Control-Allow-Origin": "", "Content-Type": "application/json", Vary: "Origin" };
+  let ok = false;
+  for (const p of permitidas) {
+    try { ok = ok || new URL(origem).origin === new URL(p).origin; } catch { /* ignore */ }
+  }
+  if (!ok) return { "Access-Control-Allow-Origin": "", "Content-Type": "application/json", Vary: "Origin" };
+  return {
+    "Access-Control-Allow-Origin": origem.split(",")[0].trim(),
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Content-Type": "application/json",
+    Vary: "Origin",
+  };
+}
 
 interface SermonRequest {
   titulo?: string;
@@ -29,24 +48,21 @@ interface SermonRequest {
   observacoes?: string;
 }
 
+const CAMPOS_OBRIGATORIOS = ["texto_biblico", "tema", "publico_alvo", "tipo_sermao"];
+
 serve(async (req) => {
   // CORS headers
-  const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  };
+  const cors = corsHeaders(req);
 
   // Handle CORS preflight
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
+  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
   try {
     // =======================================================================
     // 1. AUTENTICAÇÃO
     // =======================================================================
-    const authHeader = req.headers.get("Authorization")!;
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+    const authHeader = req.headers.get("Authorization") || "";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       global: { headers: { Authorization: authHeader } },
     });
 
@@ -58,7 +74,7 @@ serve(async (req) => {
     if (authError || !user) {
       return new Response(JSON.stringify({ error: "Não autorizado" }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: cors,
       });
     }
 
@@ -67,18 +83,25 @@ serve(async (req) => {
     // =======================================================================
     const body: SermonRequest = await req.json();
 
-    if (!body.texto_biblico || !body.tema || !body.publico_alvo || !body.tipo_sermao) {
+    if (!CAMPOS_OBRIGATORIOS.every((c) => Boolean(body[c]))) {
       return new Response(
         JSON.stringify({
           error: "Campos obrigatórios faltando",
-          required: ["texto_biblico", "tema", "publico_alvo", "tipo_sermao"],
+          required: CAMPOS_OBRIGATORIOS,
         }),
         {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: cors,
         }
       );
     }
+
+    const textoBiblico = String(body.texto_biblico || "").slice(0, 3000);
+    const tema = String(body.tema || "").slice(0, 120);
+    const tipo = String(body.tipo_sermao || "").slice(0, 80);
+    const publico = String(body.publico_alvo || "").slice(0, 120);
+    const tom = body.tom ? String(body.tom).slice(0, 60) : undefined;
+    const observacoes = body.observacoes ? String(body.observacoes).slice(0, 2000) : undefined;
 
     // =======================================================================
     // 3. CONSTRUIR PROMPTS PARA OPENAI
@@ -88,18 +111,18 @@ Sua tarefa é criar esboços de sermões estruturados, fiéis às escrituras, bi
 Use linguagem pastoral acessível, mas teologicamente profunda.
 Sempre cite referências bíblicas e mantenha fidelidade ao texto sagrado.`;
 
-    const userPrompt = `Crie um esboço completo de sermão ${body.tipo_sermao} baseado em ${body.texto_biblico} com o tema "${body.tema}".
+    const userPrompt = `Crie um esboço completo de sermão ${tipo} baseado em ${textoBiblico} com o tema "${tema}". 
 
 **ESPECIFICAÇÕES:**
-- Público-alvo: ${body.publico_alvo}
-- Tom desejado: ${body.tom || "encorajador e pastoral"}
-${body.observacoes ? `- Observações especiais: ${body.observacoes}` : ""}
+- Público-alvo: ${publico}
+- Tom desejado: ${tom || "encorajador e pastoral"}
+${observacoes ? `- Observações especiais: ${observacoes}` : ""}
 
 **ESTRUTURA OBRIGATÓRIA:**
 
 **TÍTULO**: [Crie um título impactante e relevante]
 
-**TEXTO BÍBLICO**: ${body.texto_biblico}
+**TEXTO BÍBLICO**: ${textoBiblico}
 
 **INTRODUÇÃO**:
 - Comece com uma ilustração contemporânea ou histórica relevante
@@ -152,7 +175,7 @@ Mantenha o texto limpo e bem estruturado para fácil leitura.`;
         Authorization: `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-4", // ou "gpt-4o-mini" ou "gpt-3.5-turbo"
+        model: "gpt-4o-mini",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
@@ -166,18 +189,12 @@ Mantenha o texto limpo e bem estruturado para fácil leitura.`;
     });
 
     if (!openaiResponse.ok) {
-      const error = await openaiResponse.text();
-      console.error("OpenAI Error:", error);
-      return new Response(
-        JSON.stringify({
-          error: "Erro ao gerar sermão com IA",
-          details: error,
-        }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      console.error("OpenAI Error:", await openaiResponse.text());
+      // Resposta genérica: não expõe detalhes internos ao cliente.
+      return new Response(JSON.stringify({ error: "Erro ao gerar sermão com IA" }), {
+        status: 502,
+        headers: cors,
+      });
     }
 
     const openaiData = await openaiResponse.json();
@@ -191,7 +208,7 @@ Mantenha o texto limpo e bem estruturado para fácil leitura.`;
 
     // Extrair título do HTML
     const tituloMatch = conteudoHtml.match(/<h2>(.*?)<\/h2>/);
-    const titulo = body.titulo || (tituloMatch ? tituloMatch[1] : "Novo Sermão");
+    const titulo = String(body.titulo || "").trim() || (tituloMatch ? String(tituloMatch[1]).trim() : "Novo Sermão");
 
     // Gerar texto puro (sem HTML)
     const conteudoPlain = conteudoHtml
@@ -202,9 +219,9 @@ Mantenha o texto limpo e bem estruturado para fácil leitura.`;
 
     // Gerar tags automáticas
     const tags: string[] = [];
-    tags.push(body.tema.toLowerCase());
+    tags.push(tema.toLowerCase());
 
-    const livro = body.texto_biblico.split(" ")[0].toLowerCase();
+    const livro = textoBiblico.split(" ")[0].toLowerCase();
     if (livro) tags.push(livro);
 
     // =======================================================================
@@ -215,10 +232,10 @@ Mantenha o texto limpo e bem estruturado para fácil leitura.`;
       .insert({
         user_id: user.id,
         titulo: titulo,
-        texto_biblico: body.texto_biblico,
-        tema: body.tema,
-        publico_alvo: body.publico_alvo,
-        tipo_sermao: body.tipo_sermao,
+        texto_biblico: textoBiblica,
+        tema: tema,
+        publico_alvo: publico,
+        tipo_sermao: tipo,
         conteudo_html: conteudoHtml,
         conteudo_plain: conteudoPlain,
         tags: tags,
@@ -233,11 +250,10 @@ Mantenha o texto limpo e bem estruturado para fácil leitura.`;
       return new Response(
         JSON.stringify({
           error: "Erro ao salvar sermão no banco de dados",
-          details: insertError.message,
         }),
         {
           status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          headers: cors,
         }
       );
     }
@@ -259,7 +275,7 @@ Mantenha o texto limpo e bem estruturado para fácil leitura.`;
       }),
       {
         status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: cors,
       }
     );
   } catch (error) {
@@ -267,11 +283,10 @@ Mantenha o texto limpo e bem estruturado para fácil leitura.`;
     return new Response(
       JSON.stringify({
         error: "Erro interno do servidor",
-        message: error.message,
       }),
       {
         status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: cors,
       }
     );
   }
