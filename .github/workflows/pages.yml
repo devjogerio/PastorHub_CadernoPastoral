@@ -34,9 +34,9 @@ jobs:
           mkdir -p _site
           cp -R pastorhub-static/. _site/
       - name: Enviar artefato
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: _site
       - name: Publicar
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
