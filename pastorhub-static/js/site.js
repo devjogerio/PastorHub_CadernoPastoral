@@ -31,7 +31,7 @@
   /* ---------- 3. Módulos ---------- */
   $('#modulos-grid').innerHTML = INV.modulos.map((m) =>
     '<article class="feature' + (m.novo ? ' feature-novo' : '') + '">' +
-      '<span class="f-icon">' + m.icone + '</span>' +
+      '<span class="f-icon">' + (window.SiteIcons ? SiteIcons.svg(m.icone) : '') + '</span>' +
       (m.novo ? '<span class="new-badge">Novo</span>' : '') +
       '<h3>' + esc(m.nome) + '</h3>' +
       '<p>' + esc(m.desc) + '</p>' +
@@ -173,7 +173,7 @@
   /* ---------- Documentos ---------- */
   $('#docs-grid').innerHTML = INV.documentos.map((d) =>
     '<a class="doc-card" href="' + d.link + '">' +
-      '<span class="doc-icon">' + d.icone + '</span>' +
+      '<span class="doc-icon">' + (window.SiteIcons ? SiteIcons.svg(d.icone) : '') + '</span>' +
       '<h3>' + esc(d.nome) + '</h3>' +
       '<p>' + esc(d.desc) + '</p>' +
       '<div class="doc-foot"><span>' + esc(d.tipo) + '</span><b>' + esc(d.tamanho) + '</b></div>' +

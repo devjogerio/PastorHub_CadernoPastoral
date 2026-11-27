@@ -32,6 +32,12 @@ body {
 .container { width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 24px; }
 .container.narrow { max-width: 780px; }
 
+/* ---------- Ícones institucionais (SVG — estilo de referência) ---------- */
+.site-ico { display: inline-flex; align-items: center; justify-content: center; width: 1em; height: 1em; flex: 0 0 auto; }
+.mock-topbar .site-ico { flex: 0 0 auto; }
+.mock-nav .site-ico { display: inline-flex; align-items: center; justify-content: center; }
+.mock-nav .site-ico:first-child { color: var(--lime); }
+
 /* ---------- Botões ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -146,7 +152,7 @@ body {
 .mock-row i { font-size: .62rem; color: var(--muted); font-style: normal; }
 .mock-row em { font-style: normal; font-size: .68rem; color: var(--navy); font-weight: 600; }
 .mock-nav { display: flex; justify-content: space-around; background: var(--navy); color: rgba(255, 255, 255, .55); padding: 9px 0 12px; font-size: .9rem; }
-.mock-nav span:first-child { color: var(--lime); }
+.mock-nav .site-ico:first-child { color: var(--lime); }
 
 .float-card {
   position: absolute;
