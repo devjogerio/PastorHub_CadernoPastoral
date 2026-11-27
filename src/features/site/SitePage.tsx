@@ -198,7 +198,7 @@ export function SitePage() {
   
 
   return (
-    <div className="pt-4">
+    <div className="site-scope pt-4">
       {/* ===== Topo ===== */}
       <header className="site-header">
         <div className="container header-inner">
@@ -289,7 +289,7 @@ export function SitePage() {
 
       {/* ===== Números ===== */}
       <section className="numbers animate-fade-up" aria-label="Metas do mercado">
-        <div className="numbers-grid">
+        <div className="container numbers-grid">
           <div><b>38 mil</b><span>sermões gerados com IA</span></div>
           <div><b>150–200 mil</b><span>pastores no Brasil</span></div>
           <div><b>400 mil+</b><span>templos evangélicos</span></div>
@@ -772,7 +772,7 @@ export function SitePage() {
 
       {/* ===== CTA ===== */}
       <section className="cta" data-anchor="cta">
-        <div className="cta-inner">
+        <div className="container cta-inner">
           <span className="pill-badge">Que Deus abençoe este projeto e todos os pastores que o utilizarem</span>
           <h2>Convidamos você a investir na digitalização do ministério pastoral brasileiro</h2>
           <p>Um mercado fiel, inexplorado e pronto para o seu primeiro player líder. Agende a conversa:</p>

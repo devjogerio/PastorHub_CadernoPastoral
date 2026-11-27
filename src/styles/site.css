@@ -17,7 +17,16 @@
   --max: 1180px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* Reset restrito ao site institucional: uma regra universal fora de camada
+   sobrescreve os utilitarios do Tailwind (ex.: md:pl-64 e px-3) em todo o app. */
+@layer base {
+  .site-scope,
+  .site-scope * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+}
 
 html { scroll-behavior: smooth; }
 
@@ -469,6 +478,8 @@ body {
 
 /* ---------- Mock extra ---------- */
 .float-3 { bottom: 30%; right: -10%; animation: float 7s ease-in-out infinite; }
+/* No app as secoes ficam a direita da sidebar: mantem os cards dentro do container. */
+.site-scope .float-2, .site-scope .float-3 { right: 0; }
 .mock-row-live { border-left-color: var(--blue); }
 .live-pill { color: #ef4444; font-size: .7rem; }
 

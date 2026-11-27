@@ -114,7 +114,7 @@ export function DocsPage() {
         {DOCS.map((doc) => {
           const Icone = doc.icone;
           return (
-            <article key={doc.id} className="flex items-center gap-3 rounded-xl border border-line bg-white p-3">
+            <article key={doc.id} className="flex min-w-0 flex-wrap items-center gap-3 rounded-xl border border-line bg-white p-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-soft text-[#3261AB]">
                 <Icone className="h-5 w-5" />
               </span>
@@ -122,7 +122,7 @@ export function DocsPage() {
                 <p className="text-sm font-semibold text-primary">{doc.titulo}</p>
                 <p className="text-xs text-muted-foreground">{doc.subtitulo}</p>
               </div>
-              <div className="flex shrink-0 items-center gap-1">
+              <div className="flex flex-wrap items-center gap-1">
                 <Button size="sm" variant="outline" onClick={() => (window.location.hash = `docs/${doc.id}`)}>
                   Abrir
                 </Button>

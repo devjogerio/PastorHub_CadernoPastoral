@@ -5,7 +5,7 @@
 # -----------------------------------------------------------------------------
 # Estágio 1: Instalação de dependências (camada cacheável)
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS deps
+FROM node:22-alpine AS deps
 
 WORKDIR /app
 
@@ -53,8 +53,10 @@ RUN npm run build
 # -----------------------------------------------------------------------------
 FROM nginx:1.27-alpine AS production
 
-# Remove configuração padrão do Nginx
-RUN rm -f /etc/nginx/conf.d/default.conf
+# Remove configuração padrão do Nginx e a diretiva 'user' (ignorada quando o
+# master roda como não-root) para manter os logs de inicialização limpos
+RUN rm -f /etc/nginx/conf.d/default.conf \
+    && sed -i '/^user /d' /etc/nginx/nginx.conf
 
 # Copia configuração customizada (porta 8080 não-privilegiada + SPA fallback)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
